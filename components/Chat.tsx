@@ -2,13 +2,21 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Bot, ArrowUp } from 'lucide-react';
+import { User, ArrowUp } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
 // import { PersonaModal } from './PersonaModal'; // Removed
 import { Header } from '../src/components/Header';
 import clsx from 'clsx';
+
+// Custom Rocket Icon Component
+const RocketIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+        <path d="M12 2L4 14h8v8l8-12h-8V2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="currentColor" opacity="0.2" />
+    </svg>
+);
+
 
 export function Chat() {
     const [messages, setMessages] = useState<Message[]>([]);
@@ -79,8 +87,8 @@ export function Chat() {
             />
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto scrollbar-hide pt-24 pb-36 select-text">
-                <div className="w-full max-w-3xl mx-auto px-4 md:px-6">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-24 pb-36 select-text">
+                <div className="w-full max-w-4xl mx-auto px-4 md:px-6">
                     <AnimatePresence initial={false}>
                         {messages.length === 0 && (
                             <motion.div
@@ -89,13 +97,16 @@ export function Chat() {
                                 className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4 select-none"
                             >
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5 mb-4">
-                                    <Bot size={32} className="text-zinc-500" />
+                                    <RocketIcon size={32} className="text-zinc-500" />
                                 </div>
                                 <h2 className="text-2xl font-light tracking-tight text-white/90">
                                     Decisions under uncertainty, stripped to reality.
                                 </h2>
                                 <p className="text-sm text-zinc-500 max-w-md leading-relaxed">
                                     An advisory engine serving blunt, first-principles logic optimized for leverage.
+                                </p>
+                                <p className="text-xs text-zinc-600 mt-3 italic">
+                                    Reasoning inspired by Elon Musk's first-principles thinking.
                                 </p>
                                 <div className="pt-6 border-t border-white/5 mt-2">
                                     <p className="text-[10px] font-medium text-zinc-600 uppercase tracking-[0.2em]">
@@ -112,7 +123,7 @@ export function Chat() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
                                 className={clsx(
-                                    "group flex gap-4 mb-6",
+                                    "group flex gap-4 mb-8",
                                     msg.role === 'user' ? "flex-row-reverse" : "flex-row"
                                 )}
                             >
@@ -121,7 +132,7 @@ export function Chat() {
                                     "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 select-none transition-transform duration-200 group-hover:scale-105",
                                     msg.role === 'assistant' ? "bg-white/10 text-zinc-200" : "bg-blue-600/20 text-blue-400"
                                 )}>
-                                    {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
+                                    {msg.role === 'assistant' ? <RocketIcon size={16} /> : <User size={16} />}
                                 </div>
 
                                 <div className={clsx(
@@ -129,8 +140,10 @@ export function Chat() {
                                     msg.role === 'user' ? "items-end" : "items-start"
                                 )}>
                                     <div className={clsx(
-                                        "text-base leading-7 whitespace-pre-wrap select-text",
-                                        msg.role === 'assistant' ? "text-zinc-100 font-normal" : "text-zinc-400"
+                                        "text-base whitespace-pre-wrap select-text py-1 px-1",
+                                        msg.role === 'assistant'
+                                            ? "text-zinc-100 font-normal leading-[1.7] space-y-3"
+                                            : "text-zinc-400 leading-7"
                                     )}>
                                         {msg.content}
                                     </div>
@@ -146,7 +159,7 @@ export function Chat() {
                             className="flex gap-4 mb-8 select-none"
                         >
                             <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mt-1">
-                                <Bot size={16} className="text-zinc-200 animate-pulse" />
+                                <RocketIcon size={16} className="text-zinc-200 animate-pulse" />
                             </div>
                             <div className="flex items-center gap-1 mt-3">
                                 <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
@@ -160,8 +173,8 @@ export function Chat() {
             </div>
 
             {/* Floating Input */}
-            <div className="fixed bottom-0 inset-x-0 p-6 z-50 pointer-events-none">
-                <div className="max-w-3xl mx-auto relative bg-gradient-to-t from-[#09090b] via-[#09090b] to-transparent pt-10 pb-6 pointer-events-auto">
+            <div className="fixed bottom-0 inset-x-0 p-4 md:p-6 z-50 pointer-events-none">
+                <div className="max-w-4xl mx-auto relative bg-gradient-to-t from-[#09090b] via-[#09090b] to-transparent pt-6 pb-4 md:pt-10 md:pb-6 pointer-events-auto">
 
                     {/* Input Container */}
                     <div className={clsx(

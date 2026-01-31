@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { LoginModal } from './auth/LoginModal';
 import { SignupModal } from './auth/SignupModal';
 import { PersonaSelectionModal } from './PersonaSelectionModal';
+import { HowItWorksModal } from '../../components/HowItWorksModal';
 import { Zap, LogOut, ChevronDown, User } from 'lucide-react';
 import clsx from 'clsx';
 import { Menu, Transition } from '@headlessui/react';
@@ -21,6 +22,7 @@ export function Header({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
     const [showLogin, setShowLogin] = useState(false);
     const [showSignup, setShowSignup] = useState(false);
     const [showPersonaModal, setShowPersonaModal] = useState(false);
+    const [showHowItWorks, setShowHowItWorks] = useState(false);
 
     return (
         <header className="fixed top-0 inset-x-0 h-14 z-50 flex items-center justify-between px-4 md:px-6 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-xl transition-all duration-300">
@@ -31,14 +33,23 @@ export function Header({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                     <span className="text-sm font-medium tracking-wide text-zinc-200 group-hover:text-white transition-colors">Persona AI</span>
                 </div>
                 {/* Active Persona Indicator */}
-                <div className="hidden sm:flex items-center gap-2 pl-4 border-l border-white/10">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-medium">Active:</span>
-                    <span className="text-xs text-amber-500/90 font-medium tracking-wide">First-Principles Advisor</span>
+                <div className="hidden sm:flex flex-col gap-0.5 pl-4 border-l border-white/10">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-medium">Active:</span>
+                        <span className="text-xs text-amber-500/90 font-medium tracking-wide">Elon</span>
+                    </div>
+                    <span className="text-[9px] text-zinc-600 tracking-tight">First-principles. Physics over opinion.</span>
                 </div>
             </div>
 
             {/* Right: Actions */}
             <div className="flex items-center gap-3">
+                <button
+                    onClick={() => setShowHowItWorks(true)}
+                    className="text-xs text-zinc-400 hover:text-white transition-colors font-medium"
+                >
+                    How it works
+                </button>
                 <button
                     onClick={() => setShowPersonaModal(true)}
                     className="flex items-center gap-2 bg-[#18181b] hover:bg-[#27272a] border border-white/10 hover:border-white/20 text-zinc-300 hover:text-white transition-all px-4 py-1.5 rounded-full text-xs font-medium shadow-sm group"
@@ -152,6 +163,10 @@ export function Header({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
             <PersonaSelectionModal
                 isOpen={showPersonaModal}
                 onClose={() => setShowPersonaModal(false)}
+            />
+            <HowItWorksModal
+                isOpen={showHowItWorks}
+                onClose={() => setShowHowItWorks(false)}
             />
         </header>
     );
