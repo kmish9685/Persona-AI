@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Zap, User, Bot, AlertCircle, ArrowUp } from 'lucide-react';
+import { User, Bot, ArrowUp } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
+// import { PersonaModal } from './PersonaModal'; // Removed
+import { Header } from '../src/components/Header';
 import clsx from 'clsx';
 
 export function Chat() {
@@ -46,22 +48,17 @@ export function Chat() {
                 setRemaining(data.remaining_free);
             }
 
-            // Artificial delay for "thinking" feel if response is too fast? 
-            // Nah, speed provides "premium" feel.
             setMessages(prev => [...prev, aiMsg]);
-        } catch (e: any) {
-            if (e.message.includes("402") || e.message.includes("Payment")) {
+        } catch (error: unknown) {
+            const e = error as Error;
+            if (e.message?.includes("402") || e.message?.includes("Payment")) {
                 setShowPaywall(true);
-                setRemaining(0); // Force limit state
-                // Remove the failed user message? Or keep it? 
-                // Let's keep it but show error.
-                // Actually, standard is to show the paywall overlay immediately.
+                setRemaining(0);
             } else {
                 setMessages(prev => [...prev, { role: 'assistant', content: "Error: Something went wrong." }]);
             }
         } finally {
             setLoading(false);
-            // Re-focus input after send (desktop)
             setTimeout(() => inputRef.current?.focus(), 100);
         }
     }
@@ -75,46 +72,36 @@ export function Chat() {
 
     return (
         <div className="flex flex-col h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-white/20">
-            {/* Header */}
-            <header className="fixed top-0 inset-x-0 h-14 z-50 flex items-center justify-between px-6 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-xl">
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" />
-                    <span className="text-sm font-medium tracking-wide text-zinc-200">Persona AI</span>
-                </div>
-
-                {/* Header Limit Display (Optional, subtle backup) */}
-                <div className="flex items-center gap-4">
-                    <span className="hidden md:block text-xs text-zinc-600 font-mono tracking-tight">
-                        {remaining > 0 ? `${remaining} free msgs` : 'Limit reached'}
-                    </span>
-                    <button
-                        onClick={() => setShowPaywall(true)}
-                        className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded-full hover:bg-amber-500/20 transition-colors"
-                    >
-                        <Zap size={12} className="fill-amber-300" />
-                        <span>Upgrade</span>
-                    </button>
-                </div>
-            </header>
+            <Header
+                onShowPersona={() => { }} // No-op, managed internally
+                onShowPaywall={() => setShowPaywall(true)}
+                remaining={remaining}
+            />
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto scrollbar-hide pt-24 pb-36">
+            <div className="flex-1 overflow-y-auto scrollbar-hide pt-24 pb-36 select-text">
                 <div className="w-full max-w-3xl mx-auto px-4 md:px-6">
                     <AnimatePresence initial={false}>
                         {messages.length === 0 && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4"
+                                className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4 select-none"
                             >
                                 <div className="p-4 rounded-2xl bg-white/5 border border-white/5 mb-4">
                                     <Bot size={32} className="text-zinc-500" />
                                 </div>
-                                <h2 className="text-xl font-medium text-zinc-200">First-Principles Advisor</h2>
+                                <h2 className="text-2xl font-light tracking-tight text-white/90">
+                                    Decisions under uncertainty, stripped to reality.
+                                </h2>
                                 <p className="text-sm text-zinc-500 max-w-md leading-relaxed">
-                                    I don't do small talk. I optimize for truth and leverage. <br />
-                                    Ask me how to break your constraints.
+                                    An advisory engine serving blunt, first-principles logic optimized for leverage.
                                 </p>
+                                <div className="pt-6 border-t border-white/5 mt-2">
+                                    <p className="text-[10px] font-medium text-zinc-600 uppercase tracking-[0.2em]">
+                                        Simulated Reasoning • Not a Human
+                                    </p>
+                                </div>
                             </motion.div>
                         )}
 
@@ -123,15 +110,15 @@ export function Chat() {
                                 key={idx}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
                                 className={clsx(
-                                    "group flex gap-4 mb-8",
+                                    "group flex gap-4 mb-6",
                                     msg.role === 'user' ? "flex-row-reverse" : "flex-row"
                                 )}
                             >
                                 {/* Fixed Icon/Avatar */}
                                 <div className={clsx(
-                                    "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1",
+                                    "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 select-none transition-transform duration-200 group-hover:scale-105",
                                     msg.role === 'assistant' ? "bg-white/10 text-zinc-200" : "bg-blue-600/20 text-blue-400"
                                 )}>
                                     {msg.role === 'assistant' ? <Bot size={16} /> : <User size={16} />}
@@ -142,7 +129,7 @@ export function Chat() {
                                     msg.role === 'user' ? "items-end" : "items-start"
                                 )}>
                                     <div className={clsx(
-                                        "text-base leading-7 whitespace-pre-wrap",
+                                        "text-base leading-7 whitespace-pre-wrap select-text",
                                         msg.role === 'assistant' ? "text-zinc-100 font-normal" : "text-zinc-400"
                                     )}>
                                         {msg.content}
@@ -156,7 +143,7 @@ export function Chat() {
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="flex gap-4 mb-8"
+                            className="flex gap-4 mb-8 select-none"
                         >
                             <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mt-1">
                                 <Bot size={16} className="text-zinc-200 animate-pulse" />
@@ -173,56 +160,53 @@ export function Chat() {
             </div>
 
             {/* Floating Input */}
-            <div className="fixed bottom-0 inset-x-0 p-6 z-50">
-                <div className="max-w-3xl mx-auto relative bg-gradient-to-t from-[#09090b] via-[#09090b] to-transparent pt-10 pb-4">
+            <div className="fixed bottom-0 inset-x-0 p-6 z-50 pointer-events-none">
+                <div className="max-w-3xl mx-auto relative bg-gradient-to-t from-[#09090b] via-[#09090b] to-transparent pt-10 pb-6 pointer-events-auto">
 
                     {/* Input Container */}
                     <div className={clsx(
                         "relative group transition-opacity duration-300",
                         remaining === 0 ? "opacity-50" : "opacity-100"
                     )}>
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder={remaining > 0 ? "Type a message..." : "Daily limit reached. Upgrade to continue."}
-                            className="w-full bg-[#18181b]/80 backdrop-blur-md border border-white/10 rounded-2xl pl-5 pr-14 py-4 text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-white/10 focus:border-white/20 transition-all shadow-xl shadow-black/50 disabled:cursor-not-allowed"
-                            disabled={loading || remaining === 0}
-                        />
-                        <button
-                            onClick={handleSend}
-                            disabled={!input.trim() || loading || remaining === 0}
-                            className="absolute right-2 top-2 p-2 rounded-xl bg-white text-black hover:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-white transition-all transform active:scale-95"
-                        >
-                            <ArrowUp size={20} strokeWidth={2.5} />
-                        </button>
+                        <div className="relative overflow-hidden rounded-2xl bg-[#18181b]/90 backdrop-blur-xl border border-white/10 shadow-2xl focus-within:ring-2 focus-within:ring-white/10 focus-within:border-white/20 transition-all">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder={remaining > 0 ? "Ask a question..." : "Daily limit reached."}
+                                className="w-full bg-transparent pl-5 pr-14 py-4 text-base text-zinc-100 placeholder:text-zinc-500 focus:outline-none disabled:cursor-not-allowed"
+                                disabled={loading || remaining === 0}
+                            />
+                            <button
+                                onClick={handleSend}
+                                disabled={!input.trim() || loading || remaining === 0}
+                                className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center rounded-xl bg-white text-black hover:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-white transition-all transform active:scale-95"
+                            >
+                                <ArrowUp size={20} strokeWidth={2.5} />
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Footer Transparency & Limit Text */}
-                    <div className="flex items-center justify-between mt-3 px-1">
-                        <p className="text-[10px] text-zinc-600 font-medium tracking-wide">
-                            {remaining === 0 ? (
-                                <span className="text-amber-500/80">Limit reached for today.</span>
-                            ) : (
-                                <span>Free messages left: {remaining} / 10</span>
-                            )}
+                    {/* Footer Limits & Warnings */}
+                    <div className="text-center mt-4 space-y-1.5 select-none">
+                        <p className="text-[10px] uppercase tracking-widest text-[#F59E0B]/60 font-medium">
+                            Simulated. Not a real person.
                         </p>
-
-                        <p className="text-[10px] text-zinc-700 font-medium hidden sm:block">
-                            Limits ensure our API stays reliable for everyone.
+                        <p className="text-[10px] text-zinc-600 font-medium tracking-wide">
+                            {remaining === 0 ? "Daily limit reached." : `Free messages: ${remaining} / 10`} • Insight is perishable. Calls are not saved.
                         </p>
                     </div>
                 </div>
             </div>
 
-            {/* Paywall Overlay */}
+            {/* Modals */}
             {showPaywall && (
                 <Paywall
                     onClose={() => setShowPaywall(false)}
                     onSuccess={() => {
-                        setRemaining(9999); // Unlimited
+                        setRemaining(9999);
                         setShowPaywall(false);
                     }}
                 />
