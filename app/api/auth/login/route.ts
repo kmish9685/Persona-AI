@@ -1,31 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        const { email, password } = await request.json();
 
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-
-        const response = await fetch(`${backendUrl}/api/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        });
-
-        const data = await response.json();
-
-        const setCookie = response.headers.get('set-cookie');
-        const nextResponse = NextResponse.json(data, { status: response.status });
-
-        if (setCookie) {
-            nextResponse.headers.set('set-cookie', setCookie);
+        if (!email || !password) {
+            return NextResponse.json(
+                { detail: 'Email and password are required' },
+                { status: 400 }
+            );
         }
 
-        return nextResponse;
+        // Create Supabase client
+        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
+        });
+
+        // Sign in with Supabase Auth
+        const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (signInError) {
+            return NextResponse.json(
+                { detail: 'Invalid credentials' },
+                { status: 400 }
+            );
+        }
+
+        // Get user plan from database
+        const { data: userData } = await supabase
+            .from('users')
+            .select('email, plan')
+            .eq('email', email)
+            .single();
+
+        const userPlan = userData?.plan || 'free';
+
+        // Create response
+        const response = NextResponse.json({
+            user: {
+                email: sessionData.user.email,
+                plan: userPlan
+            },
+            token: sessionData.session.access_token
+        });
+
+        // Set auth cookies
+        response.cookies.set('sb-access-token', sessionData.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7
+        });
+
+        response.cookies.set('sb-refresh-token', sessionData.session.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7
+        });
+
+        return response;
+
     } catch (error: any) {
-        console.error('Login proxy error:', error);
+        console.error('Login error:', error);
         return NextResponse.json(
             { detail: error.message || 'Login failed' },
             { status: 500 }
