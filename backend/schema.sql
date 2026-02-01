@@ -78,3 +78,18 @@ CREATE INDEX IF NOT EXISTS idx_contact_submissions_date ON contact_submissions(s
 
 -- Enable RLS (optional - backend uses service role)
 ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+
+-- 9. Gumroad Payment Integration (for international users)
+-- Add Gumroad tracking columns to users table
+ALTER TABLE users ADD COLUMN IF NOT EXISTS gumroad_sale_id TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS payment_provider TEXT DEFAULT 'razorpay';
+
+-- Add Gumroad tracking columns to transactions table
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS gumroad_sale_id TEXT;
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS payment_provider TEXT DEFAULT 'razorpay';
+
+-- Add indices for faster lookups
+CREATE INDEX IF NOT EXISTS idx_users_gumroad_sale ON users(gumroad_sale_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_gumroad_sale ON transactions(gumroad_sale_id);
+CREATE INDEX IF NOT EXISTS idx_users_payment_provider ON users(payment_provider);
+

@@ -164,3 +164,49 @@ def save_contact_submission(name: str, email: str, message: str, ip_address: str
         return {"success": True, "id": result[0].get("id")}
     else:
         return {"success": False, "error": "Failed to save submission"}
+
+def get_supabase_client():
+    """
+    Returns a simple Supabase client wrapper for use in Gumroad handlers.
+    This is a lightweight wrapper around the REST API functions.
+    """
+    class SupabaseClient:
+        def table(self, table_name):
+            return SupabaseTable(table_name)
+    
+    class SupabaseTable:
+        def __init__(self, table_name):
+            self.table_name = table_name
+            self._filters = {}
+        
+        def select(self, columns="*"):
+            self._select = columns
+            return self
+        
+        def insert(self, data):
+            result = supabase_request("POST", self.table_name, data=data)
+            return SupabaseResponse(result)
+        
+        def update(self, data):
+            self._update_data = data
+            return self
+        
+        def eq(self, column, value):
+            self._filters[column] = f"eq.{value}"
+            return self
+        
+        def execute(self):
+            if hasattr(self, '_update_data'):
+                result = supabase_request("PATCH", self.table_name, params=self._filters, data=self._update_data)
+            elif hasattr(self, '_select'):
+                result = supabase_request("GET", self.table_name, params=self._filters)
+            else:
+                result = None
+            return SupabaseResponse(result)
+    
+    class SupabaseResponse:
+        def __init__(self, data):
+            self.data = data if data else []
+    
+    return SupabaseClient()
+
