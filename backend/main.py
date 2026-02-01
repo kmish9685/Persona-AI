@@ -132,7 +132,7 @@ async def submit_contact(request: ContactRequest, raw_request: Request):
 
 # --- Payment Routes ---
 
-@app.post("/payments/create-order")
+@app.post("/api/payments/create-order")
 async def create_payment_order():
     from payments import create_order
     order = create_order()
@@ -149,160 +149,163 @@ async def razorpay_webhook(request: Request):
     # Logic to upgrade user to 'pro' using database.py (omitted for brevity in this step)
     return {"status": "ok"}
 
-# --- Gumroad Webhook & Activation Routes ---
-
-@app.post("/webhooks/gumroad")
-async def gumroad_webhook(request: Request):
-    """
-    Handle Gumroad webhook events (purchase, refund, cancellation).
-    Called by Gumroad when a sale or refund occurs.
-    """
-    try:
-        from gumroad_handler import verify_sale, grant_premium_access, revoke_premium_access, get_sale_email
-        from database import get_supabase_client
-        
-        body = await request.json()
-        
+# ============================================
+# GUMROAD INTEGRATION - FROZEN FOR LAUNCH
+# ============================================
+#
+# 
+# # @app.post("/webhooks/gumroad")
+# async def gumroad_webhook(request: Request):
+#     """
+#     Handle Gumroad webhook events (purchase, refund, cancellation).
+#     Called by Gumroad when a sale or refund occurs.
+#     """
+#     try:
+#         from gumroad_handler import verify_sale, grant_premium_access, revoke_premium_access, get_sale_email
+#         from database import get_supabase_client
+#         
+#         body = await request.json()
+#         
         # Extract sale info from webhook
-        sale_id = body.get("sale_id")
-        seller_id = body.get("seller_id")
-        product_permalink = body.get("product_permalink")
-        email = body.get("email")
-        refunded = body.get("refunded", False)
-        disputed = body.get("disputed", False)
-        
-        if not sale_id:
-            raise HTTPException(status_code=400, detail="Missing sale_id")
-        
+#         sale_id = body.get("sale_id")
+#         seller_id = body.get("seller_id")
+#         product_permalink = body.get("product_permalink")
+#         email = body.get("email")
+#         refunded = body.get("refunded", False)
+#         disputed = body.get("disputed", False)
+#         
+#         if not sale_id:
+#             raise HTTPException(status_code=400, detail="Missing sale_id")
+#         
         # Verify sale with Gumroad API
-        sale_data = verify_sale(sale_id)
-        if not sale_data:
-            raise HTTPException(status_code=400, detail="Invalid sale")
-        
-        supabase = get_supabase_client()
-        
+#         sale_data = verify_sale(sale_id)
+#         if not sale_data:
+#             raise HTTPException(status_code=400, detail="Invalid sale")
+#         
+#         supabase = get_supabase_client()
+#         
         # Handle refund/dispute
-        if refunded or disputed:
-            success = revoke_premium_access(sale_id, supabase)
-            return {"status": "revoked" if success else "error"}
-        
+#         if refunded or disputed:
+#             success = revoke_premium_access(sale_id, supabase)
+#             return {"status": "revoked" if success else "error"}
+#         
         # Handle new purchase - AUTO-GRANT PREMIUM ACCESS
         # Get buyer email from Gumroad
-        buyer_email = email or get_sale_email(sale_id)
-        
-        if buyer_email:
+#         buyer_email = email or get_sale_email(sale_id)
+#         
+#         if buyer_email:
             # Automatically grant premium access
-            success = grant_premium_access(buyer_email, sale_id, supabase)
-            
-            if success:
-                print(f"✅ Auto-granted premium access to {buyer_email} (sale: {sale_id})")
-                return {"status": "premium_granted", "email": buyer_email}
-            else:
-                print(f"❌ Failed to grant premium to {buyer_email} (sale: {sale_id})")
-                return {"status": "error", "message": "Failed to grant premium"}
-        else:
-            print(f"⚠️ No email found for sale {sale_id}")
-            return {"status": "error", "message": "No email found"}
-        
-    except Exception as e:
-        print(f"Gumroad webhook error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/api/activate-premium")
-async def activate_premium(request: Request):
-    """
-    Activate premium access after Gumroad purchase.
-    Called when user clicks activation link from Gumroad receipt.
-    """
-    try:
-        from gumroad_handler import verify_sale, grant_premium_access, get_sale_email
-        from database import get_supabase_client
-        from middleware.auth_middleware import get_user_from_token
-        
-        body = await request.json()
-        sale_id = body.get("sale_id")
-        user_email = body.get("user_email")  # From logged-in user
-        
-        if not sale_id:
-            raise HTTPException(status_code=400, detail="Missing sale_id")
-        
+#             success = grant_premium_access(buyer_email, sale_id, supabase)
+#             
+#             if success:
+#                 print(f"✅ Auto-granted premium access to {buyer_email} (sale: {sale_id})")
+#                 return {"status": "premium_granted", "email": buyer_email}
+#             else:
+#                 print(f"❌ Failed to grant premium to {buyer_email} (sale: {sale_id})")
+#                 return {"status": "error", "message": "Failed to grant premium"}
+#         else:
+#             print(f"⚠️ No email found for sale {sale_id}")
+#             return {"status": "error", "message": "No email found"}
+#         
+#     except Exception as e:
+#         print(f"Gumroad webhook error: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+# 
+# 
+# # @app.post("/api/activate-premium")
+# async def activate_premium(request: Request):
+#     """
+#     Activate premium access after Gumroad purchase.
+#     Called when user clicks activation link from Gumroad receipt.
+#     """
+#     try:
+#         from gumroad_handler import verify_sale, grant_premium_access, get_sale_email
+#         from database import get_supabase_client
+#         from middleware.auth_middleware import get_user_from_token
+#         
+#         body = await request.json()
+#         sale_id = body.get("sale_id")
+#         user_email = body.get("user_email")  # From logged-in user
+#         
+#         if not sale_id:
+#             raise HTTPException(status_code=400, detail="Missing sale_id")
+#         
         # Verify sale exists
-        sale_data = verify_sale(sale_id)
-        if not sale_data:
-            raise HTTPException(status_code=400, detail="Invalid sale")
-        
+#         sale_data = verify_sale(sale_id)
+#         if not sale_data:
+#             raise HTTPException(status_code=400, detail="Invalid sale")
+#         
         # Get buyer email from Gumroad
-        gumroad_email = get_sale_email(sale_id)
-        if not gumroad_email:
-            raise HTTPException(status_code=400, detail="Could not retrieve purchase email")
-        
+#         gumroad_email = get_sale_email(sale_id)
+#         if not gumroad_email:
+#             raise HTTPException(status_code=400, detail="Could not retrieve purchase email")
+#         
         # Check if emails match
-        if user_email and user_email.lower() != gumroad_email.lower():
-            return {
-                "status": "email_mismatch",
-                "gumroad_email": gumroad_email,
-                "user_email": user_email,
-                "message": "Please sign in with the email you used on Gumroad"
-            }
-        
+#         if user_email and user_email.lower() != gumroad_email.lower():
+#             return {
+#                 "status": "email_mismatch",
+#                 "gumroad_email": gumroad_email,
+#                 "user_email": user_email,
+#                 "message": "Please sign in with the email you used on Gumroad"
+#             }
+#         
         # Grant premium access
-        supabase = get_supabase_client()
-        success = grant_premium_access(gumroad_email, sale_id, supabase)
-        
-        if success:
-            return {
-                "status": "success",
-                "message": "Premium access activated!",
-                "email": gumroad_email
-            }
-        else:
-            raise HTTPException(status_code=500, detail="Failed to activate premium")
-            
-    except Exception as e:
-        print(f"Activation error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.post("/api/verify-gumroad-purchase")
-async def verify_gumroad_purchase_manual(request: Request):
-    """
-    Manual verification endpoint for email mismatch cases.
-    User confirms "Yes, this is my purchase" even though emails don't match.
-    """
-    try:
-        from gumroad_handler import verify_sale, grant_premium_access
-        from database import get_supabase_client
-        
-        body = await request.json()
-        sale_id = body.get("sale_id")
-        user_email = body.get("user_email")
-        confirmed = body.get("confirmed", False)
-        
-        if not sale_id or not user_email or not confirmed:
-            raise HTTPException(status_code=400, detail="Missing required fields")
-        
+#         supabase = get_supabase_client()
+#         success = grant_premium_access(gumroad_email, sale_id, supabase)
+#         
+#         if success:
+#             return {
+#                 "status": "success",
+#                 "message": "Premium access activated!",
+#                 "email": gumroad_email
+#             }
+#         else:
+#             raise HTTPException(status_code=500, detail="Failed to activate premium")
+#             
+#     except Exception as e:
+#         print(f"Activation error: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+# 
+# 
+# # @app.post("/api/verify-gumroad-purchase")
+# async def verify_gumroad_purchase_manual(request: Request):
+#     """
+#     Manual verification endpoint for email mismatch cases.
+#     User confirms "Yes, this is my purchase" even though emails don't match.
+#     """
+#     try:
+#         from gumroad_handler import verify_sale, grant_premium_access
+#         from database import get_supabase_client
+#         
+#         body = await request.json()
+#         sale_id = body.get("sale_id")
+#         user_email = body.get("user_email")
+#         confirmed = body.get("confirmed", False)
+#         
+#         if not sale_id or not user_email or not confirmed:
+#             raise HTTPException(status_code=400, detail="Missing required fields")
+#         
         # Verify sale exists
-        sale_data = verify_sale(sale_id)
-        if not sale_data:
-            raise HTTPException(status_code=400, detail="Invalid sale")
-        
+#         sale_data = verify_sale(sale_id)
+#         if not sale_data:
+#             raise HTTPException(status_code=400, detail="Invalid sale")
+#         
         # Grant access to the user's email (manual override)
-        supabase = get_supabase_client()
-        success = grant_premium_access(user_email, sale_id, supabase)
-        
-        if success:
-            return {
-                "status": "success",
-                "message": "Premium access activated via manual verification"
-            }
-        else:
-            raise HTTPException(status_code=500, detail="Failed to activate premium")
-            
-    except Exception as e:
-        print(f"Manual verification error: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
+#         supabase = get_supabase_client()
+#         success = grant_premium_access(user_email, sale_id, supabase)
+#         
+#         if success:
+#             return {
+#                 "status": "success",
+#                 "message": "Premium access activated via manual verification"
+#             }
+#         else:
+#             raise HTTPException(status_code=500, detail="Failed to activate premium")
+#             
+#     except Exception as e:
+#         print(f"Manual verification error: {e}")
+#         raise HTTPException(status_code=500, detail=str(e))
+# 
 
 @app.get("/api/detect-country")
 async def detect_country(request: Request):
