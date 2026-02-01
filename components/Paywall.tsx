@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { motion } from 'framer-motion';
-import { Check, Zap, X, ShieldCheck } from 'lucide-react';
+import { Check, Zap, X, ShieldCheck, Globe } from 'lucide-react';
 
 interface PaywallProps {
     onClose: () => void;
@@ -12,19 +12,50 @@ interface PaywallProps {
 
 export function Paywall({ onClose, onSuccess }: PaywallProps) {
     const [loading, setLoading] = useState(false);
+    const [paymentProvider, setPaymentProvider] = useState<'razorpay' | 'gumroad' | null>(null);
+    const [country, setCountry] = useState<string | null>(null);
+    const [manualCountry, setManualCountry] = useState<'india' | 'international' | null>(null);
+    const [showCountrySelector, setShowCountrySelector] = useState(false);
 
-    // Load Razorpay Script
+    // Detect country on mount
     useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.async = true;
-        document.body.appendChild(script);
-        return () => {
-            document.body.removeChild(script);
-        };
+        detectCountry();
     }, []);
 
-    async function handleUpgrade() {
+    async function detectCountry() {
+        try {
+            const res = await fetch('/api/detect-country');
+            const data = await res.json();
+
+            setCountry(data.country);
+            setPaymentProvider(data.payment_provider);
+        } catch (e) {
+            console.error('Country detection failed:', e);
+            // Default to Gumroad for international
+            setPaymentProvider('gumroad');
+        }
+    }
+
+    // Load Razorpay Script (only if needed)
+    useEffect(() => {
+        const currentProvider = manualCountry === 'india' ? 'razorpay' :
+            manualCountry === 'international' ? 'gumroad' :
+                paymentProvider;
+
+        if (currentProvider === 'razorpay') {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.async = true;
+            document.body.appendChild(script);
+            return () => {
+                if (document.body.contains(script)) {
+                    document.body.removeChild(script);
+                }
+            };
+        }
+    }, [paymentProvider, manualCountry]);
+
+    async function handleRazorpayUpgrade() {
         setLoading(true);
         try {
             // 1. Create Order
@@ -34,21 +65,20 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
             // 2. Open Razorpay
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || 'rzp_live_SAOD6SpRnXBDEb', // Fallback or env
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY || 'rzp_live_SAOD6SpRnXBDEb',
                 amount: order.amount,
                 currency: order.currency,
                 name: "Persona AI",
                 description: "Pro Upgrade - Unlimited Access",
                 order_id: order.id,
                 handler: function (_response: any) {
-                    // 3. On Success (In MVP, we trust callback. In Prod, verify webhook)
                     onSuccess();
                 },
                 prefill: {
                     email: "user@example.com"
                 },
                 theme: {
-                    color: "#F59E0B" // Amber-500
+                    color: "#F59E0B"
                 },
                 modal: {
                     ondismiss: function () {
@@ -65,6 +95,31 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
             setLoading(false);
         }
     }
+
+    function handleGumroadUpgrade() {
+        // Redirect to Gumroad checkout
+        window.location.href = 'https://growthkuldeep.gumroad.com/l/persona-ai';
+    }
+
+    function handleUpgrade() {
+        const provider = manualCountry === 'india' ? 'razorpay' :
+            manualCountry === 'international' ? 'gumroad' :
+                paymentProvider;
+
+        if (provider === 'razorpay') {
+            handleRazorpayUpgrade();
+        } else {
+            handleGumroadUpgrade();
+        }
+    }
+
+    const currentProvider = manualCountry === 'india' ? 'razorpay' :
+        manualCountry === 'international' ? 'gumroad' :
+            paymentProvider;
+
+    const isIndia = currentProvider === 'razorpay';
+    const priceDisplay = isIndia ? '₹299' : '$6.99';
+    const providerName = isIndia ? 'Razorpay' : 'Gumroad';
 
     return (
         <Dialog open={true} onClose={onClose} className="relative z-50">
@@ -98,13 +153,54 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                             </button>
                         </div>
 
+                        {/* Country Selector */}
+                        <div className="mb-4 flex items-center justify-between text-xs text-zinc-500">
+                            <span>
+                                {country ? `Detected: ${country === 'IN' ? 'India' : 'International'}` : 'Detecting location...'}
+                            </span>
+                            <button
+                                onClick={() => setShowCountrySelector(!showCountrySelector)}
+                                className="flex items-center gap-1 hover:text-amber-400 transition-colors"
+                            >
+                                <Globe size={12} />
+                                <span>Change</span>
+                            </button>
+                        </div>
+
+                        {/* Manual Country Selector */}
+                        {showCountrySelector && (
+                            <div className="mb-4 p-3 rounded-lg bg-white/5 border border-white/10">
+                                <p className="text-xs text-zinc-400 mb-2">Select your region:</p>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => { setManualCountry('india'); setShowCountrySelector(false); }}
+                                        className={`flex-1 py-2 px-3 rounded-lg text-sm transition-all ${manualCountry === 'india' || (!manualCountry && isIndia)
+                                                ? 'bg-amber-500 text-black font-semibold'
+                                                : 'bg-white/5 text-zinc-400 hover:bg-white/10'
+                                            }`}
+                                    >
+                                        🇮🇳 India
+                                    </button>
+                                    <button
+                                        onClick={() => { setManualCountry('international'); setShowCountrySelector(false); }}
+                                        className={`flex-1 py-2 px-3 rounded-lg text-sm transition-all ${manualCountry === 'international' || (!manualCountry && !isIndia)
+                                                ? 'bg-amber-500 text-black font-semibold'
+                                                : 'bg-white/5 text-zinc-400 hover:bg-white/10'
+                                            }`}
+                                    >
+                                        🌍 International
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Plans Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 relative">
                             {/* Free Plan */}
                             <div className="p-4 rounded-xl border border-white/5 bg-white/[0.02] transition-colors duration-200 hover:bg-white/[0.04]">
                                 <h3 className="text-zinc-400 font-medium mb-1">Free</h3>
                                 <div className="text-2xl font-bold text-zinc-100 mb-4">
-                                    ₹0 <span className="text-xs font-normal text-zinc-600">/ forever</span>
+                                    {isIndia ? '₹0' : '$0'} <span className="text-xs font-normal text-zinc-600">/ forever</span>
                                 </div>
                                 <ul className="space-y-3">
                                     <li className="flex items-center gap-2 text-sm text-zinc-400">
@@ -127,7 +223,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     <Zap size={14} className="fill-amber-200" /> Pro
                                 </h3>
                                 <div className="text-2xl font-bold text-white mb-4">
-                                    ₹299 <span className="text-xs font-normal text-zinc-500">/ month</span>
+                                    {priceDisplay} <span className="text-xs font-normal text-zinc-500">/ month</span>
                                 </div>
                                 <ul className="space-y-3">
                                     <li className="flex items-center gap-2 text-sm text-white">
@@ -149,11 +245,13 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                         {/* Action */}
                         <button
                             onClick={handleUpgrade}
-                            disabled={loading}
+                            disabled={loading || !paymentProvider}
                             className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {loading ? (
                                 <span className="animate-pulse">Connecting to Secure Gateway...</span>
+                            ) : !paymentProvider ? (
+                                <span className="animate-pulse">Detecting location...</span>
                             ) : (
                                 <>
                                     <span>Upgrade Access</span>
@@ -165,7 +263,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                         {/* Trust Footer */}
                         <div className="mt-4 flex items-center justify-center gap-2 text-[10px] text-zinc-600">
                             <ShieldCheck size={12} />
-                            <span>Secured by Razorpay. Cancel anytime.</span>
+                            <span>Secured by {providerName}. Cancel anytime.</span>
                         </div>
                     </motion.div>
                 </Dialog.Panel>

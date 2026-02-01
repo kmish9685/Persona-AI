@@ -27,6 +27,16 @@ export function Chat() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Check for upgrade URL parameter
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('upgrade') === 'true') {
+            setShowPaywall(true);
+            // Remove the parameter from URL
+            window.history.replaceState({}, '', '/chat');
+        }
+    }, []);
+
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
