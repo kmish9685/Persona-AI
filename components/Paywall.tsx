@@ -41,9 +41,8 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
         setLoading(true);
         try {
-            // 1. Create Order
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-            const res = await fetch(`${backendUrl}/api/payments/create-order`, {
+            // 1. Create Order via Next.js API route
+            const res = await fetch('/api/payments/create-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
