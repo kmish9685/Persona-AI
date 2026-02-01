@@ -158,7 +158,7 @@ async def gumroad_webhook(request: Request):
     Called by Gumroad when a sale or refund occurs.
     """
     try:
-        from gumroad_handler import verify_sale, grant_premium_access, revoke_premium_access
+        from gumroad_handler import verify_sale, grant_premium_access, revoke_premium_access, get_sale_email
         from database import get_supabase_client
         
         body = await request.json()
@@ -186,10 +186,23 @@ async def gumroad_webhook(request: Request):
             success = revoke_premium_access(sale_id, supabase)
             return {"status": "revoked" if success else "error"}
         
-        # Handle new purchase
-        # Note: We don't auto-grant here because we need email verification
-        # The user will click the activation link from Gumroad receipt
-        return {"status": "received"}
+        # Handle new purchase - AUTO-GRANT PREMIUM ACCESS
+        # Get buyer email from Gumroad
+        buyer_email = email or get_sale_email(sale_id)
+        
+        if buyer_email:
+            # Automatically grant premium access
+            success = grant_premium_access(buyer_email, sale_id, supabase)
+            
+            if success:
+                print(f"✅ Auto-granted premium access to {buyer_email} (sale: {sale_id})")
+                return {"status": "premium_granted", "email": buyer_email}
+            else:
+                print(f"❌ Failed to grant premium to {buyer_email} (sale: {sale_id})")
+                return {"status": "error", "message": "Failed to grant premium"}
+        else:
+            print(f"⚠️ No email found for sale {sale_id}")
+            return {"status": "error", "message": "No email found"}
         
     except Exception as e:
         print(f"Gumroad webhook error: {e}")
