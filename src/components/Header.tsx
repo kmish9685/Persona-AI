@@ -133,6 +133,13 @@ export function Header({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
 
                         <div className="flex items-center gap-2 border-l border-white/10 pl-3">
                             <button
+                                onClick={onShowPaywall}
+                                className="px-3.5 py-1.5 text-xs font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] active:scale-95 flex items-center gap-1.5"
+                            >
+                                <Zap size={12} className="fill-black/50" />
+                                Upgrade
+                            </button>
+                            <button
                                 onClick={() => setShowLogin(true)}
                                 className="text-xs font-medium text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
                             >

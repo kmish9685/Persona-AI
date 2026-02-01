@@ -10,8 +10,11 @@ export default function LandingPage() {
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="text-sm font-medium">Persona AI</Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <Link href="/about" className="text-sm text-zinc-400 hover:text-white transition-colors">About</Link>
+            <Link href="/chat?upgrade=true" className="px-4 py-1.5 text-sm font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-colors">
+              Upgrade
+            </Link>
             <Link href="/chat" className="px-4 py-1.5 text-sm font-medium bg-white text-black rounded-lg hover:bg-zinc-200 transition-colors">
               Start now
             </Link>
