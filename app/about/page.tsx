@@ -12,12 +12,27 @@ export default function AboutPage() {
         e.preventDefault();
         setStatus('sending');
 
-        // Simulate form submission (replace with actual API call)
-        setTimeout(() => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000'}/contact`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit');
+            }
+
             setStatus('sent');
             setFormData({ name: '', email: '', message: '' });
             setTimeout(() => setStatus(''), 3000);
-        }, 1000);
+        } catch (error) {
+            console.error('Contact form error:', error);
+            setStatus('error');
+            setTimeout(() => setStatus(''), 3000);
+        }
     };
 
     return (
@@ -94,7 +109,7 @@ export default function AboutPage() {
                                     disabled={status === 'sending'}
                                     className="w-full px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {status === 'sending' ? 'Sending...' : status === 'sent' ? 'Sent!' : 'Send message'}
+                                    {status === 'sending' ? 'Sending...' : status === 'sent' ? 'Sent!' : status === 'error' ? 'Failed - Try again' : 'Send message'}
                                 </button>
                             </form>
                         </div>

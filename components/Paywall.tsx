@@ -5,6 +5,8 @@ import { Dialog } from '@headlessui/react';
 import { motion } from 'framer-motion';
 import { Check, Zap, X, ShieldCheck } from 'lucide-react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
 interface PaywallProps {
     onClose: () => void;
     onSuccess: () => void;
@@ -28,7 +30,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         setLoading(true);
         try {
             // 1. Create Order
-            const res = await fetch('http://localhost:8000/payments/create-order', { method: 'POST' });
+            const res = await fetch(`${API_URL}/payments/create-order`, { method: 'POST' });
             if (!res.ok) throw new Error("Failed to create order");
             const order = await res.json();
 
