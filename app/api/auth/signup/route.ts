@@ -1,34 +1,109 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        const { email, password } = await request.json();
 
-        // Get backend URL from environment or use default
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
-
-        // Forward request to Python backend
-        const response = await fetch(`${backendUrl}/api/auth/signup`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-        });
-
-        const data = await response.json();
-
-        // If backend set a cookie, forward it
-        const setCookie = response.headers.get('set-cookie');
-        const nextResponse = NextResponse.json(data, { status: response.status });
-
-        if (setCookie) {
-            nextResponse.headers.set('set-cookie', setCookie);
+        // Validate input
+        if (!email || !password) {
+            return NextResponse.json(
+                { detail: 'Email and password are required' },
+                { status: 400 }
+            );
         }
 
-        return nextResponse;
+        if (password.length < 8) {
+            return NextResponse.json(
+                { detail: 'Password must be at least 8 characters' },
+                { status: 400 }
+            );
+        }
+
+        // Create Supabase admin client
+        const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+            auth: {
+                autoRefreshToken: false,
+                persistSession: false
+            }
+        });
+
+        // Sign up user with Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true, // Auto-confirm email
+            user_metadata: { plan: 'free' }
+        });
+
+        if (authError) {
+            if (authError.message.includes('already registered')) {
+                return NextResponse.json(
+                    { detail: 'User already exists' },
+                    { status: 400 }
+                );
+            }
+            throw authError;
+        }
+
+        // Create user record in public.users table
+        if (authData.user) {
+            const { error: dbError } = await supabase
+                .from('users')
+                .insert({
+                    id: authData.user.id,
+                    email: authData.user.email,
+                    plan: 'free',
+                    created_at: new Date().toISOString()
+                });
+
+            if (dbError && !dbError.message.includes('duplicate')) {
+                console.error('Failed to create user record:', dbError);
+            }
+        }
+
+        // Sign in to get session
+        const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (signInError) {
+            throw signInError;
+        }
+
+        // Create response with session
+        const response = NextResponse.json({
+            user: {
+                email: sessionData.user.email,
+                plan: 'free'
+            },
+            token: sessionData.session.access_token,
+            verification_required: false
+        });
+
+        // Set auth cookie
+        response.cookies.set('sb-access-token', sessionData.session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7 // 7 days
+        });
+
+        response.cookies.set('sb-refresh-token', sessionData.session.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7
+        });
+
+        return response;
+
     } catch (error: any) {
-        console.error('Signup proxy error:', error);
+        console.error('Signup error:', error);
         return NextResponse.json(
             { detail: error.message || 'Signup failed' },
             { status: 500 }

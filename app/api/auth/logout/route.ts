@@ -1,29 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
-    try {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+export async function POST() {
+    const response = NextResponse.json({ message: 'Logged out' });
 
-        const response = await fetch(`${backendUrl}/api/auth/logout`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Cookie': request.headers.get('cookie') || '',
-            },
-        });
+    // Clear auth cookies
+    response.cookies.delete('sb-access-token');
+    response.cookies.delete('sb-refresh-token');
 
-        const data = await response.json();
-        const nextResponse = NextResponse.json(data, { status: response.status });
-
-        // Clear the auth cookie
-        nextResponse.cookies.delete('auth_token');
-
-        return nextResponse;
-    } catch (error: any) {
-        console.error('Logout proxy error:', error);
-        return NextResponse.json(
-            { detail: error.message || 'Logout failed' },
-            { status: 500 }
-        );
-    }
+    return response;
 }

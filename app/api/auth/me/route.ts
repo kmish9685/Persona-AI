@@ -1,24 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function GET(request: NextRequest) {
     try {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+        const accessToken = request.cookies.get('sb-access-token')?.value;
 
-        const response = await fetch(`${backendUrl}/api/auth/me`, {
-            method: 'GET',
-            headers: {
-                'Cookie': request.headers.get('cookie') || '',
-            },
-        });
-
-        if (!response.ok) {
-            return NextResponse.json(null, { status: response.status });
+        if (!accessToken) {
+            return NextResponse.json(null);
         }
 
-        const data = await response.json();
-        return NextResponse.json(data);
-    } catch (error: any) {
-        console.error('Session check proxy error:', error);
-        return NextResponse.json(null, { status: 200 });
+        const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        // Get user from token
+        const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+
+        if (error || !user) {
+            return NextResponse.json(null);
+        }
+
+        // Get user plan from database
+        const { data: userData } = await supabase
+            .from('users')
+            .select('email, plan')
+            .eq('email', user.email)
+            .single();
+
+        return NextResponse.json({
+            email: user.email,
+            plan: userData?.plan || 'free'
+        });
+
+    } catch (error) {
+        console.error('Session check error:', error);
+        return NextResponse.json(null);
     }
 }
