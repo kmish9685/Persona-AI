@@ -12,7 +12,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Import auth router
+from auth import router as auth_router
+
 app = FastAPI()
+
+# Include auth routes
+app.include_router(auth_router, prefix="/api")
 
 # Enhanced CORS for production and development
 origins = [
