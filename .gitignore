@@ -61,3 +61,5 @@ next-env.d.ts
 
 # ComfyUI
 comfyui/
+.vercel
+.env*.local
