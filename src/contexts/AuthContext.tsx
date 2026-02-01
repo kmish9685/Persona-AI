@@ -3,8 +3,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, LoginResponse, SignupResponse } from '../types/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
 interface AuthContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<void>;
@@ -27,7 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function checkSession() {
         try {
-            const res = await fetch(`${API_URL}/auth/me`);
+            const res = await fetch('/api/auth/me');
             if (res.ok) {
                 const data = await res.json();
                 setUser(data); // { email, plan }
@@ -40,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     async function login(email: string, password: string) {
-        const res = await fetch(`${API_URL}/auth/login`, {
+        const res = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -56,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     async function signup(email: string, password: string) {
-        const res = await fetch(`${API_URL}/auth/signup`, {
+        const res = await fetch('/api/auth/signup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -78,12 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     async function logout() {
-        await fetch(`${API_URL}/auth/logout`, { method: 'POST' });
+        await fetch('/api/auth/logout', { method: 'POST' });
         setUser(null);
     }
 
     async function migratePremium(email: string) {
-        const res = await fetch(`${API_URL}/auth/migrate-premium`, {
+        const res = await fetch('/api/auth/migrate-premium', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email }),

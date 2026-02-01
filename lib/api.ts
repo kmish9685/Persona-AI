@@ -1,7 +1,7 @@
 import { ChatResponse } from '../types/chat';
 
-// API configuration - uses environment variable in production, localhost in development
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+const API_URL = '/api';
 
 export async function sendMessage(message: string): Promise<ChatResponse> {
     try {
