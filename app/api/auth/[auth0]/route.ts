@@ -1,4 +1,4 @@
-import { auth0 } from '@/lib/auth0';
+import { auth0 } from '../../../src/lib/auth0';
 import { NextRequest } from 'next/server';
 
 export const GET = (req: NextRequest) => {

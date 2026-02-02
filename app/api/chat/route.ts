@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { auth0 } from '@/lib/auth0'; // Use singleton
+import { auth0 } from '../../../src/lib/auth0'; // Use relative path
 
 // --- Configuration ---
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
