@@ -21,9 +21,9 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
     const [showHowItWorks, setShowHowItWorks] = useState(false);
 
     // Auth0 Login/Signup Links
-    const loginLink = "/api/auth/login";
-    const signupLink = "/api/auth/login?screen_hint=signup";
-    const logoutLink = "/api/auth/logout";
+    const loginLink = "/auth/login";
+    const signupLink = "/auth/login?screen_hint=signup";
+    const logoutLink = "/auth/logout";
 
     return (
         <header className="fixed top-0 inset-x-0 h-14 z-50 flex items-center justify-between px-4 md:px-6 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-xl transition-all duration-300">
