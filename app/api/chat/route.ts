@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
 import { createClient } from '@supabase/supabase-js';
 
 // --- Configuration ---
@@ -7,10 +6,10 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Persona Configuration (Ported from persona.json)
+// Persona Configuration
 const PERSONA = {
     name: "Elon-Style Thinking Engine",
-    max_words: 150, // Slightly higher to allow buffer
+    max_words: 150,
     forbidden_phrases: [
         "as an AI", "I understand how you feel", "it depends", "nuanced",
         "complex landscape", "I might be wrong but", "leverage", "synergy",
@@ -76,86 +75,45 @@ Output Discipline:
 };
 
 // --- Helpers ---
-
-// Initialize Supabase Admin Client
 const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!, {
-    auth: {
-        autoRefreshToken: false,
-        persistSession: false
-    }
+    auth: { autoRefreshToken: false, persistSession: false }
 });
 
 async function checkCanChat(identifier: string) {
-    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
-        return { allowed: true, plan: 'dev', remaining: 999 };
-    }
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return { allowed: true, plan: 'dev', remaining: 999 };
 
     const today = new Date().toISOString().split('T')[0];
     const isEmail = identifier.includes('@');
     const queryColumn = isEmail ? 'email' : 'ip_address';
 
     try {
-        // 1. Check Global Cap
-        const { data: globalStats } = await supabase
-            .from('global_stats')
-            .select('total_requests')
-            .eq('date', today)
-            .single();
+        const { data: globalStats } = await supabase.from('global_stats').select('total_requests').eq('date', today).single();
+        if (globalStats && globalStats.total_requests >= 1000) return { allowed: false, reason: 'global_cap_reached', plan: 'free' };
+        if (!globalStats) await supabase.from('global_stats').insert({ date: today, total_requests: 0 });
 
-        if (globalStats && globalStats.total_requests >= 1000) {
-            return { allowed: false, reason: 'global_cap_reached', plan: 'free' };
-        }
-        if (!globalStats) {
-            await supabase.from('global_stats').insert({ date: today, total_requests: 0 });
-        }
-
-        // 2. Check User
-        let { data: user } = await supabase
-            .from('users')
-            .select('*')
-            .eq(queryColumn, identifier)
-            .single();
-
+        let { data: user } = await supabase.from('users').select('*').eq(queryColumn, identifier).single();
         if (!user) {
-            // Create user
-            const newUser = {
-                plan: 'free',
-                msg_count: 0,
-                last_active_date: today,
-                [queryColumn]: identifier
-            };
-            const { data: createdUser, error } = await supabase
-                .from('users')
-                .insert(newUser)
-                .select()
-                .single();
-
+            const newUser = { plan: 'free', msg_count: 0, last_active_date: today, [queryColumn]: identifier };
+            const { data: createdUser, error } = await supabase.from('users').insert(newUser).select().single();
             if (error) throw error;
             user = createdUser;
         }
 
-        // Reset if new day
         if (user.last_active_date !== today) {
             await supabase.from('users').update({ msg_count: 0, last_active_date: today }).eq(queryColumn, identifier);
             user.msg_count = 0;
         }
 
-        // Logic
         if (user.plan === 'pro') {
             await incrementGlobalStats(today);
             return { allowed: true, plan: 'pro', remaining: 9999 };
         }
+        if (user.msg_count >= 10) return { allowed: false, reason: 'daily_limit_reached', plan: 'free', remaining: 0 };
 
-        if (user.msg_count >= 10) {
-            return { allowed: false, reason: 'daily_limit_reached', plan: 'free', remaining: 0 };
-        }
-
-        // Allowed -> Increment
         await supabase.from('users').update({ msg_count: user.msg_count + 1 }).eq(queryColumn, identifier);
         await incrementGlobalStats(today);
 
         return { allowed: true, plan: 'free', remaining: 10 - (user.msg_count + 1) };
-
     } catch (error) {
         console.error("Limit Check Error:", error);
         return { allowed: true, plan: 'error_fallback', remaining: 5 };
@@ -163,49 +121,32 @@ async function checkCanChat(identifier: string) {
 }
 
 async function incrementGlobalStats(today: string) {
-    // Determine if we need to increment. Current logic in python fetches first.
-    // RPC or simple update is better to avoid race, but staying consistent with python logic
-    // We'll just ignore strict race conditions for MVP.
     const { data } = await supabase.from('global_stats').select('total_requests').eq('date', today).single();
-    if (data) {
-        await supabase.from('global_stats').update({ total_requests: data.total_requests + 1 }).eq('date', today);
-    }
+    if (data) await supabase.from('global_stats').update({ total_requests: data.total_requests + 1 }).eq('date', today);
 }
 
-
 // --- Handler ---
-
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
         const { message } = body;
+        if (!message) return NextResponse.json({ error: "Message is required" }, { status: 400 });
 
-        if (!message) {
-            return NextResponse.json({ error: "Message is required" }, { status: 400 });
-        }
-
-        // 1. Identify User
+        // 1. Identify User (Dynamic Import to fix package resolution)
         let identifier = req.headers.get("x-forwarded-for")?.split(',')[0] || "unknown_ip";
         try {
+            // @ts-ignore
+            const { getSession } = await import('@auth0/nextjs-auth0/server');
             const session = await getSession();
-            if (session?.user?.email) {
-                identifier = session.user.email;
-            }
-        } catch (e) {
-            // No session or error accessing session
-        }
+            if (session?.user?.email) identifier = session.user.email;
+        } catch (e) { }
 
-        // 2. Check Limits
+        // 2. Limits
         const limitStatus = await checkCanChat(identifier);
+        if (!limitStatus.allowed) return NextResponse.json({ error: limitStatus.reason }, { status: 402 });
 
-        if (!limitStatus.allowed) {
-            return NextResponse.json({ error: limitStatus.reason }, { status: 402 });
-        }
-
-        // 3. Call Groq
-        if (!GROQ_API_KEY) {
-            return NextResponse.json({ error: "Configuration Error" }, { status: 500 });
-        }
+        // 3. Groq
+        if (!GROQ_API_KEY) return NextResponse.json({ error: "Configuration Error" }, { status: 500 });
 
         const systemPrompt = PERSONA.system_prompt;
         const personaReinforcement = `You think like a first-principles engineer who has built and scaled real systems.
@@ -236,49 +177,31 @@ Response:`;
 
         const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
-                "Content-Type": "application/json"
-            },
+            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: personaReinforcement }
-                ],
-                temperature: 0.3,
-                max_tokens: 150,
-                top_p: 0.9
+                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: personaReinforcement }],
+                temperature: 0.3, max_tokens: 150, top_p: 0.9
             })
         });
 
         if (!groqResponse.ok) {
             const errText = await groqResponse.text();
-            console.error("Groq API Error:", errText);
             throw new Error(`Groq API Error: ${groqResponse.statusText}`);
         }
 
         const groqData = await groqResponse.json();
         let responseText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
 
-        // 4. Validate/Clean Response
-        // Word limit check
+        // 4. Validate
         const words = responseText.split(/\s+/);
-        if (words.length > PERSONA.max_words) {
-            responseText = words.slice(0, PERSONA.max_words).join(" ") + "...";
-        }
-        // Forbidden phrases
+        if (words.length > PERSONA.max_words) responseText = words.slice(0, PERSONA.max_words).join(" ") + "...";
         PERSONA.forbidden_phrases.forEach(phrase => {
             const regex = new RegExp(phrase, 'gi');
             responseText = responseText.replace(regex, "");
         });
 
-
-        return NextResponse.json({
-            response: responseText,
-            remaining_free: limitStatus.remaining,
-            plan: limitStatus.plan
-        });
+        return NextResponse.json({ response: responseText, remaining_free: limitStatus.remaining, plan: limitStatus.plan });
 
     } catch (error: any) {
         console.error("Chat Route Error:", error);
