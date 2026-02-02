@@ -4,7 +4,6 @@ export const auth0 = new Auth0Client({
     routes: {
         login: '/api/auth/login',
         callback: '/api/auth/callback',
-        logout: '/api/auth/logout',
-        profile: '/api/auth/me'
+        logout: '/api/auth/logout'
     }
 });
