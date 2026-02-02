@@ -9,6 +9,8 @@ interface AuthContextType {
     signup: (email: string, password: string) => Promise<{ hasMigration: boolean; verification_required?: boolean }>;
     logout: () => Promise<void>;
     migratePremium: (email: string) => Promise<void>;
+    forgotPassword: (email: string) => Promise<void>;
+    resetPassword: (newPassword: string) => Promise<void>;
     isLoading: boolean;
 }
 
@@ -95,8 +97,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         checkSession();
     }
 
+    async function forgotPassword(email: string) {
+        const res = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+        });
+
+        if (!res.ok) {
+            // Even on error, don't throw - security (don't reveal if email exists)
+            console.error('Password reset request failed');
+        }
+    }
+
+    async function resetPassword(newPassword: string) {
+        const res = await fetch('/api/auth/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: newPassword }),
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Password reset failed');
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, migratePremium, isLoading }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, migratePremium, forgotPassword, resetPassword, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

@@ -11,9 +11,10 @@ interface LoginModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSwitchToSignup: () => void;
+    onSwitchToForgotPassword: () => void;
 }
 
-export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onSwitchToSignup, onSwitchToForgotPassword }: LoginModalProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -108,6 +109,17 @@ export function LoginModal({ isOpen, onClose, onSwitchToSignup }: LoginModalProp
                                             placeholder="••••••••"
                                         />
                                     </div>
+                                </div>
+
+                                {/* Forgot Password Link */}
+                                <div className="text-right">
+                                    <button
+                                        type="button"
+                                        onClick={onSwitchToForgotPassword}
+                                        className="text-sm text-[#0A84FF] hover:text-[#0066CC] font-medium hover:underline transition-colors"
+                                    >
+                                        Forgot password?
+                                    </button>
                                 </div>
                             </div>
 
