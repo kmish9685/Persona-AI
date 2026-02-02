@@ -1,130 +1,64 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, LoginResponse, SignupResponse } from '../types/auth';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useUser as useAuth0User } from '@auth0/nextjs-auth0/client';
+
+// Define the shape of the user object expected by the app
+// We map Auth0 user to this.
+interface User {
+    id: string;
+    email: string;
+    plan: 'free' | 'pro';
+    // Add other fields if needed
+}
 
 interface AuthContextType {
     user: User | null;
-    login: (email: string, password: string) => Promise<void>;
-    signup: (email: string, password: string) => Promise<{ hasMigration: boolean; verification_required?: boolean }>;
-    logout: () => Promise<void>;
-    migratePremium: (email: string) => Promise<void>;
-    forgotPassword: (email: string) => Promise<void>;
-    resetPassword: (newPassword: string) => Promise<void>;
     isLoading: boolean;
+    login: () => void;
+    signup: () => void;
+    logout: () => void;
+    resetPassword: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { user: auth0User, isLoading } = useAuth0User();
 
-    // Check session on mount
-    useEffect(() => {
-        checkSession();
-    }, []);
+    // Map Auth0 user to our User interface
+    const user: User | null = auth0User ? {
+        id: auth0User.sub || '',
+        email: auth0User.email || '',
+        plan: 'free', // Default to free, real plan should come from DB or Claims
+        // In a real implementation, we might fetch the plan from our API here
+        // or ensure it's in the session.
+    } : null;
 
-    async function checkSession() {
-        try {
-            const res = await fetch('/api/auth/me');
-            if (res.ok) {
-                const data = await res.json();
-                setUser(data); // { email, plan }
-            }
-        } catch (e) {
-            console.error("Session check failed", e);
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const login = () => {
+        window.location.href = '/api/auth/login';
+    };
 
-    async function login(email: string, password: string) {
-        const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
+    const signup = () => {
+        window.location.href = '/api/auth/login?screen_hint=signup';
+    };
 
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.detail || 'Login failed');
-        }
+    const logout = () => {
+        window.location.href = '/api/auth/logout';
+    };
 
-        const data: LoginResponse = await res.json();
-        setUser(data.user);
-    }
+    const resetPassword = () => {
+        // Auth0 handles this via their Universal Login usually, 
+        // or we redirect to a specific connection reset url.
+        // For standard Auth0, usually clicking "Don't remember your password?" on login screen is enough.
+        // But if we need a direct link:
+        // window.location.href = ...
+        console.log("Reset password via Auth0 Login screen");
+    };
 
-    async function signup(email: string, password: string) {
-        const res = await fetch('/api/auth/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-        });
-
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.detail || 'Signup failed');
-        }
-
-        const data: any = await res.json();
-
-        if (data.verification_required) {
-            return { hasMigration: false, verification_required: true };
-        }
-
-        setUser(data.user);
-        return { hasMigration: data.has_premium_migration };
-    }
-
-    async function logout() {
-        await fetch('/api/auth/logout', { method: 'POST' });
-        setUser(null);
-    }
-
-    async function migratePremium(email: string) {
-        const res = await fetch('/api/auth/migrate-premium', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-        });
-
-        if (!res.ok) {
-            throw new Error("Migration failed");
-        }
-
-        // Refresh user to get new pro status
-        checkSession();
-    }
-
-    async function forgotPassword(email: string) {
-        const res = await fetch('/api/auth/forgot-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email }),
-        });
-
-        if (!res.ok) {
-            // Even on error, don't throw - security (don't reveal if email exists)
-            console.error('Password reset request failed');
-        }
-    }
-
-    async function resetPassword(newPassword: string) {
-        const res = await fetch('/api/auth/reset-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: newPassword }),
-        });
-
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.detail || 'Password reset failed');
-        }
-    }
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, logout, migratePremium, forgotPassword, resetPassword, isLoading }}>
+        <AuthContext.Provider value={{ user, isLoading, login, signup, logout, resetPassword }}>
             {children}
         </AuthContext.Provider>
     );

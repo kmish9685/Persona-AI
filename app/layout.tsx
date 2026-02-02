@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
-import { AuthProvider } from '../src/contexts/AuthContext';
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export default function RootLayout({
   children,
@@ -39,9 +39,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
+        <UserProvider>
           {children}
-        </AuthProvider>
+        </UserProvider>
       </body>
     </html>
   );

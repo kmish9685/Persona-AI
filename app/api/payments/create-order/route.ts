@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@auth0/nextjs-auth0';
 
 export async function POST(request: NextRequest) {
     try {
-        const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+        const razorpayKeyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
         const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+
+        // 1. Verify Authentication
+        const session = await getSession();
+        if (!session?.user?.email) {
+            return NextResponse.json({ detail: 'Authentication required' }, { status: 401 });
+        }
+        const userEmail = session.user.email;
 
         if (!razorpayKeyId || !razorpayKeySecret) {
             return NextResponse.json(
@@ -24,7 +32,8 @@ export async function POST(request: NextRequest) {
             currency: 'INR',
             receipt: `receipt_${Date.now()}`,
             notes: {
-                plan: 'founding_access'
+                plan: 'founding_access',
+                user_email: userEmail // Critical for linking payment to user
             }
         };
 
