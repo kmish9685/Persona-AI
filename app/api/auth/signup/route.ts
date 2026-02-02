@@ -32,11 +32,15 @@ export async function POST(request: NextRequest) {
         });
 
         // Sign up user with Supabase Auth
+        // Remove email_confirm: true to FORCE verification email
         const { data: authData, error: authError } = await supabase.auth.admin.createUser({
             email,
             password,
-            email_confirm: true, // Auto-confirm email
-            user_metadata: { plan: 'free' }
+            email_confirm: false, // User MUST verify email
+            user_metadata: {
+                plan: 'free',
+                email_verified: false
+            }
         });
 
         if (authError) {
@@ -63,44 +67,18 @@ export async function POST(request: NextRequest) {
             if (dbError && !dbError.message.includes('duplicate')) {
                 console.error('Failed to create user record:', dbError);
             }
+
+            // DO NOT sign them in immediately.
+            // With email_confirm: false, Supabase sends the verification email automatically
+            // (assuming 'Enable Confirm Email' is ON in Supabase Dashboard)
+
+            return NextResponse.json({
+                message: "Account created. Please verify your email.",
+                verification_required: true
+            });
         }
 
-        // Sign in to get session
-        const { data: sessionData, error: signInError } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (signInError) {
-            throw signInError;
-        }
-
-        // Create response with session
-        const response = NextResponse.json({
-            user: {
-                email: sessionData.user.email,
-                plan: 'free'
-            },
-            token: sessionData.session.access_token,
-            verification_required: false
-        });
-
-        // Set auth cookie
-        response.cookies.set('sb-access-token', sessionData.session.access_token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7 // 7 days
-        });
-
-        response.cookies.set('sb-refresh-token', sessionData.session.refresh_token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            maxAge: 60 * 60 * 24 * 7
-        });
-
-        return response;
+        return NextResponse.json({ detail: 'Signup failed' }, { status: 500 });
 
     } catch (error: any) {
         console.error('Signup error:', error);
