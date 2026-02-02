@@ -29,8 +29,8 @@ export function EmailGateModal({ isOpen, onClose, onSubmit }: EmailGateModalProp
         setLoading(true);
 
         try {
-            // Call backend API - use the correct endpoint
-            const response = await fetch('https://persona-ai-production.up.railway.app/email-capture', {
+            // Call backend API (Vercel)
+            const response = await fetch('/api/email-capture', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
