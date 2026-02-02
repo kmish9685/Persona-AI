@@ -29,8 +29,8 @@ export function EmailGateModal({ isOpen, onClose, onSubmit }: EmailGateModalProp
         setLoading(true);
 
         try {
-            // Call backend API
-            const response = await fetch('/api/email-capture', {
+            // Call backend API - use the correct endpoint
+            const response = await fetch('https://persona-ai-production.up.railway.app/email-capture', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,11 +41,11 @@ export function EmailGateModal({ isOpen, onClose, onSubmit }: EmailGateModalProp
                 })
             });
 
-            const data = await response.json();
-
-            if (!response.ok || !data.success) {
-                throw new Error(data.error || 'Failed to submit email');
+            if (!response.ok) {
+                throw new Error('Failed to submit email');
             }
+
+            const data = await response.json();
 
             // Store in localStorage
             localStorage.setItem('emailSubmitted', 'true');
