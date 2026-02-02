@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LoginModal } from './auth/LoginModal';
 import { SignupModal } from './auth/SignupModal';
+import { ForgotPasswordModal } from './auth/ForgotPasswordModal';
 import { PersonaSelectionModal } from './PersonaSelectionModal';
 import { HowItWorksModal } from '../../components/HowItWorksModal';
 import { Zap, LogOut, ChevronDown, User } from 'lucide-react';
@@ -21,6 +22,7 @@ export function Header({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
     const { user, logout } = useAuth();
     const [showLogin, setShowLogin] = useState(false);
     const [showSignup, setShowSignup] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
     const [showPersonaModal, setShowPersonaModal] = useState(false);
     const [showHowItWorks, setShowHowItWorks] = useState(false);
 
@@ -161,11 +163,17 @@ export function Header({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                 isOpen={showLogin}
                 onClose={() => setShowLogin(false)}
                 onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }}
+                onSwitchToForgotPassword={() => { setShowLogin(false); setShowForgotPassword(true); }}
             />
             <SignupModal
                 isOpen={showSignup}
                 onClose={() => setShowSignup(false)}
                 onSwitchToLogin={() => { setShowSignup(false); setShowLogin(true); }}
+            />
+            <ForgotPasswordModal
+                isOpen={showForgotPassword}
+                onClose={() => setShowForgotPassword(false)}
+                onBackToLogin={() => { setShowForgotPassword(false); setShowLogin(true); }}
             />
             <PersonaSelectionModal
                 isOpen={showPersonaModal}

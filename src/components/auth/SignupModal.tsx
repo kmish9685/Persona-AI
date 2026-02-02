@@ -166,6 +166,13 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
                             >
                                 {isLoading ? <Loader2 size={18} className="animate-spin" /> : "Sign Up"}
                             </button>
+
+                            {/* Email Verification Notice */}
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <p className="text-xs text-blue-800 font-medium text-center">
+                                    📧 You'll receive a verification email. Check your spam folder if you don't see it!
+                                </p>
+                            </div>
                         </form>
 
                         <div className="mt-8 pt-6 border-t border-gray-100 text-center">
