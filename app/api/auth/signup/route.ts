@@ -31,15 +31,17 @@ export async function POST(request: NextRequest) {
             }
         });
 
-        // Sign up user with Supabase Auth
-        // Remove email_confirm: true to FORCE verification email
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        // Sign up user with Supabase Auth (Client method allows redirectTo)
+        // This forces the verification email to point to Production, overriding Dashboard defaults.
+        const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
-            email_confirm: false, // User MUST verify email
-            user_metadata: {
-                plan: 'free',
-                email_verified: false
+            options: {
+                emailRedirectTo: 'https://personai.fun/chat?verified=true',
+                data: {
+                    plan: 'free',
+                    email_verified: false
+                }
             }
         });
 
@@ -68,14 +70,41 @@ export async function POST(request: NextRequest) {
                 console.error('Failed to create user record:', dbError);
             }
 
-            // DO NOT sign them in immediately.
-            // With email_confirm: false, Supabase sends the verification email automatically
-            // (assuming 'Enable Confirm Email' is ON in Supabase Dashboard)
+            // CHECK: Did Supabase return a session? (Means Email Confirm is OFF)
+            if (authData.session) {
+                // Auto-login (Verification is OFF in Dashboard)
+                const response = NextResponse.json({
+                    user: {
+                        email: authData.user.email,
+                        plan: 'free'
+                    },
+                    token: authData.session.access_token,
+                    verification_required: false
+                });
 
-            return NextResponse.json({
-                message: "Account created. Please verify your email.",
-                verification_required: true
-            });
+                // Set cookies
+                response.cookies.set('sb-access-token', authData.session.access_token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    maxAge: 60 * 60 * 24 * 7 // 7 days
+                });
+
+                response.cookies.set('sb-refresh-token', authData.session.refresh_token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    maxAge: 60 * 60 * 24 * 7
+                });
+
+                return response;
+            } else {
+                // No session = Verification Required (Confirm Email is ON)
+                return NextResponse.json({
+                    message: "Account created. Please verify your email.",
+                    verification_required: true
+                });
+            }
         }
 
         return NextResponse.json({ detail: 'Signup failed' }, { status: 500 });
