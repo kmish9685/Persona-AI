@@ -28,6 +28,8 @@ export function SignupModal({ isOpen, onClose, onSwitchToLogin }: SignupModalPro
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isVerificationSent, setIsVerificationSent] = useState(false);
+    const [showMigration, setShowMigration] = useState(false);
+    const [focusedField, setFocusedField] = useState<string | null>(null);
 
     const { signup } = useAuth();
 
