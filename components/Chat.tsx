@@ -6,6 +6,8 @@ import { User, ArrowUp } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
+import { EmailGateModal } from './EmailGateModal';
+import { FreshThinkingCard } from './FreshThinkingCard';
 // import { PersonaModal } from './PersonaModal'; // Removed
 import { Header } from '../src/components/Header';
 import clsx from 'clsx';
@@ -23,6 +25,8 @@ export function Chat() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPaywall, setShowPaywall] = useState(false);
+    const [showEmailGate, setShowEmailGate] = useState(false);
+    const [messageCount, setMessageCount] = useState(0);
     const [remaining, setRemaining] = useState<number>(10); // Start with 10 for optimistic UI
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -36,6 +40,33 @@ export function Chat() {
             window.history.replaceState({}, '', '/chat');
         }
     }, []);
+
+    // Check email gate status on mount
+    useEffect(() => {
+        const emailSubmitted = localStorage.getItem('emailSubmitted');
+        const dismissed = localStorage.getItem('emailGateDismissed');
+        const dismissDate = localStorage.getItem('emailGateDismissDate');
+
+        // Reset dismissal if it's a new day
+        if (dismissDate) {
+            const lastDismiss = new Date(dismissDate);
+            const today = new Date();
+            if (lastDismiss.toDateString() !== today.toDateString()) {
+                localStorage.removeItem('emailGateDismissed');
+                localStorage.removeItem('emailGateDismissDate');
+            }
+        }
+    }, []);
+
+    // Trigger email gate after 3 messages
+    useEffect(() => {
+        const emailSubmitted = localStorage.getItem('emailSubmitted');
+        const dismissed = localStorage.getItem('emailGateDismissed');
+
+        if (messageCount === 3 && !emailSubmitted && !dismissed) {
+            setShowEmailGate(true);
+        }
+    }, [messageCount]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,6 +88,9 @@ export function Chat() {
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
+
+        // Increment message count for email gate trigger
+        setMessageCount(prev => prev + 1);
 
         try {
             const data = await sendMessage(userMsg.content);
@@ -99,6 +133,8 @@ export function Chat() {
             {/* Chat Area */}
             <div className="flex-1 overflow-y-auto custom-scrollbar pt-24 pb-36 select-text">
                 <div className="w-full max-w-4xl mx-auto px-4 md:px-6">
+                    {/* Fresh Thinking Mode Card */}
+                    <FreshThinkingCard />
                     <AnimatePresence initial={false}>
                         {messages.length === 0 && (
                             <motion.div
@@ -231,6 +267,19 @@ export function Chat() {
                     onSuccess={() => {
                         setRemaining(9999);
                         setShowPaywall(false);
+                    }}
+                />
+            )}
+
+            {showEmailGate && (
+                <EmailGateModal
+                    isOpen={showEmailGate}
+                    onClose={() => setShowEmailGate(false)}
+                    onSubmit={(email) => {
+                        console.log('Email submitted:', email);
+                        // Extend remaining messages by 7
+                        setRemaining(prev => prev + 7);
+                        setShowEmailGate(false);
                     }}
                 />
             )}
