@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth0 } from '@/lib/auth0';
 
 export async function POST(request: NextRequest) {
     try {
@@ -6,11 +7,7 @@ export async function POST(request: NextRequest) {
         const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
 
         // 1. Verify Authentication
-        // Dynamic import to handle package resolution quirks
-        // @ts-ignore
-        const { getSession } = await import('@auth0/nextjs-auth0/server');
-
-        const session = await getSession();
+        const session = await auth0.getSession(); // Use singleton
         if (!session?.user?.email) {
             return NextResponse.json({ detail: 'Authentication required' }, { status: 401 });
         }

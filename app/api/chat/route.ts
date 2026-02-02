@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { auth0 } from '@/lib/auth0'; // Use singleton
 
 // --- Configuration ---
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
@@ -132,14 +133,14 @@ export async function POST(req: NextRequest) {
         const { message } = body;
         if (!message) return NextResponse.json({ error: "Message is required" }, { status: 400 });
 
-        // 1. Identify User (Dynamic Import to fix package resolution)
+        // 1. Identify User
         let identifier = req.headers.get("x-forwarded-for")?.split(',')[0] || "unknown_ip";
         try {
-            // @ts-ignore
-            const { getSession } = await import('@auth0/nextjs-auth0/server');
-            const session = await getSession();
+            const session = await auth0.getSession(); // Correct usage of singleton
             if (session?.user?.email) identifier = session.user.email;
-        } catch (e) { }
+        } catch (e) {
+            // e.g. AccessTokenError if no session, ignore
+        }
 
         // 2. Limits
         const limitStatus = await checkCanChat(identifier);
@@ -149,25 +150,19 @@ export async function POST(req: NextRequest) {
         if (!GROQ_API_KEY) return NextResponse.json({ error: "Configuration Error" }, { status: 500 });
 
         const systemPrompt = PERSONA.system_prompt;
-        const personaReinforcement = `You think like a first-principles engineer who has built and scaled real systems.
+        const personaReinforcement = `You think like a first-principles engineer.
 
-Biases you MUST retain:
+Biases:
 - Manufacturing > theory
 - Throughput > elegance
-- Cost curves matter
 - Physics does not negotiate
 - Markets are zero-sum after friction
-- Survival is not success
 
-Language Constraints:
-- Prefer numbers, constraints, and limits.
-- Use physics or engineering metaphors when helpful.
-- Avoid storytelling unless it clarifies a constraint.
-- Never over-explain.
-
-Default Behavior:
+Constraints:
+- Prefer numbers/limits.
+- Physics metaphors.
+- No storytelling.
 - Judge first.
-- Explain only if resistance is likely.
 
 ---
 
