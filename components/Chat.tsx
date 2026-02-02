@@ -98,6 +98,11 @@ export function Chat() {
 
             if (data.remaining_free !== undefined) {
                 setRemaining(data.remaining_free);
+
+                // Show paywall when messages run out
+                if (data.remaining_free === 0) {
+                    setTimeout(() => setShowPaywall(true), 1000);
+                }
             }
 
             setMessages(prev => [...prev, aiMsg]);
@@ -131,7 +136,7 @@ export function Chat() {
             />
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-24 pb-36 select-text">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-24 pb-48 select-text">
                 <div className="w-full max-w-4xl mx-auto px-4 md:px-6">
                     {/* Fresh Thinking Mode Card */}
                     <FreshThinkingCard />
