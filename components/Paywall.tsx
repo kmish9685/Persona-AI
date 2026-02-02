@@ -6,6 +6,7 @@ import { X, Zap, Check } from 'lucide-react';
 import { useAuth } from '../src/contexts/AuthContext';
 import { LoginModal } from '../src/components/auth/LoginModal';
 import { SignupModal } from '../src/components/auth/SignupModal';
+import { ForgotPasswordModal } from '../src/components/auth/ForgotPasswordModal';
 
 interface PaywallProps {
     onClose: () => void;
@@ -17,6 +18,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
     const [loading, setLoading] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
     const [showSignup, setShowSignup] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
 
     // Load Razorpay Script
     useEffect(() => {
@@ -219,11 +221,17 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                 isOpen={showLogin}
                 onClose={() => setShowLogin(false)}
                 onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }}
+                onSwitchToForgotPassword={() => { setShowLogin(false); setShowForgotPassword(true); }}
             />
             <SignupModal
                 isOpen={showSignup}
                 onClose={() => setShowSignup(false)}
                 onSwitchToLogin={() => { setShowSignup(false); setShowLogin(true); }}
+            />
+            <ForgotPasswordModal
+                isOpen={showForgotPassword}
+                onClose={() => setShowForgotPassword(false)}
+                onBackToLogin={() => { setShowForgotPassword(false); setShowLogin(true); }}
             />
         </>
     );
