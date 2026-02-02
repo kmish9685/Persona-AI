@@ -31,8 +31,11 @@ export async function POST(request: NextRequest) {
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
         // Send password reset email via Supabase
+        // Force production URL to avoid localhost issues
+        const siteUrl = 'https://personai.fun';
+
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://personai.fun'}/reset-password`,
+            redirectTo: `${siteUrl}/reset-password`,
         });
 
         if (error) {

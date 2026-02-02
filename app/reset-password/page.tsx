@@ -48,6 +48,19 @@ export default function ResetPasswordPage() {
 
         try {
             await resetPassword(newPassword);
+
+            // SECURITY: Logout immediately so they have to sign in with new credentials
+            try {
+                const { createClient } = require('@supabase/supabase-js');
+                const supabase = createClient(
+                    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+                    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+                );
+                await supabase.auth.signOut();
+            } catch (e) {
+                console.error('Logout error:', e);
+            }
+
             setIsSuccess(true);
 
             // Redirect to homepage with login modal after 2 seconds

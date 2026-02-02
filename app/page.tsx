@@ -2,10 +2,53 @@
 
 import Link from 'next/link';
 import { ArrowRight, Check } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { LoginModal } from '../src/components/auth/LoginModal';
+import { SignupModal } from '../src/components/auth/SignupModal';
+import { ForgotPasswordModal } from '../src/components/auth/ForgotPasswordModal';
 
-export default function LandingPage() {
+function LandingPageContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  useEffect(() => {
+    // Check for login trigger from password reset
+    if (searchParams.get('login') === 'true') {
+      setShowLogin(true);
+      // Clean URL
+      router.replace('/', { scroll: false });
+    }
+    // Check for forgot-password trigger
+    if (searchParams.get('forgot-password') === 'true') {
+      setShowForgotPassword(true);
+      router.replace('/', { scroll: false });
+    }
+  }, [searchParams, router]);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
+      {/* Auth Modals */}
+      <LoginModal
+        isOpen={showLogin}
+        onClose={() => setShowLogin(false)}
+        onSwitchToSignup={() => { setShowLogin(false); setShowSignup(true); }}
+        onSwitchToForgotPassword={() => { setShowLogin(false); setShowForgotPassword(true); }}
+      />
+      <SignupModal
+        isOpen={showSignup}
+        onClose={() => setShowSignup(false)}
+        onSwitchToLogin={() => { setShowSignup(false); setShowLogin(true); }}
+      />
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onBackToLogin={() => { setShowForgotPassword(false); setShowLogin(true); }}
+      />
+
       {/* Navigation */}
       <nav className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#0A0A0A]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -175,5 +218,13 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <Suspense fallback={null}>
+      <LandingPageContent />
+    </Suspense>
   );
 }
