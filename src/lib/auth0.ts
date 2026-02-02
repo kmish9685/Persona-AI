@@ -7,12 +7,8 @@ export const auth0 = new Auth0Client({
     secret: process.env.AUTH0_SECRET,
     appBaseUrl: process.env.AUTH0_BASE_URL,
     routes: {
-        routes: {
-            login: '/auth/login',
-            callback: '/auth/callback',
-            logout: '/auth/logout',
-            profile: '/auth/profile'
-        }
-    });
+        login: '/auth/login',
+        callback: '/auth/callback',
+        logout: '/auth/logout'
     }
 });
