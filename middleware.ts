@@ -4,6 +4,17 @@ export default withMiddlewareAuthRequired();
 
 export const config = {
     matcher: [
-        "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+        /*
+         * Match all request paths except for the ones starting with:
+         * - api/auth (Auth0 routes must be public)
+         * - api/webhooks (Webhooks must be public)
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - / (Landing page should be public)
+         */
+        "/chat(.*)",
+        "/api/chat(.*)",
+        "/api/payments/create-order", // Protect creation, but not webhooks/checkout
     ],
 };
