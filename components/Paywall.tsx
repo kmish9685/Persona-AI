@@ -139,7 +139,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                 <Zap size={28} className="text-amber-500 fill-amber-500" />
                             </div>
                             <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2">
-                                Founding Access v3
+                                Founding Access v4
                             </h2>
                             <p className="text-zinc-400 text-sm">
                                 Unlimited access to first-principles reasoning
@@ -167,7 +167,6 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     >
                                         <option value="IN">India (₹ INR)</option>
                                         <option value="US">United States ($ USD)</option>
-                                        <option value="OTHER">Rest of World ($ USD)</option>
                                     </select>
                                 </div>
                                 <button
