@@ -141,7 +141,7 @@ export function Chat() {
 
                     {/* Fresh Thinking Card - Only show when no messages */}
                     {messages.length === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-[-100px]">
                             <div className="pointer-events-auto">
                                 <FreshThinkingCard />
                             </div>

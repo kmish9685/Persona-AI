@@ -91,6 +91,31 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         }
     }
 
+    async function handlePolarCheckout() {
+        if (!user) {
+            window.location.href = "/api/auth/login?returnTo=/chat";
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const res = await fetch('/api/payments/polar-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userEmail: user.email })
+            });
+
+            if (!res.ok) throw new Error('Failed to create checkout');
+
+            const { checkoutUrl } = await res.json();
+            window.location.href = checkoutUrl;
+        } catch (error: any) {
+            console.error('Polar checkout error:', error);
+            alert('Something went wrong. Please try again.');
+            setLoading(false);
+        }
+    }
+
     return (
         <Dialog open={true} onClose={onClose} className="relative z-50">
             {/* Backdrop */}
@@ -160,7 +185,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                 <h3 className="text-lg font-medium text-white mb-1">Founding Access</h3>
                                 <p className="text-xs text-amber-400/80 mb-3">Lock this price permanently</p>
                                 <p className="text-3xl font-light text-white mb-1">
-                                    {user?.isIndia ? '₹299' : '$9'}
+                                    {user?.isIndia ? '₹299' : '$6.70'}
                                 </p>
                                 <p className="text-xs text-zinc-500 mb-1">per month</p>
                                 <p className="text-[11px] text-zinc-600 mb-4 italic">Early users keep this price. It will increase later.</p>
@@ -186,7 +211,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
                         {/* CTA Button */}
                         <button
-                            onClick={user?.isIndia ? handleRazorpayUpgrade : () => window.open('https://personaai.gumroad.com/l/access', '_blank')}
+                            onClick={user?.isIndia ? handleRazorpayUpgrade : handlePolarCheckout}
                             disabled={loading}
                             className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
@@ -195,7 +220,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                             ) : user ? (
                                 <>
                                     <Zap size={18} className="fill-black/50" />
-                                    Claim Founding Access — {user.isIndia ? '₹299/mo' : '$9/mo'}
+                                    Claim Founding Access — {user.isIndia ? '₹299/mo' : '$6.70/mo'}
                                 </>
                             ) : (
                                 <>Sign In to Upgrade</>
@@ -206,7 +231,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                         <p className="text-center text-xs text-zinc-600 mt-4">
                             {user?.isIndia
                                 ? 'Secure payment via Razorpay • Cancel anytime'
-                                : 'Secure payment via Gumroad • Cancel anytime'
+                                : 'Secure payment via Polar • Cancel anytime'
                             }
                         </p>
                     </div>
