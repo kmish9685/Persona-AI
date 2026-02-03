@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+// Initialize Supabase Admin Client
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(request: NextRequest) {
     try {
@@ -13,16 +20,22 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // In a real app, you would send an email here using Resend or SendGrid.
-        // For now, we will log it to the server console so it "succeeds" for the user.
-        console.log('--- NEW CONTACT FORM SUBMISSION ---');
-        console.log(`From: ${name} (${email})`);
-        console.log(`Message: ${message}`);
-        console.log('-----------------------------------');
+        // Save to Supabase
+        const { error } = await supabase
+            .from('contact_submissions')
+            .insert([
+                { name, email, message, created_at: new Date().toISOString() }
+            ]);
+
+        if (error) {
+            console.error('Supabase error:', error);
+            throw new Error('Failed to save message');
+        }
 
         return NextResponse.json({ success: true });
 
-    } catch (error) {
+    } catch (error: any) {
+        console.error('Contact API Error:', error);
         return NextResponse.json(
             { error: 'Internal Server Error' },
             { status: 500 }

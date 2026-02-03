@@ -14,6 +14,14 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
 
+    // Manual Location State
+    const [step, setStep] = useState<'details' | 'payment'>('details');
+    const [country, setCountry] = useState<string>('IN');
+    const [name, setName] = useState('');
+
+    // Derived state
+    const isIndia = country === 'IN';
+
     // Load Razorpay Script
     useEffect(() => {
         if (user) {
@@ -70,7 +78,9 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     onSuccess();
                 },
                 prefill: {
-                    email: user.email
+                    name: name || user.email, // Use manual name if available
+                    email: user.email,
+                    contact: ""
                 },
                 theme: {
                     color: "#F59E0B"
@@ -123,7 +133,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 <Dialog.Panel
-                    className="relative w-full max-w-2xl bg-[#18181b] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+                    className="relative w-full max-w-lg bg-[#18181b] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
                 >
                     {/* Close Button */}
                     <button
@@ -134,13 +144,13 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     </button>
 
                     {/* Content */}
-                    <div className="p-8">
+                    <div className="p-6 md:p-8">
                         {/* Header */}
-                        <div className="text-center mb-8">
-                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-4">
-                                <Zap size={32} className="text-amber-500 fill-amber-500" />
+                        <div className="text-center mb-6 md:mb-8">
+                            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-4">
+                                <Zap size={28} className="text-amber-500 fill-amber-500" />
                             </div>
-                            <h2 className="text-3xl font-light tracking-tight text-white mb-2">
+                            <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2">
                                 Founding Access
                             </h2>
                             <p className="text-zinc-400 text-sm">
@@ -148,92 +158,96 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                             </p>
                         </div>
 
-                        {/* Authentication Required Message */}
-                        {!user && (
-                            <div className="mb-6 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                <p className="text-sm text-blue-400 text-center">
-                                    Please sign in or create an account to upgrade
-                                </p>
+                        {step === 'details' ? (
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">Your Name</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Elon Musk"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/50 transition-colors"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-zinc-400 mb-1.5 uppercase tracking-wider">Country</label>
+                                    <select
+                                        value={country}
+                                        onChange={(e) => setCountry(e.target.value)}
+                                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500/50 transition-colors appearance-none cursor-pointer"
+                                    >
+                                        <option value="IN">India (₹ INR)</option>
+                                        <option value="US">United States ($ USD)</option>
+                                        <option value="UK">United Kingdom (£ GBP)</option>
+                                        <option value="EU">Europe (€ EUR)</option>
+                                        <option value="OTHER">Rest of World ($ USD)</option>
+                                    </select>
+                                </div>
+                                <button
+                                    onClick={() => setStep('payment')}
+                                    disabled={!name.trim()}
+                                    className="w-full py-3.5 mt-2 bg-white text-black font-medium rounded-xl hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Continue
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                {/* Plan Card */}
+                                <div className="p-6 rounded-xl border-2 border-amber-500/50 bg-amber-500/5 relative">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-500 text-black text-xs font-medium rounded-full">
+                                        FOUNDING MEMBERS
+                                    </div>
+                                    <div className="flex justify-between items-end mb-2">
+                                        <div>
+                                            <h3 className="text-lg font-medium text-white">Founding Access</h3>
+                                            <p className="text-xs text-amber-400/80">Lock this price permanently</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-3xl font-light text-white">
+                                                {isIndia ? '₹299' : '$6.70'}
+                                            </p>
+                                            <p className="text-xs text-zinc-500">per month</p>
+                                        </div>
+                                    </div>
+
+                                    <ul className="space-y-2 my-4 border-t border-white/5 pt-4">
+                                        <li className="flex items-center gap-2 text-sm text-white">
+                                            <Check size={16} className="text-amber-500" />
+                                            Unlimited messages
+                                        </li>
+                                        <li className="flex items-center gap-2 text-sm text-white">
+                                            <Check size={16} className="text-amber-500" />
+                                            Priority latency
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* CTA Button */}
+                                <button
+                                    onClick={isIndia ? handleRazorpayUpgrade : handlePolarCheckout}
+                                    disabled={loading}
+                                    className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                >
+                                    {loading ? (
+                                        <>Processing...</>
+                                    ) : (
+                                        <>
+                                            <Zap size={18} className="fill-black/50" />
+                                            Pay with {isIndia ? 'Razorpay' : 'Polar'}
+                                        </>
+                                    )}
+                                </button>
+
+                                <button
+                                    onClick={() => setStep('details')}
+                                    className="w-full text-xs text-zinc-500 hover:text-white transition-colors"
+                                >
+                                    Back to details
+                                </button>
                             </div>
                         )}
-
-                        {/* Plans Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                            {/* Free Plan */}
-                            <div className="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
-                                <h3 className="text-lg font-medium text-white mb-2">Free</h3>
-                                <p className="text-3xl font-light text-white mb-4">
-                                    {user?.isIndia ? '₹0' : '$0'}
-                                </p>
-                                <ul className="space-y-2 mb-4">
-                                    <li className="flex items-center gap-2 text-sm text-zinc-400">
-                                        <Check size={16} className="text-zinc-600" />
-                                        10 messages/day
-                                    </li>
-                                    <li className="flex items-center gap-2 text-sm text-zinc-400">
-                                        <Check size={16} className="text-zinc-600" />
-                                        Basic access
-                                    </li>
-                                </ul>
-                            </div>
-
-                            {/* Founding Access Plan */}
-                            <div className="p-6 rounded-xl border-2 border-amber-500/50 bg-amber-500/5 relative">
-                                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-500 text-black text-xs font-medium rounded-full">
-                                    FOUNDING MEMBERS
-                                </div>
-                                <h3 className="text-lg font-medium text-white mb-1">Founding Access</h3>
-                                <p className="text-xs text-amber-400/80 mb-3">Lock this price permanently</p>
-                                <p className="text-3xl font-light text-white mb-1">
-                                    {user?.isIndia ? '₹299' : '$6.70'}
-                                </p>
-                                <p className="text-xs text-zinc-500 mb-1">per month</p>
-                                <p className="text-[11px] text-zinc-600 mb-4 italic">Early users keep this price. It will increase later.</p>
-                                <ul className="space-y-2 mb-4">
-                                    <li className="flex items-center gap-2 text-sm text-white">
-                                        <Check size={16} className="text-amber-500" />
-                                        Unlimited messages
-                                    </li>
-                                    <li className="flex items-center gap-2 text-sm text-white">
-                                        <Check size={16} className="text-amber-500" />
-                                        Priority latency
-                                    </li>
-                                    <li className="flex items-center gap-2 text-sm text-white">
-                                        <Check size={16} className="text-amber-500" />
-                                        First-principles tuning
-                                    </li>
-                                </ul>
-                                <p className="text-[10px] text-zinc-600 mt-3 border-t border-white/5 pt-3">
-                                    Founding users keep this price permanently.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* CTA Button */}
-                        <button
-                            onClick={user?.isIndia ? handleRazorpayUpgrade : handlePolarCheckout}
-                            disabled={loading}
-                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {loading ? (
-                                <>Processing...</>
-                            ) : user ? (
-                                <>
-                                    <Zap size={18} className="fill-black/50" />
-                                    Claim Founding Access — {user.isIndia ? '₹299/mo' : '$6.70/mo'}
-                                </>
-                            ) : (
-                                <>Sign In to Upgrade</>
-                            )}
-                        </button>
-
-                        {/* Footer Note */}
-                        <p className="text-center text-xs text-zinc-600 mt-4">
-                            {user?.isIndia
-                                ? 'Secure payment via Razorpay • Cancel anytime'
-                                : 'Secure payment via Polar • Cancel anytime'
-                            }
-                        </p>
                     </div>
                 </Dialog.Panel>
             </div>

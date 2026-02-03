@@ -128,7 +128,7 @@ export function Chat() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-white/20">
+        <div className="flex flex-col h-[100dvh] supports-[height:100cqh]:h-[100cqh] bg-[#09090b] text-zinc-100 font-sans selection:bg-white/20 overflow-hidden">
             <Header
                 onShowPersona={() => { }} // No-op, managed internally
                 onShowPaywall={() => setShowPaywall(true)}
@@ -136,13 +136,13 @@ export function Chat() {
             />
 
             {/* Chat Area - Flex Grow with Auto Scroll */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 pb-4 px-4 scroll-smooth">
-                <div className="w-full max-w-3xl mx-auto flex flex-col justify-end min-h-full">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 pb-4 px-4 scroll-smooth overscroll-contain">
+                <div className="w-full max-w-3xl mx-auto flex flex-col justify-end min-h-full pb-4">
 
                     {/* Fresh Thinking Card - Only show when no messages */}
                     {messages.length === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-[-100px]">
-                            <div className="pointer-events-auto">
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-[-60px] md:mt-[-100px] px-4">
+                            <div className="pointer-events-auto transform scale-90 md:scale-100 transition-transform">
                                 <FreshThinkingCard />
                             </div>
                         </div>
@@ -153,7 +153,7 @@ export function Chat() {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10"
+                                className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10 hidden md:flex"
                             >
                                 <div className="p-5 rounded-3xl bg-white/5 border border-white/5 shadow-2xl">
                                     <RocketIcon size={40} className="text-zinc-500" />
@@ -176,7 +176,7 @@ export function Chat() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
                                 className={clsx(
-                                    "group flex gap-4 mb-6 z-10",
+                                    "group flex gap-3 md:gap-4 mb-6 z-10",
                                     msg.role === 'user' ? "flex-row-reverse" : "flex-row"
                                 )}
                             >
@@ -192,7 +192,7 @@ export function Chat() {
                                     msg.role === 'user' ? "items-end" : "items-start"
                                 )}>
                                     <div className={clsx(
-                                        "text-base whitespace-pre-wrap select-text py-2 px-3 rounded-2xl",
+                                        "text-[15px] md:text-base whitespace-pre-wrap select-text py-2.5 px-4 rounded-2xl",
                                         msg.role === 'assistant'
                                             ? "text-zinc-200 font-light leading-relaxed"
                                             : "bg-[#27272a] text-zinc-100 shadow-sm"
@@ -221,7 +221,7 @@ export function Chat() {
             </div>
 
             {/* Input Area - Flex None (Sticks to bottom) */}
-            <div className="flex-none bg-[#09090b] border-t border-white/5 p-4 md:p-6 z-20">
+            <div className="flex-none bg-[#09090b]/95 backdrop-blur-xl border-t border-white/5 p-3 md:p-6 z-20 pb-[max(1rem,env(safe-area-inset-bottom))]">
                 <div className="max-w-3xl mx-auto space-y-4">
                     {/* Input Container */}
                     <div className={clsx(
@@ -236,7 +236,7 @@ export function Chat() {
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 placeholder={messages.length === 0 ? "Ask anything..." : "Reply..."}
-                                className="w-full bg-transparent pl-5 pr-14 py-4 text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:cursor-not-allowed"
+                                className="w-full bg-transparent pl-4 pr-12 py-3.5 md:pl-5 md:pr-14 md:py-4 text-[16px] md:text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:cursor-not-allowed"
                                 disabled={loading || remaining === 0}
                             />
                             <button
