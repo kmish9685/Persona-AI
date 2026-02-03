@@ -46,6 +46,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
         setLoading(true);
         try {
+            console.log("Creating Razorpay Order...");
             // 1. Create Order via Next.js API route
             const res = await fetch('/api/payments/create-order', {
                 method: 'POST',
@@ -56,10 +57,12 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
             if (!res.ok) {
                 const error = await res.text();
+                console.error("Razorpay Order API Error:", error);
                 throw new Error(`Failed to create order: ${error}`);
             }
 
             const order = await res.json();
+            console.log("Razorpay Order Created:", order);
 
             // 2. Check if Razorpay is loaded
             if (!(window as any).Razorpay) {
@@ -108,22 +111,15 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         }
 
         setLoading(true);
-        try {
-            const res = await fetch('/api/payments/polar-checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userEmail: user.email })
-            });
+        // Direct Link Strategy (Fixes 404)
+        const polarLink = "https://buy.polar.sh/polar_cl_yRdwa0cqXG8R7odwLf0MlAat2L4xjIgmmtF1S0u8ayb";
+        // Pre-fill email
+        const targetUrl = user.email
+            ? `${polarLink}?email=${encodeURIComponent(user.email)}`
+            : polarLink;
 
-            if (!res.ok) throw new Error('Failed to create checkout');
-
-            const { checkoutUrl } = await res.json();
-            window.location.href = checkoutUrl;
-        } catch (error: any) {
-            console.error('Polar checkout error:', error);
-            alert('Something went wrong. Please try again.');
-            setLoading(false);
-        }
+        console.log("Redirecting to Polar Direct Link:", targetUrl);
+        window.location.href = targetUrl;
     }
 
     return (
