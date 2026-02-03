@@ -9,12 +9,10 @@ export async function POST(request: NextRequest) {
         });
 
         // Create Polar checkout session
-        const checkout = await polar.checkouts.custom.create({
-            body: {
-                productPriceId: process.env.POLAR_PRODUCT_PRICE_ID || "",
-                successUrl: `${process.env.APP_BASE_URL}/?payment=success`,
-                customerEmail: userEmail,
-            }
+        const checkout = await polar.checkouts.create({
+            products: [process.env.POLAR_PRODUCT_PRICE_ID || ""],
+            successUrl: `${process.env.APP_BASE_URL}/?payment=success`,
+            customerEmail: userEmail,
         });
 
         return NextResponse.json({
