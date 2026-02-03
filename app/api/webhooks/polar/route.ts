@@ -19,41 +19,61 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate webhook signature
-        let event;
+        const headers: Record<string, string> = {};
+        request.headers.forEach((value, key) => {
+            headers[key] = value;
+        });
+
+        let event: any;
         try {
-            event = validateEvent(payload, signature, secret);
+            event = validateEvent(payload, headers, secret);
         } catch (e) {
             return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
         }
 
-        if (event.type === "checkout.completed") {
-            const { customer_email, subscription_id } = event.data;
-            if (customer_email) {
-                // Update user to premium in Supabase
+        if (event.type === "checkout.created" || event.type === "checkout.updated") {
+            const checkout = event.data;
+            if (checkout.status === "succeeded" && checkout.customer_email) {
+                // Update user to premium
                 const { error } = await supabase
                     .from("users")
                     .update({
-                        plan: "pro", // Using 'pro' to match existing logig
-                        subscription_id: subscription_id,
+                        plan: "pro",
+                        subscription_id: checkout.id,
                         subscription_provider: "polar",
                         subscription_status: "active"
                     })
-                    .eq("email", customer_email);
+                    .eq("email", checkout.customer_email);
 
                 if (error) console.error("Supabase update error:", error);
             }
         }
 
+        if (event.type === "subscription.created") {
+            const subscription = event.data;
+            if (subscription.user && subscription.user.email) {
+                await supabase
+                    .from("users")
+                    .update({
+                        plan: "pro",
+                        subscription_id: subscription.id,
+                        subscription_provider: "polar",
+                        subscription_status: "active"
+                    })
+                    .eq("email", subscription.user.email);
+            }
+        }
+
         if (event.type === "subscription.canceled" || event.type === "subscription.revoked") {
-            const { subscription_id } = event.data;
-            if (subscription_id) {
+            const subscription = event.data;
+            if (subscription.id) {
                 await supabase
                     .from("users")
                     .update({
                         plan: "free",
                         subscription_status: "cancelled"
                     })
-                    .eq("subscription_id", subscription_id);
+                    .eq("subscription_id", subscription.id);
             }
         }
 
