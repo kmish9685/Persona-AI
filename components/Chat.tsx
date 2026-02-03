@@ -135,33 +135,35 @@ export function Chat() {
                 remaining={remaining}
             />
 
-            {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-24 pb-48 select-text">
-                <div className="w-full max-w-4xl mx-auto px-4 md:px-6">
-                    {/* Fresh Thinking Mode Card */}
-                    <FreshThinkingCard />
+            {/* Chat Area - Flex Grow with Auto Scroll */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 pb-4 px-4 scroll-smooth">
+                <div className="w-full max-w-3xl mx-auto flex flex-col justify-end min-h-full">
+
+                    {/* Fresh Thinking Card - Only show when no messages */}
+                    {messages.length === 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                            <div className="pointer-events-auto">
+                                <FreshThinkingCard />
+                            </div>
+                        </div>
+                    )}
+
                     <AnimatePresence initial={false}>
                         {messages.length === 0 && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4 select-none"
+                                className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10"
                             >
-                                <div className="p-4 rounded-2xl bg-white/5 border border-white/5 mb-4">
-                                    <RocketIcon size={32} className="text-zinc-500" />
+                                <div className="p-5 rounded-3xl bg-white/5 border border-white/5 shadow-2xl">
+                                    <RocketIcon size={40} className="text-zinc-500" />
                                 </div>
-                                <h2 className="text-2xl font-light tracking-tight text-white/90">
-                                    Decisions under uncertainty, stripped to reality.
-                                </h2>
-                                <p className="text-sm text-zinc-500 max-w-md leading-relaxed">
-                                    An advisory engine serving blunt, first-principles logic optimized for leverage.
-                                </p>
-                                <p className="text-xs text-zinc-600 mt-3 italic">
-                                    Reasoning inspired by Elon Musk's first-principles thinking.
-                                </p>
-                                <div className="pt-6 border-t border-white/5 mt-2">
-                                    <p className="text-[10px] font-medium text-zinc-600 uppercase tracking-[0.2em]">
-                                        Simulated Reasoning • Not a Human
+                                <div>
+                                    <h2 className="text-3xl md:text-4xl font-light tracking-tighter text-white">
+                                        Decisions, stripped to reality.
+                                    </h2>
+                                    <p className="text-base text-zinc-500 max-w-md mx-auto mt-3 leading-relaxed">
+                                        An advisory engine serving blunt, first-principles logic.
                                     </p>
                                 </div>
                             </motion.div>
@@ -174,27 +176,26 @@ export function Chat() {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.2, ease: "easeOut" }}
                                 className={clsx(
-                                    "group flex gap-4 mb-8",
+                                    "group flex gap-4 mb-6 z-10",
                                     msg.role === 'user' ? "flex-row-reverse" : "flex-row"
                                 )}
                             >
-                                {/* Fixed Icon/Avatar */}
                                 <div className={clsx(
-                                    "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 select-none transition-transform duration-200 group-hover:scale-105",
-                                    msg.role === 'assistant' ? "bg-white/10 text-zinc-200" : "bg-blue-600/20 text-blue-400"
+                                    "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 select-none transition-transform duration-200",
+                                    msg.role === 'assistant' ? "bg-zinc-800 text-zinc-200" : "bg-blue-600 text-white shadow-lg shadow-blue-900/20"
                                 )}>
                                     {msg.role === 'assistant' ? <RocketIcon size={16} /> : <User size={16} />}
                                 </div>
 
                                 <div className={clsx(
-                                    "flex flex-col max-w-[85%] md:max-w-[75%]",
+                                    "flex flex-col max-w-[85%] md:max-w-[80%]",
                                     msg.role === 'user' ? "items-end" : "items-start"
                                 )}>
                                     <div className={clsx(
-                                        "text-base whitespace-pre-wrap select-text py-1 px-1",
+                                        "text-base whitespace-pre-wrap select-text py-2 px-3 rounded-2xl",
                                         msg.role === 'assistant'
-                                            ? "text-zinc-100 font-normal leading-[1.7] space-y-3"
-                                            : "text-zinc-400 leading-7"
+                                            ? "text-zinc-200 font-light leading-relaxed"
+                                            : "bg-[#27272a] text-zinc-100 shadow-sm"
                                     )}>
                                         {msg.content}
                                     </div>
@@ -207,40 +208,35 @@ export function Chat() {
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            className="flex gap-4 mb-8 select-none"
+                            className="flex gap-4 mb-6 select-none"
                         >
-                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mt-1">
-                                <RocketIcon size={16} className="text-zinc-200 animate-pulse" />
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center mt-1">
+                                <RocketIcon size={16} className="text-zinc-200 animate-bounce" />
                             </div>
-                            <div className="flex items-center gap-1 mt-3">
-                                <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                                <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                                <span className="w-1.5 h-1.5 bg-zinc-600 rounded-full animate-bounce"></span>
-                            </div>
+                            <span className="text-zinc-500 text-sm mt-2 font-mono">Thinking...</span>
                         </motion.div>
                     )}
-                    <div ref={messagesEndRef} className="h-4" />
+                    <div ref={messagesEndRef} className="h-2" />
                 </div>
             </div>
 
-            {/* Floating Input */}
-            <div className="fixed bottom-0 inset-x-0 p-4 md:p-6 z-50 pointer-events-none">
-                <div className="max-w-4xl mx-auto relative bg-gradient-to-t from-[#09090b] via-[#09090b] to-transparent pt-6 pb-4 md:pt-10 md:pb-6 pointer-events-auto">
-
+            {/* Input Area - Flex None (Sticks to bottom) */}
+            <div className="flex-none bg-[#09090b] border-t border-white/5 p-4 md:p-6 z-20">
+                <div className="max-w-3xl mx-auto space-y-4">
                     {/* Input Container */}
                     <div className={clsx(
                         "relative group transition-opacity duration-300",
                         remaining === 0 ? "opacity-50" : "opacity-100"
                     )}>
-                        <div className="relative overflow-hidden rounded-2xl bg-[#18181b]/90 backdrop-blur-xl border border-white/10 shadow-2xl focus-within:ring-2 focus-within:ring-white/10 focus-within:border-white/20 transition-all">
+                        <div className="relative overflow-hidden rounded-2xl bg-[#18181b] border border-white/10 shadow-lg focus-within:ring-1 focus-within:ring-white/20 focus-within:border-white/20 transition-all hover:border-white/20">
                             <input
                                 ref={inputRef}
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder={remaining > 0 ? "Ask a question..." : "Daily limit reached."}
-                                className="w-full bg-transparent pl-5 pr-14 py-4 text-base text-zinc-100 placeholder:text-zinc-500 focus:outline-none disabled:cursor-not-allowed"
+                                placeholder={messages.length === 0 ? "Ask anything..." : "Reply..."}
+                                className="w-full bg-transparent pl-5 pr-14 py-4 text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:cursor-not-allowed"
                                 disabled={loading || remaining === 0}
                             />
                             <button
@@ -254,12 +250,12 @@ export function Chat() {
                     </div>
 
                     {/* Footer Limits & Warnings */}
-                    <div className="text-center mt-4 space-y-1.5 select-none">
-                        <p className="text-[10px] uppercase tracking-widest text-[#F59E0B]/60 font-medium">
-                            Simulated. Not a real person.
+                    <div className="flex items-center justify-between px-2 opacity-60 hover:opacity-100 transition-opacity">
+                        <p className="text-[10px] uppercase tracking-widest text-[#F59E0B] font-semibold">
+                            Simulated Person
                         </p>
-                        <p className="text-[10px] text-zinc-600 font-medium tracking-wide">
-                            {remaining === 0 ? "Daily limit reached." : `Free messages: ${remaining} / 10`} • Insight is perishable. Calls are not saved.
+                        <p className="text-[10px] text-zinc-500 font-medium tracking-wide font-mono">
+                            {remaining === 0 ? "LIMIT REACHED" : `${remaining}/10 FREE`}
                         </p>
                     </div>
                 </div>

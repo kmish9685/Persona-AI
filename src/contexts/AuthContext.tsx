@@ -9,7 +9,8 @@ interface User {
     id: string;
     email: string;
     plan: 'free' | 'pro';
-    // Add other fields if needed
+    country?: string;
+    isIndia?: boolean;
 }
 
 interface AuthContextType {
@@ -30,9 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const user: User | null = auth0User ? {
         id: auth0User.sub || '',
         email: auth0User.email || '',
-        plan: 'free', // Default to free, real plan should come from DB or Claims
-        // In a real implementation, we might fetch the plan from our API here
-        // or ensure it's in the session.
+        plan: 'free',
+        country: (auth0User['country_code'] as string) || 'US',
+        isIndia: (auth0User['country_code'] === 'IN')
     } : null;
 
     const login = () => {

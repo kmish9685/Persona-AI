@@ -137,7 +137,9 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                             {/* Free Plan */}
                             <div className="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
                                 <h3 className="text-lg font-medium text-white mb-2">Free</h3>
-                                <p className="text-3xl font-light text-white mb-4">₹0</p>
+                                <p className="text-3xl font-light text-white mb-4">
+                                    {user?.isIndia ? '₹0' : '$0'}
+                                </p>
                                 <ul className="space-y-2 mb-4">
                                     <li className="flex items-center gap-2 text-sm text-zinc-400">
                                         <Check size={16} className="text-zinc-600" />
@@ -157,7 +159,9 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                 </div>
                                 <h3 className="text-lg font-medium text-white mb-1">Founding Access</h3>
                                 <p className="text-xs text-amber-400/80 mb-3">Lock this price permanently</p>
-                                <p className="text-3xl font-light text-white mb-1">₹299</p>
+                                <p className="text-3xl font-light text-white mb-1">
+                                    {user?.isIndia ? '₹299' : '$9'}
+                                </p>
                                 <p className="text-xs text-zinc-500 mb-1">per month</p>
                                 <p className="text-[11px] text-zinc-600 mb-4 italic">Early users keep this price. It will increase later.</p>
                                 <ul className="space-y-2 mb-4">
@@ -182,7 +186,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
                         {/* CTA Button */}
                         <button
-                            onClick={handleRazorpayUpgrade}
+                            onClick={user?.isIndia ? handleRazorpayUpgrade : () => window.open('https://personaai.gumroad.com/l/access', '_blank')}
                             disabled={loading}
                             className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
@@ -191,7 +195,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                             ) : user ? (
                                 <>
                                     <Zap size={18} className="fill-black/50" />
-                                    Claim Founding Access — ₹299/month
+                                    Claim Founding Access — {user.isIndia ? '₹299/mo' : '$9/mo'}
                                 </>
                             ) : (
                                 <>Sign In to Upgrade</>
@@ -200,10 +204,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
                         {/* Footer Note */}
                         <p className="text-center text-xs text-zinc-600 mt-4">
-                            Secure payment via Razorpay • Indian users only
-                        </p>
-                        <p className="text-center text-xs text-zinc-500 mt-2">
-                            International payments coming soon
+                            {user?.isIndia
+                                ? 'Secure payment via Razorpay • Cancel anytime'
+                                : 'Secure payment via Gumroad • Cancel anytime'
+                            }
                         </p>
                     </div>
                 </Dialog.Panel>
