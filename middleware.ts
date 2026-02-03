@@ -1,11 +1,6 @@
-import { auth0 } from '@/src/lib/auth0';
+import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0/edge';
 
-export async function middleware(request: any) {
-    const authResponse = await auth0.middleware(request);
-
-    // Always return the auth response.
-    return authResponse;
-}
+export default withMiddlewareAuthRequired();
 
 export const config = {
     matcher: [
