@@ -3,31 +3,40 @@ export default function RefundPage() {
         <div className="min-h-screen bg-[#0A0A0A] text-white p-6">
             <div className="max-w-3xl mx-auto py-16">
                 <h1 className="text-4xl font-bold mb-8">Refund Policy</h1>
-                <p className="text-zinc-400 mb-4">Last updated: February 2, 2026</p>
+                <p className="text-zinc-400 mb-8">Last updated: February 4, 2026</p>
 
-                <div className="space-y-6 text-zinc-300">
-                    <section>
-                        <h2 className="text-2xl font-semibold text-white mb-3">7-Day Money-Back Guarantee</h2>
-                        <p>We offer a full refund within 7 days of purchase if you're not satisfied with Persona AI Premium.</p>
+                <div className="space-y-8 text-zinc-300 leading-relaxed">
+                    <section className="bg-red-500/10 border border-red-500/20 p-6 rounded-xl">
+                        <h2 className="text-xl font-semibold text-red-400 mb-3">All Sales Are Final</h2>
+                        <p className="text-zinc-200">
+                            **We do NOT offer refunds.** By subscribing to Persona AI, you agree that your purchase is non-refundable.
+                        </p>
                     </section>
 
                     <section>
-                        <h2 className="text-2xl font-semibold text-white mb-3">How to Request a Refund</h2>
-                        <p>Email us at <a href="mailto:support@personai.fun" className="text-[#FF9500] hover:underline">support@personai.fun</a> with your purchase details. Refunds are processed within 5-7 business days.</p>
+                        <h2 className="text-2xl font-semibold text-white mb-3">Why No Refunds?</h2>
+                        <p className="mb-4">
+                            Persona AI provides immediate access to high-cost GPU compute resources (LLM inference) the moment you start chatting.
+                            Since we incur non-recoverable costs for every message generated, we cannot offer refunds on used time or tokens.
+                        </p>
+                        <p>
+                            Think of this like buying a ticket to a concert or a flight. once the seat is reserved and the plane takes off, the value has been delivered.
+                        </p>
                     </section>
 
                     <section>
-                        <h2 className="text-2xl font-semibold text-white mb-3">Eligibility</h2>
-                        <ul className="list-disc ml-6 space-y-1">
-                            <li>Refund requests must be made within 7 days of purchase</li>
-                            <li>Only one refund per user</li>
-                            <li>Subscription will be canceled upon refund</li>
-                        </ul>
+                        <h2 className="text-2xl font-semibold text-white mb-3">Cancellation</h2>
+                        <p>
+                            You can cancel your subscription at any time to prevent future billing.
+                            You will retain access to Pro features until the end of your current billing cycle.
+                        </p>
                     </section>
 
                     <section>
-                        <h2 className="text-2xl font-semibold text-white mb-3">Contact</h2>
-                        <p>Questions? Email: <a href="mailto:support@personai.fun" className="text-[#FF9500] hover:underline">support@personai.fun</a></p>
+                        <h2 className="text-2xl font-semibold text-white mb-3">Contact Support</h2>
+                        <p>
+                            For billing disputes or technical issues, contact: <a href="mailto:kmish9685@gmail.com" className="text-[#FF9500] hover:underline">kmish9685@gmail.com</a>
+                        </p>
                     </section>
                 </div>
             </div>

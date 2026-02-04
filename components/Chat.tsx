@@ -151,8 +151,9 @@ export function Chat() {
                     <AnimatePresence initial={false}>
                         {messages.length === 0 && (
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.25, ease: "easeOut" }}
                                 className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10 hidden md:flex"
                             >
                                 <div className="p-5 rounded-3xl bg-white/5 border border-white/5 shadow-2xl">
@@ -172,33 +173,33 @@ export function Chat() {
                         {messages.map((msg, idx) => (
                             <motion.div
                                 key={idx}
-                                initial={{ opacity: 0, y: 10 }}
+                                initial={{ opacity: 0, y: 8 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.2, ease: "easeOut" }}
+                                transition={{ duration: 0.18, ease: "easeOut" }}
                                 className={clsx(
-                                    "group flex gap-3 md:gap-4 mb-6 z-10",
-                                    msg.role === 'user' ? "flex-row-reverse" : "flex-row"
+                                    "group mb-8 z-10",
+                                    "flex flex-col gap-2"
                                 )}
                             >
-                                <div className={clsx(
-                                    "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mt-1 select-none transition-transform duration-200",
-                                    msg.role === 'assistant' ? "bg-zinc-800 text-zinc-200" : "bg-blue-600 text-white shadow-lg shadow-blue-900/20"
-                                )}>
-                                    {msg.role === 'assistant' ? <RocketIcon size={16} /> : <User size={16} />}
+                                {/* Avatar / Name Header */}
+                                <div className="flex items-center gap-3 select-none opacity-80">
+                                    <div className={clsx(
+                                        "w-5 h-5 rounded-full flex items-center justify-center",
+                                        msg.role === 'assistant' ? "bg-amber-500/10 text-amber-500" : "bg-zinc-800 text-zinc-400"
+                                    )}>
+                                        {msg.role === 'assistant' ? <RocketIcon size={12} /> : <User size={12} />}
+                                    </div>
+                                    <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                                        {msg.role === 'assistant' ? 'Elon' : 'You'}
+                                    </span>
                                 </div>
 
+                                {/* Message Content */}
                                 <div className={clsx(
-                                    "flex flex-col max-w-[85%] md:max-w-[80%]",
-                                    msg.role === 'user' ? "items-end" : "items-start"
+                                    "text-base md:text-lg leading-relaxed text-zinc-200 pl-8 md:pl-0 font-light",
+                                    msg.role === 'user' ? "text-zinc-100 font-normal" : "text-zinc-300"
                                 )}>
-                                    <div className={clsx(
-                                        "text-[15px] md:text-base whitespace-pre-wrap select-text py-2.5 px-4 rounded-2xl",
-                                        msg.role === 'assistant'
-                                            ? "text-zinc-200 font-light leading-relaxed"
-                                            : "bg-[#27272a] text-zinc-100 shadow-sm"
-                                    )}>
-                                        {msg.content}
-                                    </div>
+                                    {msg.content}
                                 </div>
                             </motion.div>
                         ))}
@@ -206,14 +207,12 @@ export function Chat() {
 
                     {loading && (
                         <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="flex gap-4 mb-6 select-none"
+                            initial={{ opacity: 0, y: 4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.15 }}
+                            className="flex gap-4 mb-6 select-none pl-8"
                         >
-                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center mt-1">
-                                <RocketIcon size={16} className="text-zinc-200 animate-bounce" />
-                            </div>
-                            <span className="text-zinc-500 text-sm mt-2 font-mono">Thinking...</span>
+                            <span className="text-zinc-600 text-xs font-medium tracking-wide">Thinking...</span>
                         </motion.div>
                     )}
                     <div ref={messagesEndRef} className="h-2" />
