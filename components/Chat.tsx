@@ -1,16 +1,15 @@
-"use client";
+'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ArrowUp, Zap } from 'lucide-react';
+import { User, ArrowUp, Menu, MoreHorizontal, Zap } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
 import { EmailGateModal } from './EmailGateModal';
 import { FreshThinkingCard } from './FreshThinkingCard';
-// import { PersonaModal } from './PersonaModal'; // Removed
-import { Header } from '../src/components/Header';
 import clsx from 'clsx';
+import Link from 'next/link';
 
 // Custom Rocket Icon Component
 const RocketIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
@@ -19,54 +18,21 @@ const RocketIcon = ({ size = 16, className = "" }: { size?: number; className?: 
     </svg>
 );
 
-
 export function Chat() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPaywall, setShowPaywall] = useState(false);
     const [showEmailGate, setShowEmailGate] = useState(false);
-    const [messageCount, setMessageCount] = useState(0);
-    const [remaining, setRemaining] = useState<number>(10); // Start with 10 for optimistic UI
+    const [messageCount, setMessageCount] = useState(0); // Session count
+    const [remaining, setRemaining] = useState<number>(10);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Check for upgrade URL parameter
+    // Initial Scroll
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('upgrade') === 'true') {
-            setShowPaywall(true);
-            // Remove the parameter from URL
-            window.history.replaceState({}, '', '/chat');
-        }
+        setTimeout(scrollToBottom, 100);
     }, []);
-
-    // Check email gate status on mount
-    useEffect(() => {
-        const emailSubmitted = localStorage.getItem('emailSubmitted');
-        const dismissed = localStorage.getItem('emailGateDismissed');
-        const dismissDate = localStorage.getItem('emailGateDismissDate');
-
-        // Reset dismissal if it's a new day
-        if (dismissDate) {
-            const lastDismiss = new Date(dismissDate);
-            const today = new Date();
-            if (lastDismiss.toDateString() !== today.toDateString()) {
-                localStorage.removeItem('emailGateDismissed');
-                localStorage.removeItem('emailGateDismissDate');
-            }
-        }
-    }, []);
-
-    // Trigger email gate after 3 messages
-    useEffect(() => {
-        const emailSubmitted = localStorage.getItem('emailSubmitted');
-        const dismissed = localStorage.getItem('emailGateDismissed');
-
-        if (messageCount === 3 && !emailSubmitted && !dismissed) {
-            setShowEmailGate(true);
-        }
-    }, [messageCount]);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -76,11 +42,7 @@ export function Chat() {
         scrollToBottom();
     }, [messages, loading]);
 
-    // Focus input on mount
-    useEffect(() => {
-        inputRef.current?.focus();
-    }, []);
-
+    // Handle Sending
     async function handleSend() {
         if (!input.trim() || loading || remaining === 0) return;
 
@@ -88,8 +50,6 @@ export function Chat() {
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
-
-        // Increment message count for email gate trigger
         setMessageCount(prev => prev + 1);
 
         try {
@@ -98,194 +58,144 @@ export function Chat() {
 
             if (data.remaining_free !== undefined) {
                 setRemaining(data.remaining_free);
-
-                // Show paywall when messages run out
-                if (data.remaining_free === 0) {
-                    setTimeout(() => setShowPaywall(true), 1000);
-                }
+                if (data.remaining_free === 0) setTimeout(() => setShowPaywall(true), 1000);
             }
-
             setMessages(prev => [...prev, aiMsg]);
-        } catch (error: unknown) {
-            const e = error as Error;
-            if (e.message?.includes("402") || e.message?.includes("Payment")) {
-                setShowPaywall(true);
-                setRemaining(0);
-            } else {
-                setMessages(prev => [...prev, { role: 'assistant', content: "Error: Something went wrong." }]);
-            }
+        } catch (error) {
+            setShowPaywall(true); // Assuming mainly payment limits causes errors now
         } finally {
             setLoading(false);
             setTimeout(() => inputRef.current?.focus(), 100);
         }
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
-        }
-    };
-
     return (
-        <div className="flex flex-col h-[100dvh] supports-[height:100cqh]:h-[100cqh] bg-[#09090b] text-zinc-100 font-sans selection:bg-white/20 overflow-hidden">
-            <Header
-                onShowPersona={() => { }} // No-op, managed internally
-                onShowPaywall={() => setShowPaywall(true)}
-                remaining={remaining}
-            />
+        <div className="flex flex-col h-[100dvh] bg-[#09090b] text-zinc-100 font-sans">
 
-            {/* Chat Area - Flex Grow with Auto Scroll */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 pb-4 px-4 scroll-smooth overscroll-contain">
-                <div className="w-full max-w-3xl mx-auto flex flex-col justify-end min-h-full pb-4">
+            {/* 1. HEADER (Sticky) */}
+            <header className="flex-none h-14 flex items-center justify-between px-4 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-md z-40 sticky top-0">
+                <button className="p-2 -ml-2 text-zinc-400 hover:text-white">
+                    <Menu size={24} />
+                </button>
 
-                    {/* Fresh Thinking Card - Only show when no messages */}
-                    {messages.length === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-[-60px] md:mt-[-100px] px-4">
-                            <div className="pointer-events-auto transform scale-90 md:scale-100 transition-transform">
-                                <FreshThinkingCard />
-                            </div>
-                        </div>
-                    )}
+                <div className="flex items-center gap-3">
+                    <img
+                        src="/logo.png"
+                        alt="Persona AI"
+                        className="w-8 h-8 rounded-md object-contain"
+                    />
+                    <div className="flex flex-col">
+                        <span className="font-semibold text-sm tracking-wide leading-none">Persona AI</span>
+                        <span className={clsx(
+                            "text-[10px] font-mono leading-tight",
+                            remaining === 0 ? "text-red-500" : "text-zinc-500"
+                        )}>
+                            {remaining}/10 free
+                        </span>
+                    </div>
+                </div>
 
-                    <AnimatePresence initial={false}>
+                <User size={16} className="text-zinc-600" />
+            </header>
+
+            {/* 2. MAIN SCROLL AREA */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth overscroll-contain pb-32">
+                <div className="max-w-2xl mx-auto flex flex-col min-h-full">
+
+                    {/* Fresh Thinking Card - Always at top of chat stream */}
+                    <FreshThinkingCard />
+
+                    {/* Messages */}
+                    <div className="px-4 pt-2 pb-4 space-y-6">
                         {messages.length === 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10 hidden md:flex"
-                            >
-                                <div className="p-1">
-                                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl">
-                                        {/* Use the new logo */}
-                                        <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain opacity-90" />
+                            <div className="flex flex-col items-center justify-center py-20 opacity-30 select-none">
+                                <RocketIcon size={48} className="mb-4 text-zinc-500" />
+                                <p className="text-sm font-momo text-zinc-500">INITIATED</p>
+                            </div>
+                        )}
+
+                        <AnimatePresence initial={false}>
+                            {messages.map((msg, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={clsx(
+                                        "flex w-full animate-fade-in",
+                                        msg.role === 'user' ? "justify-end" : "justify-start"
+                                    )}
+                                >
+                                    <div className={clsx(
+                                        "max-w-[85%] rounded-2xl p-4 text-[15px] leading-relaxed relative",
+                                        msg.role === 'user'
+                                            ? "bg-[#0A84FF] text-white rounded-br-none"
+                                            : "bg-[#1A1A1A] text-zinc-100 rounded-bl-none border border-white/5"
+                                    )}>
+                                        {/* Label */}
+                                        <p className={clsx(
+                                            "text-[10px] font-bold uppercase mb-1 tracking-wider opacity-50",
+                                            msg.role === 'user' ? "text-blue-100 text-right" : "text-amber-500/80"
+                                        )}>
+                                            {msg.role === 'user' ? 'You' : 'Persona AI'}
+                                        </p>
+
+                                        {msg.content}
                                     </div>
-                                </div>
-                                <div>
-                                    <h2 className="text-3xl md:text-4xl font-light tracking-tighter text-white">
-                                        Decisions, stripped to reality.
-                                    </h2>
-                                    <p className="text-base text-zinc-500 max-w-md mx-auto mt-3 leading-relaxed">
-                                        An advisory engine serving blunt, first-principles logic.
-                                    </p>
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+
+                        {loading && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start w-full">
+                                <div className="bg-[#1A1A1A] rounded-2xl rounded-bl-none p-4 border border-white/5 flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <div className="w-2 h-2 bg-zinc-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                 </div>
                             </motion.div>
                         )}
-
-                        {messages.map((msg, idx) => (
-                            <motion.div
-                                key={idx}
-                                initial={{ opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.18, ease: "easeOut" }}
-                                className={clsx(
-                                    "group mb-8 z-10",
-                                    "flex flex-col gap-2"
-                                )}
-                            >
-                                {/* Avatar / Name Header */}
-                                <div className="flex items-center gap-3 select-none opacity-80">
-                                    <div className={clsx(
-                                        "w-5 h-5 rounded-full flex items-center justify-center",
-                                        msg.role === 'assistant' ? "bg-amber-500/10 text-amber-500" : "bg-zinc-800 text-zinc-400"
-                                    )}>
-                                        {msg.role === 'assistant' ? <RocketIcon size={12} /> : <User size={12} />}
-                                    </div>
-                                    <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                        {msg.role === 'assistant' ? 'Elon' : 'You'}
-                                    </span>
-                                </div>
-
-                                {/* Message Content */}
-                                <div className={clsx(
-                                    "text-base md:text-lg leading-relaxed text-zinc-200 pl-8 md:pl-0 font-light",
-                                    msg.role === 'user' ? "text-zinc-100 font-normal" : "text-zinc-300"
-                                )}>
-                                    {msg.content}
-                                </div>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-
-                    {loading && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.15 }}
-                            className="flex gap-4 mb-6 select-none pl-8"
-                        >
-                            <span className="text-zinc-600 text-xs font-medium tracking-wide">Thinking...</span>
-                        </motion.div>
-                    )}
-                    <div ref={messagesEndRef} className="h-2" />
+                        <div ref={messagesEndRef} className="h-4" />
+                    </div>
                 </div>
             </div>
 
-            {/* Input Area - Flex None (Sticks to bottom) */}
-            <div className="flex-none bg-[#09090b]/95 backdrop-blur-xl border-t border-white/5 p-3 md:p-6 z-20 pb-[max(1rem,env(safe-area-inset-bottom))]">
-                <div className="max-w-3xl mx-auto space-y-4">
-                    {/* Input Container */}
-                    <div className={clsx(
-                        "relative group transition-opacity duration-300",
-                        remaining === 0 ? "opacity-50" : "opacity-100"
-                    )}>
-                        <div className="relative overflow-hidden rounded-2xl bg-[#18181b] border border-white/10 shadow-lg focus-within:ring-1 focus-within:ring-white/20 focus-within:border-white/20 transition-all hover:border-white/20">
-                            <input
-                                ref={inputRef}
-                                type="text"
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Ask anything..."
-                                className="w-full bg-transparent pl-4 pr-12 py-3.5 md:pl-5 md:pr-14 md:py-4 text-[16px] md:text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:cursor-not-allowed"
-                                disabled={loading || remaining === 0}
-                            />
-                            <button
-                                onClick={handleSend}
-                                disabled={!input.trim() || loading || remaining === 0}
-                                className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center rounded-xl bg-white text-black hover:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-white transition-all transform active:scale-95"
-                            >
-                                <ArrowUp size={20} strokeWidth={2.5} />
-                            </button>
-                        </div>
+            {/* 3. STICKY INPUT AREA */}
+            <div className="flex-none fixed bottom-0 inset-x-0 bg-[#0A0A0A] border-t border-white/5 z-50 px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+                <div className="max-w-2xl mx-auto space-y-3">
+                    <div className="relative">
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                            placeholder="Ask a question..."
+                            disabled={loading || remaining === 0}
+                            className="w-full bg-[#1A1A1A] text-white placeholder:text-zinc-600 rounded-[24px] pl-4 pr-12 py-3.5 text-[16px] border border-[#2A2A2A] focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all shadow-inner"
+                        />
+                        <button
+                            onClick={handleSend}
+                            disabled={!input.trim() || loading || remaining === 0}
+                            className="absolute right-2 top-2 bottom-2 w-10 h-10 bg-[#FF9500] hover:bg-[#FFA500] disabled:bg-zinc-800 disabled:text-zinc-600 rounded-full flex items-center justify-center text-black font-bold transition-transform active:scale-95"
+                        >
+                            <ArrowUp size={20} strokeWidth={3} />
+                        </button>
                     </div>
 
-                    {/* Footer Limits & Warnings */}
-                    <div className="flex items-center justify-between px-2 opacity-60 hover:opacity-100 transition-opacity">
-                        <p className="text-[10px] uppercase tracking-widest text-[#F59E0B] font-semibold">
-                            Simulated Person
+                    {/* Disclaimer */}
+                    <div className="text-center space-y-0.5">
+                        <p className="text-[10px] uppercase font-bold text-[#4B5563] tracking-wider">
+                            Simulated • Not a Real Person
                         </p>
-                        <p className="text-[10px] text-zinc-500 font-medium tracking-wide font-mono">
-                            {remaining === 0 ? "LIMIT REACHED" : `${remaining}/10 FREE`}
+                        <p className="text-[10px] text-[#4B5563]">
+                            Free messages: <span className={remaining === 0 ? "text-red-500 font-bold" : "text-zinc-400"}>{remaining}/10</span> • Insight is perishable • Calls not saved
                         </p>
                     </div>
                 </div>
             </div>
 
             {/* Modals */}
-            {showPaywall && (
-                <Paywall
-                    onClose={() => setShowPaywall(false)}
-                    onSuccess={() => {
-                        setRemaining(9999);
-                        setShowPaywall(false);
-                    }}
-                />
-            )}
-
-            {showEmailGate && (
-                <EmailGateModal
-                    isOpen={showEmailGate}
-                    onClose={() => setShowEmailGate(false)}
-                    onSubmit={(email) => {
-                        console.log('Email submitted:', email);
-                        // Extend remaining messages by 7
-                        setRemaining(prev => prev + 7);
-                        setShowEmailGate(false);
-                    }}
-                />
-            )}
+            {showPaywall && <Paywall onClose={() => setShowPaywall(false)} onSuccess={() => setRemaining(9999)} />}
         </div>
     );
 }
