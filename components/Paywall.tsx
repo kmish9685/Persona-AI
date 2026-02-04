@@ -203,6 +203,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                                 {isIndia ? '₹199' : '$6.70'}
                                             </p>
                                             <p className="text-xs text-zinc-500">per month</p>
+                                            <p className="text-[10px] text-red-500/80 mt-1 font-medium tracking-wide uppercase">Non-refundable</p>
                                         </div>
                                     </div>
                                     <ul className="space-y-2 my-4 border-t border-white/5 pt-4">
@@ -211,6 +212,9 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                             Unlimited messages
                                         </li>
                                     </ul>
+                                    <p className="text-[10px] text-zinc-600 text-center mt-3">
+                                        By subscribing, you agree to our <a href="/refund" target="_blank" className="underline hover:text-zinc-400">No Refund Policy</a>.
+                                    </p>
                                 </div>
 
                                 {isIndia ? (

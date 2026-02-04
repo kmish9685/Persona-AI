@@ -172,7 +172,7 @@ function LandingPageContent() {
 
           {/* Contact */}
           <div className="text-center text-sm text-[#6B7280] mb-4">
-            Contact: <a href="mailto:support@personai.fun" className="hover:text-white transition-colors hover:underline">support@personai.fun</a>
+            Contact: <a href="mailto:kmish9685@gmail.com" className="hover:text-white transition-colors hover:underline">kmish9685@gmail.com</a>
           </div>
 
           {/* Copyright */}
