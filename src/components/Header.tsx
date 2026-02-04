@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useUser } from '@auth0/nextjs-auth0/client'; // Auth0 Hook
+import { useAuth } from '../contexts/AuthContext';
 import { PersonaSelectionModal } from './PersonaSelectionModal';
 import { HowItWorksModal } from '../../components/HowItWorksModal';
 import { Zap, LogOut, ChevronDown, User } from 'lucide-react';
@@ -16,14 +16,9 @@ interface HeaderProps {
 }
 
 export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps) => {
-    const { user, isLoading } = useUser();
+    const { user, isLoading, login, signup, logout } = useAuth();
     const [showPersonaModal, setShowPersonaModal] = useState(false);
     const [showHowItWorks, setShowHowItWorks] = useState(false);
-
-    // Auth0 Login/Signup Links
-    const loginLink = "/auth/login";
-    const signupLink = "/auth/login?screen_hint=signup";
-    const logoutLink = "/auth/logout";
 
     return (
         <header className="fixed top-0 inset-x-0 h-14 z-50 flex items-center justify-between px-4 md:px-6 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-xl transition-all duration-300">
@@ -64,15 +59,11 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                     <Menu as="div" className="relative ml-2">
                         <Menu.Button className="flex items-center gap-2 text-xs font-medium text-zinc-300 hover:text-white transition-colors px-2 py-1.5 rounded-lg hover:bg-white/5 outline-none group">
                             <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                {user.picture ? (
-                                    <img src={user.picture} alt="Profile" className="w-6 h-6 rounded-full" />
-                                ) : (
-                                    <span className="text-[10px] font-bold text-white tracking-tight">
-                                        {(user.name || user.email || 'U').substring(0, 2).toUpperCase()}
-                                    </span>
-                                )}
+                                <span className="text-[10px] font-bold text-white tracking-tight">
+                                    {(user.email || 'U').substring(0, 2).toUpperCase()}
+                                </span>
                             </div>
-                            <span className="hidden sm:inline max-w-[100px] truncate">{user.name || user.email}</span>
+                            <span className="hidden sm:inline max-w-[100px] truncate">{user.email}</span>
                             <ChevronDown size={12} className="text-zinc-500 group-hover:text-zinc-300 transition-colors" />
                         </Menu.Button>
                         <Transition
@@ -88,8 +79,7 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                                 <div className="px-4 py-3">
                                     <p className="text-xs text-zinc-500">Signed in as</p>
                                     <p className="text-sm font-medium text-white truncate mt-0.5">{user.email}</p>
-                                    {/* Note: 'plan' is not in standard Auth0 user object unless added to custom claims. 
-                                        For now, we assume free or check DB separately. UI kept simple. */}
+                                    <p className="text-[10px] text-zinc-500 mt-1 uppercase">Plan: {user.plan}</p>
                                 </div>
                                 <div className="p-1">
                                     <Menu.Item>
@@ -108,8 +98,8 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                                     </Menu.Item>
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <a
-                                                href={logoutLink}
+                                            <button
+                                                onClick={() => logout()}
                                                 className={clsx(
                                                     "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs transition-colors",
                                                     active ? "bg-red-500/10 text-red-400" : "text-zinc-400"
@@ -117,7 +107,7 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                                             >
                                                 <LogOut size={14} />
                                                 Log Out
-                                            </a>
+                                            </button>
                                         )}
                                     </Menu.Item>
                                 </div>
@@ -139,25 +129,25 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                                     <Zap size={12} className="fill-black/50" />
                                     Upgrade
                                 </button>
-                                <a
-                                    href={loginLink}
+                                <button
+                                    onClick={() => login()}
                                     className="text-xs font-medium text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
                                 >
                                     Log In
-                                </a>
-                                <a
-                                    href={signupLink}
+                                </button>
+                                <button
+                                    onClick={() => signup()}
                                     className="px-3.5 py-1.5 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-[#1D4ED8] transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)] active:scale-95"
                                 >
                                     Sign Up
-                                </a>
+                                </button>
                             </div>
                         </>
                     )
                 )}
             </div>
 
-            {/* Modals - Auth Modals Removed */}
+            {/* Modals */}
             <PersonaSelectionModal
                 isOpen={showPersonaModal}
                 onClose={() => setShowPersonaModal(false)}
