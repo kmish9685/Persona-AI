@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { auth0 } from '@/src/lib/auth0'; // Use alias
+import { getSession } from '@auth0/nextjs-auth0';
 
 // --- Configuration ---
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
         // 1. Identify User
         let identifier = req.headers.get("x-forwarded-for")?.split(',')[0] || "unknown_ip";
         try {
-            const session = await auth0.getSession(); // Correct usage of singleton
+            const session = await getSession(); // Correct usage of global import
             if (session?.user?.email) identifier = session.user.email;
         } catch (e) {
             // e.g. AccessTokenError if no session, ignore
