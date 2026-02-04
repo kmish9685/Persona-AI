@@ -136,36 +136,29 @@ export function Chat() {
             />
 
             {/* Chat Area - Flex Grow with Auto Scroll */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 pb-4 px-4 scroll-smooth overscroll-contain">
-                <div className="w-full max-w-3xl mx-auto flex flex-col justify-end min-h-full pb-4">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pt-20 pb-0 px-4 scroll-smooth overscroll-contain">
+                <div className="w-full max-w-2xl mx-auto flex flex-col justify-end min-h-full pb-32">
 
-                    {/* Fresh Thinking Card - Only show when no messages */}
-                    {messages.length === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-[-60px] md:mt-[-100px] px-4">
-                            <div className="pointer-events-auto transform scale-90 md:scale-100 transition-transform">
-                                <FreshThinkingCard />
-                            </div>
-                        </div>
-                    )}
-
+                    {/* Fresh Thinking Card (Hidden/Handled) */}
+                    {/* Splash Screen - Claude Style */}
                     <AnimatePresence initial={false}>
                         {messages.length === 0 && (
                             <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.25, ease: "easeOut" }}
-                                className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10 hidden md:flex"
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10"
                             >
-                                <div className="p-5 rounded-3xl bg-white/5 border border-white/5 shadow-2xl">
-                                    <RocketIcon size={40} className="text-zinc-500" />
+                                <div className="p-1">
+                                    <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-2xl">
+                                        {/* Use the new logo */}
+                                        <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+                                    </div>
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl md:text-4xl font-light tracking-tighter text-white">
-                                        Decisions, stripped to reality.
+                                    <h2 className="text-3xl font-serif text-white tracking-tight leading-tight">
+                                        How can I help you<br />this late night?
                                     </h2>
-                                    <p className="text-base text-zinc-500 max-w-md mx-auto mt-3 leading-relaxed">
-                                        An advisory engine serving blunt, first-principles logic.
-                                    </p>
                                 </div>
                             </motion.div>
                         )}
@@ -173,88 +166,84 @@ export function Chat() {
                         {messages.map((msg, idx) => (
                             <motion.div
                                 key={idx}
-                                initial={{ opacity: 0, y: 8 }}
+                                initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.18, ease: "easeOut" }}
+                                transition={{ duration: 0.2, ease: "easeOut" }}
                                 className={clsx(
-                                    "group mb-8 z-10",
-                                    "flex flex-col gap-2"
+                                    "group mb-6 z-10 flex w-full",
+                                    msg.role === 'user' ? "justify-end" : "justify-start"
                                 )}
                             >
-                                {/* Avatar / Name Header */}
-                                <div className="flex items-center gap-3 select-none opacity-80">
-                                    <div className={clsx(
-                                        "w-5 h-5 rounded-full flex items-center justify-center",
-                                        msg.role === 'assistant' ? "bg-amber-500/10 text-amber-500" : "bg-zinc-800 text-zinc-400"
-                                    )}>
-                                        {msg.role === 'assistant' ? <RocketIcon size={12} /> : <User size={12} />}
+                                {msg.role === 'user' ? (
+                                    // User: Bubble (Claude Style - Light Gray/Beige but Dark Mode adapted)
+                                    <div className="bg-[#27272a] text-zinc-100 py-3 px-5 rounded-2xl max-w-[85%] text-[16px] leading-relaxed shadow-sm">
+                                        {msg.content}
                                     </div>
-                                    <span className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                                        {msg.role === 'assistant' ? 'Elon' : 'You'}
-                                    </span>
-                                </div>
-
-                                {/* Message Content */}
-                                <div className={clsx(
-                                    "text-base md:text-lg leading-relaxed text-zinc-200 pl-8 md:pl-0 font-light",
-                                    msg.role === 'user' ? "text-zinc-100 font-normal" : "text-zinc-300"
-                                )}>
-                                    {msg.content}
-                                </div>
+                                ) : (
+                                    // AI: No Bubble (Document Style)
+                                    <div className="flex gap-4 max-w-full">
+                                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center mt-1">
+                                            <img src="/logo.png" className="w-5 h-5 opacity-90" />
+                                        </div>
+                                        <div className="flex-1 space-y-2">
+                                            <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider">Claude</span>
+                                            <div className="text-[16px] md:text-[17px] leading-7 text-zinc-200 font-light whitespace-pre-wrap">
+                                                {msg.content}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </motion.div>
                         ))}
                     </AnimatePresence>
 
                     {loading && (
                         <motion.div
-                            initial={{ opacity: 0, y: 4 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.15 }}
-                            className="flex gap-4 mb-6 select-none pl-8"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="flex gap-4 mb-6 pl-0"
                         >
-                            <span className="text-zinc-600 text-xs font-medium tracking-wide">Thinking...</span>
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-transparent flex items-center justify-center mt-1">
+                                {/* Loading Spinner - Claude uses a specific one, we use a simple pulse here */}
+                                <div className="w-4 h-4 border-2 border-orange-500/50 border-t-orange-500 rounded-full animate-spin" />
+                            </div>
                         </motion.div>
                     )}
-                    <div ref={messagesEndRef} className="h-2" />
+                    <div ref={messagesEndRef} className="h-4" />
                 </div>
             </div>
 
-            {/* Input Area - Flex None (Sticks to bottom) */}
-            <div className="flex-none bg-[#09090b]/95 backdrop-blur-xl border-t border-white/5 p-3 md:p-6 z-20 pb-[max(1rem,env(safe-area-inset-bottom))]">
-                <div className="max-w-3xl mx-auto space-y-4">
-                    {/* Input Container */}
-                    <div className={clsx(
-                        "relative group transition-opacity duration-300",
-                        remaining === 0 ? "opacity-50" : "opacity-100"
-                    )}>
-                        <div className="relative overflow-hidden rounded-2xl bg-[#18181b] border border-white/10 shadow-lg focus-within:ring-1 focus-within:ring-white/20 focus-within:border-white/20 transition-all hover:border-white/20">
+            {/* Input Area - Absolute Bottom Floating Pill */}
+            <div className="absolute bottom-0 inset-x-0 p-4 pb-8 z-30 bg-gradient-to-t from-[#09090b] via-[#09090b]/90 to-transparent pt-12">
+                <div className="max-w-2xl mx-auto">
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-white/5 rounded-3xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+                        <div className="relative bg-[#18181b] border border-white/10 overflow-hidden rounded-[24px] shadow-2xl ring-1 ring-white/5 focus-within:ring-orange-500/50 focus-within:border-orange-500/50 transition-all">
                             <input
                                 ref={inputRef}
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder={messages.length === 0 ? "Ask anything..." : "Reply..."}
-                                className="w-full bg-transparent pl-4 pr-12 py-3.5 md:pl-5 md:pr-14 md:py-4 text-[16px] md:text-base text-zinc-100 placeholder:text-zinc-600 focus:outline-none disabled:cursor-not-allowed"
+                                placeholder="Reply to Claude..."
+                                className="w-full bg-transparent pl-6 pr-14 py-4 text-[16px] text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
                                 disabled={loading || remaining === 0}
                             />
                             <button
                                 onClick={handleSend}
                                 disabled={!input.trim() || loading || remaining === 0}
-                                className="absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center rounded-xl bg-white text-black hover:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-white transition-all transform active:scale-95"
+                                className={clsx(
+                                    "absolute right-2 top-2 bottom-2 aspect-square flex items-center justify-center rounded-2xl transition-all duration-300",
+                                    input.trim() ? "bg-orange-500 text-black hover:bg-orange-400" : "bg-white/5 text-zinc-600"
+                                )}
                             >
                                 <ArrowUp size={20} strokeWidth={2.5} />
                             </button>
                         </div>
                     </div>
-
-                    {/* Footer Limits & Warnings */}
-                    <div className="flex items-center justify-between px-2 opacity-60 hover:opacity-100 transition-opacity">
-                        <p className="text-[10px] uppercase tracking-widest text-[#F59E0B] font-semibold">
-                            Simulated Person
-                        </p>
-                        <p className="text-[10px] text-zinc-500 font-medium tracking-wide font-mono">
-                            {remaining === 0 ? "LIMIT REACHED" : `${remaining}/10 FREE`}
+                    <div className="flex justify-center mt-3">
+                        <p className="text-[10px] text-zinc-600 font-medium tracking-wide">
+                            {remaining === 0 ? "LIMIT REACHED" : `${remaining} free messages remaining`}
                         </p>
                     </div>
                 </div>
