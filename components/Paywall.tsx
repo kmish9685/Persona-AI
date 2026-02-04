@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { X, Zap, Check } from 'lucide-react';
-import { useAuth, useClerk } from '@clerk/nextjs';
+import { useUser, useClerk } from '@clerk/nextjs';
 
 interface PaywallProps {
     onClose: () => void;
@@ -11,7 +11,7 @@ interface PaywallProps {
 }
 
 export function Paywall({ onClose, onSuccess }: PaywallProps) {
-    const { user } = useAuth();
+    const { user } = useUser();
     const [loading, setLoading] = useState(false);
 
     // Manual Location State
