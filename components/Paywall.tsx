@@ -54,7 +54,6 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
     }, [user, isIndia]);
 
     async function handleRazorpayUpgrade() {
-        alert("Starting Razorpay..."); // DEBUG: Confirm button works
         if (!user) {
             window.location.href = "/api/auth/login?returnTo=/chat";
             return;
@@ -69,8 +68,14 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
             });
 
             if (!res.ok) {
-                const error = await res.text();
-                throw new Error(error || 'Failed to create order');
+                const errorText = await res.text();
+                let errorMessage = errorText;
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    errorMessage = errorJson.detail || errorJson.error || errorText;
+                } catch (e) { }
+
+                throw new Error(errorMessage || 'Failed to create subscription');
             }
 
             const data = await res.json();
