@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { X, Zap, Check } from 'lucide-react';
-import { useAuth } from '../src/contexts/AuthContext';
+import { useAuth, useClerk } from '@clerk/nextjs';
 
 interface PaywallProps {
     onClose: () => void;
@@ -53,11 +53,15 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         }
     }, [user, isIndia]);
 
+    const { openSignIn } = useClerk(); // Ensure this hook is imported
+
     async function handleRazorpayUpgrade() {
         if (!user) {
-            // Force redirect to Clerk's sign-up/sign-in page
-            // We use the environment variable or fallback to standard path
-            window.location.href = process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in?redirect_url=/chat?upgrade=true";
+            openSignIn({
+                afterSignInUrl: '/chat?upgrade=true',
+                afterSignUpUrl: '/chat?upgrade=true',
+                redirectUrl: '/chat?upgrade=true' // covering bases
+            });
             return;
         }
 

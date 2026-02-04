@@ -21,9 +21,9 @@ function LandingPageContent() {
               <Link href="/about" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
                 About
               </Link>
-              <a href="/chat" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
+              <Link href="/pricing" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
                 Pricing
-              </a>
+              </Link>
 
               <Link
                 href="/chat"
