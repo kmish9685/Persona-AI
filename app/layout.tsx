@@ -42,7 +42,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UserProvider>
+        <UserProvider loginUrl="/api/auth/login" profileUrl="/api/auth/me">
           <AuthProvider>
             {children}
           </AuthProvider>
