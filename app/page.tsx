@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Sidebar } from '../components/Sidebar';
-import { useState } from 'react';
 
 function LandingPageContent() {
   return (
@@ -13,22 +11,26 @@ function LandingPageContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="Persona AI" className="w-10 h-10 rounded-md" />
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/logo.png" alt="Persona AI" className="w-10 h-10 rounded-md opacity-90" />
               <span className="font-bold text-xl tracking-tight">Persona AI</span>
-            </div>
+            </Link>
 
-            {/* Auth buttons */}
-            <div className="flex items-center gap-4">
-              <a href="/login" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors">
-                Log In
-              </a>
-              <a
-                href="/signup"
-                className="px-4 py-2 text-sm font-semibold bg-[#0A84FF] hover:bg-blue-500 text-white rounded-lg transition-colors"
+            {/* Desktop Nav */}
+            <div className="flex items-center gap-6">
+              <Link href="/about" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                About
+              </Link>
+              <Link href="/pricing" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                Pricing
+              </Link>
+
+              <Link
+                href="/chat"
+                className="px-5 py-2 text-sm font-semibold bg-[#FF9500] hover:bg-orange-500 text-black rounded-lg transition-colors shadow-lg shadow-orange-500/10"
               >
-                Sign Up
-              </a>
+                Start Now
+              </Link>
             </div>
           </div>
         </div>
@@ -180,6 +182,9 @@ function LandingPageContent() {
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
           </div>
+          <p className="text-sm text-gray-600 mb-2">
+            Contact: <a href="mailto:kmish9685@gmail.com" className="text-gray-400 hover:text-white">kmish9685@gmail.com</a>
+          </p>
           <p className="text-sm text-gray-600">
             © 2025 Persona AI. All rights reserved.
           </p>
