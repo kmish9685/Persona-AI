@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@auth0/nextjs-auth0';
+import { currentUser } from '@clerk/nextjs/server';
 
 export async function POST(request: NextRequest) {
     try {
         const razorpayKeyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
         const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
 
-        // 1. Verify Authentication
-        const session = await getSession(); // Use global import
-        if (!session?.user?.email) {
+        // 1. Verify Authentication (Clerk)
+        const user = await currentUser();
+        if (!user) {
             return NextResponse.json({ detail: 'Authentication required' }, { status: 401 });
         }
-        const userEmail = session.user.email;
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+
+        if (!userEmail) {
+            return NextResponse.json({ detail: 'User email not found' }, { status: 400 });
+        }
 
         if (!razorpayKeyId || !razorpayKeySecret) {
             return NextResponse.json(
