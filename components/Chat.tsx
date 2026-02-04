@@ -150,15 +150,18 @@ export function Chat() {
                                 className="flex flex-col items-center justify-center text-center space-y-6 select-none my-auto z-10"
                             >
                                 <div className="p-1">
-                                    <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-2xl">
+                                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl">
                                         {/* Use the new logo */}
-                                        <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+                                        <img src="/logo.png" alt="Logo" className="w-10 h-10 object-contain opacity-90" />
                                     </div>
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl font-serif text-white tracking-tight leading-tight">
-                                        How can I help you<br />this late night?
+                                    <h2 className="text-3xl md:text-4xl font-light tracking-tighter text-white">
+                                        Decisions, stripped to reality.
                                     </h2>
+                                    <p className="text-base text-zinc-500 max-w-md mx-auto mt-3 leading-relaxed">
+                                        An advisory engine serving blunt, first-principles logic.
+                                    </p>
                                 </div>
                             </motion.div>
                         )}
@@ -186,7 +189,7 @@ export function Chat() {
                                             <img src="/logo.png" className="w-5 h-5 opacity-90" />
                                         </div>
                                         <div className="flex-1 space-y-2">
-                                            <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider">Claude</span>
+                                            <span className="block text-xs font-semibold text-zinc-500 uppercase tracking-wider">Elon</span>
                                             <div className="text-[16px] md:text-[17px] leading-7 text-zinc-200 font-light whitespace-pre-wrap">
                                                 {msg.content}
                                             </div>
@@ -225,7 +228,7 @@ export function Chat() {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
-                                placeholder="Reply to Claude..."
+                                placeholder="Ask anything..."
                                 className="w-full bg-transparent pl-6 pr-14 py-4 text-[16px] text-zinc-100 placeholder:text-zinc-600 focus:outline-none"
                                 disabled={loading || remaining === 0}
                             />
