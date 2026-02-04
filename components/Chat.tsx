@@ -2,17 +2,19 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ChevronDown, Check, LogOut, Sparkles } from 'lucide-react';
+import { User, ChevronDown, Check, LogOut, Sparkles, Lock, LogIn } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
 import { useClerk, useUser } from '@clerk/nextjs';
+import { useSearchParams } from 'next/navigation'; // Added for query params
 import clsx from 'clsx';
 import Link from 'next/link';
 
 export function Chat() {
     const { user } = useUser();
     const { signOut } = useClerk();
+    const searchParams = useSearchParams(); // To check for ?upgrade=true
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
@@ -29,12 +31,16 @@ export function Chat() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Initial Scroll
+    // Initial Scroll & Check for Upgrade Trigger
     useEffect(() => {
         setTimeout(scrollToBottom, 100);
         const dismissed = localStorage.getItem('freshThinkingDismissed');
         if (dismissed) setDismissedFreshThinking(true);
-    }, []);
+
+        if (searchParams.get('upgrade') === 'true') {
+            setShowPaywall(true);
+        }
+    }, [searchParams]);
 
     // Close menus on click outside
     useEffect(() => {
@@ -100,6 +106,12 @@ export function Chat() {
         }
     };
 
+    const personas = [
+        { id: 'Elon Manager', name: 'Elon Manager', locked: false },
+        { id: 'Sam Product', name: 'Sam Product', locked: true }, // Locked
+        { id: 'Naval Angel', name: 'Naval Angel', locked: true }  // Locked
+    ];
+
     return (
         <div className="w-full h-[100dvh] flex flex-col bg-black text-white overflow-hidden font-sans">
 
@@ -108,10 +120,10 @@ export function Chat() {
                 <div className="flex items-center justify-between px-4 h-14 max-w-5xl mx-auto w-full">
 
                     {/* Left: Logo (Clean) */}
-                    <div className="flex items-center gap-3">
+                    <Link href="/" className="flex items-center gap-3">
                         <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-md opacity-90" />
                         <span className="font-semibold text-sm sm:text-base hidden sm:inline-block tracking-tight text-zinc-100">Persona AI</span>
-                    </div>
+                    </Link>
 
                     {/* Right: Controls */}
                     <div className="flex items-center gap-3 sm:gap-4">
@@ -142,22 +154,32 @@ export function Chat() {
                                         </div>
 
                                         <div className="p-1.5 space-y-0.5">
-                                            {['Elon Manager', 'Sam Product', 'Naval Angel'].map((persona) => (
+                                            {personas.map((persona) => (
                                                 <button
-                                                    key={persona}
+                                                    key={persona.id}
                                                     onClick={() => {
-                                                        setActivePersona(persona);
-                                                        setShowPersonaMenu(false);
+                                                        if (!persona.locked) {
+                                                            setActivePersona(persona.id);
+                                                            setShowPersonaMenu(false);
+                                                        } else {
+                                                            setShowPaywall(true); // Trigger upgrade on locked click
+                                                            setShowPersonaMenu(false);
+                                                        }
                                                     }}
                                                     className={clsx(
                                                         "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between group",
-                                                        activePersona === persona
+                                                        activePersona === persona.id
                                                             ? "bg-zinc-800 text-white font-medium"
-                                                            : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+                                                            : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50",
+                                                        persona.locked && "opacity-75"
                                                     )}
                                                 >
-                                                    {persona}
-                                                    {activePersona === persona && <Check size={14} className="text-[#FF9500]" />}
+                                                    <span className="flex items-center gap-2">
+                                                        {persona.name}
+                                                        {persona.locked && <Lock size={12} className="text-zinc-600" />}
+                                                    </span>
+                                                    {activePersona === persona.id && <Check size={14} className="text-[#FF9500]" />}
+                                                    {persona.locked && <span className="text-[10px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-700">PRO</span>}
                                                 </button>
                                             ))}
                                         </div>
@@ -224,13 +246,25 @@ export function Chat() {
                                                 <span className="bg-[#FF9500]/10 text-[#FF9500] text-[10px] px-1.5 py-0.5 rounded border border-[#FF9500]/20 group-hover:border-[#FF9500]/40 transition-colors">NEW</span>
                                             </button>
 
-                                            <button
-                                                onClick={() => signOut()}
-                                                className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-2 mt-1"
-                                            >
-                                                <LogOut size={14} />
-                                                Log Out
-                                            </button>
+                                            {!user ? (
+                                                <>
+                                                    <a
+                                                        href="/sign-in?redirect_url=/chat"
+                                                        className="block w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-2 mt-1"
+                                                    >
+                                                        <LogIn size={14} />
+                                                        Log In / Sign Up
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <button
+                                                    onClick={() => signOut()}
+                                                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-2 mt-1"
+                                                >
+                                                    <LogOut size={14} />
+                                                    Log Out
+                                                </button>
+                                            )}
                                         </div>
                                     </motion.div>
                                 )}
