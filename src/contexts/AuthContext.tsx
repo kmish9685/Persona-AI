@@ -37,15 +37,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } : null;
 
     const login = () => {
-        window.location.href = '/auth/login';
+        window.location.href = '/api/auth/login';
     };
 
     const signup = () => {
-        window.location.href = '/auth/login?screen_hint=signup';
+        window.location.href = '/api/auth/login?screen_hint=signup';
     };
 
     const logout = () => {
-        window.location.href = '/auth/logout';
+        window.location.href = '/api/auth/logout';
     };
 
     const resetPassword = () => {
