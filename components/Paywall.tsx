@@ -72,10 +72,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                 throw new Error(error || 'Failed to create order');
             }
 
-            const order = await res.json();
-            console.log("Order created:", order);
+            const data = await res.json();
+            console.log("Subscription created:", data);
 
-            const rzpKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+            const rzpKey = data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
             if (!rzpKey) {
                 alert("Configuration Error: Razorpay Key ID is missing.");
                 setLoading(false);
@@ -90,11 +90,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
             const options = {
                 key: rzpKey,
-                amount: order.amount,
-                currency: order.currency,
+                subscription_id: data.subscription_id, // Recurring
                 name: "Persona AI",
-                description: "Founding Membership",
-                order_id: order.id,
+                description: "Founding Membership (Monthly)",
+                // Removed amount/currency/order_id as per Subscription flow
                 handler: function (_response: any) {
                     onSuccess();
                 },
@@ -102,7 +101,12 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     name: name || user.email,
                     email: user.email,
                 },
-                theme: { color: "#F59E0B" }
+                theme: { color: "#F59E0B" },
+                modal: {
+                    ondismiss: function () {
+                        setLoading(false);
+                    }
+                }
             };
 
             const rzp = new (window as any).Razorpay(options);
@@ -190,7 +194,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-3xl font-light text-white">
-                                                {isIndia ? '₹299' : '$6.70'}
+                                                {isIndia ? '₹199' : '$6.70'}
                                             </p>
                                             <p className="text-xs text-zinc-500">per month</p>
                                         </div>

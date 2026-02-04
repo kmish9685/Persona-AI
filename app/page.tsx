@@ -122,7 +122,7 @@ function LandingPageContent() {
             </div>
             <div>
               <p className="text-lg text-zinc-300 leading-relaxed">
-                <span className="font-semibold text-white">ChatGPT tells you what you want to hear.</span> Persona AI tells you what you need to know. Get 10 free brutal answers daily. Upgrade to unlimited for ₹299/month—less than one coffee meeting.
+                <span className="font-semibold text-white">ChatGPT tells you what you want to hear.</span> Persona AI tells you what you need to know. Get 10 free brutal answers daily. Upgrade to unlimited for ₹199/month—less than one coffee meeting.
               </p>
             </div>
           </div>

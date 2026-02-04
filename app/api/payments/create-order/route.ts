@@ -20,29 +20,26 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Create Razorpay order
+        // Create Razorpay Subscription (Recurring)
         const Razorpay = require('razorpay');
         const razorpay = new Razorpay({
             key_id: razorpayKeyId,
             key_secret: razorpayKeySecret
         });
 
-        const options = {
-            amount: 29900, // ₹299 in paise
-            currency: 'INR',
-            receipt: `receipt_${Date.now()}`,
+        const subscription = await razorpay.subscriptions.create({
+            plan_id: 'plan_SBvweKiucUyCuD', // Provided by user
+            customer_notify: 1,
+            total_count: 120, // 10 years monthly
             notes: {
-                plan: 'founding_access',
-                user_email: userEmail // Critical for linking payment to user
+                user_email: userEmail
             }
-        };
-
-        const order = await razorpay.orders.create(options);
+        });
 
         return NextResponse.json({
-            id: order.id,
-            currency: order.currency,
-            amount: order.amount
+            subscription_id: subscription.id,
+            currency: 'INR',
+            key: razorpayKeyId
         });
 
     } catch (error: any) {
