@@ -2,22 +2,22 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ChevronDown, Check } from 'lucide-react';
+import { User, ChevronDown, Check, LogOut, Sparkles } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
+import { useClerk, useUser } from '@clerk/nextjs';
 import clsx from 'clsx';
 import Link from 'next/link';
 
-// Mock User Data (Replace with real auth later)
-const MOCK_USER_EMAIL = "user@example.com";
-
 export function Chat() {
+    const { user } = useUser();
+    const { signOut } = useClerk();
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPaywall, setShowPaywall] = useState(false);
-    const [messageCount, setMessageCount] = useState(0);
     const [remaining, setRemaining] = useState<number>(10);
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
 
@@ -29,6 +29,13 @@ export function Chat() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
+    // Initial Scroll
+    useEffect(() => {
+        setTimeout(scrollToBottom, 100);
+        const dismissed = localStorage.getItem('freshThinkingDismissed');
+        if (dismissed) setDismissedFreshThinking(true);
+    }, []);
+
     // Close menus on click outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -38,13 +45,6 @@ export function Chat() {
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    // Initial Scroll
-    useEffect(() => {
-        setTimeout(scrollToBottom, 100);
-        const dismissed = localStorage.getItem('freshThinkingDismissed');
-        if (dismissed) setDismissedFreshThinking(true);
     }, []);
 
     const scrollToBottom = () => {
@@ -68,7 +68,6 @@ export function Chat() {
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
-        setMessageCount(prev => prev + 1);
 
         try {
             const data = await sendMessage(userMsg.content);
@@ -87,6 +86,20 @@ export function Chat() {
         }
     }
 
+    // Dynamic Sarcastic Empty State
+    const getEmptyStateText = () => {
+        switch (activePersona) {
+            case 'Elon Manager':
+                return "Production is at zero. Ask me something useful or go back to work.";
+            case 'Sam Product':
+                return "The interface is blank because you haven't shipped a prompt yet.";
+            case 'Naval Angel':
+                return "A quiet mind is good. But a quiet chat won't build you wealth. Ask.";
+            default:
+                return "Silence is golden, but I'm expensive. Ask me something.";
+        }
+    };
+
     return (
         <div className="w-full h-[100dvh] flex flex-col bg-black text-white overflow-hidden font-sans">
 
@@ -103,40 +116,60 @@ export function Chat() {
                     {/* Right: Controls */}
                     <div className="flex items-center gap-3 sm:gap-4">
 
-                        {/* Persona Switcher */}
+                        {/* Persona Switcher (Cool & Professional) */}
                         <div className="relative persona-menu-container">
                             <button
                                 onClick={() => setShowPersonaMenu(!showPersonaMenu)}
-                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 transition-colors"
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 transition-all hover:border-zinc-700 active:scale-95 group"
                             >
-                                <span className="text-xs font-medium text-zinc-400 uppercase tracking-wider">Model:</span>
-                                <span className="text-sm font-semibold text-white">{activePersona}</span>
-                                <ChevronDown size={14} className="text-zinc-500" />
+                                <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">MODEL</span>
+                                <div className="h-3 w-[1px] bg-zinc-700 mx-0.5"></div>
+                                <span className="text-sm font-semibold text-white tracking-wide">{activePersona}</span>
+                                <ChevronDown size={14} className={`text-zinc-500 transition-transform duration-200 ${showPersonaMenu ? 'rotate-180' : ''}`} />
                             </button>
 
                             {/* Persona Dropdown */}
                             <AnimatePresence>
                                 {showPersonaMenu && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 5 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 5 }}
-                                        className="absolute top-full right-0 mt-2 w-48 bg-[#1A1A1A] border border-zinc-800 rounded-xl shadow-xl overflow-hidden z-50 py-1"
+                                        initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                                        className="absolute top-full right-0 mt-2 w-56 bg-[#0F0F0F] border border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-50 ring-1 ring-white/5"
                                     >
-                                        <div className="px-3 py-2 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Select Persona</div>
-                                        {['Elon Manager', 'Sam Product', 'Naval Angel'].map((persona) => (
-                                            <button
-                                                key={persona}
-                                                onClick={() => {
-                                                    setActivePersona(persona);
-                                                    setShowPersonaMenu(false);
-                                                }}
-                                                className="w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors flex items-center justify-between"
-                                            >
-                                                {persona}
-                                                {activePersona === persona && <Check size={14} className="text-orange-500" />}
-                                            </button>
-                                        ))}
+                                        <div className="px-4 py-2.5 border-b border-zinc-800/50 bg-zinc-900/30">
+                                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Select Intelligence</p>
+                                        </div>
+
+                                        <div className="p-1.5 space-y-0.5">
+                                            {['Elon Manager', 'Sam Product', 'Naval Angel'].map((persona) => (
+                                                <button
+                                                    key={persona}
+                                                    onClick={() => {
+                                                        setActivePersona(persona);
+                                                        setShowPersonaMenu(false);
+                                                    }}
+                                                    className={clsx(
+                                                        "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between group",
+                                                        activePersona === persona
+                                                            ? "bg-zinc-800 text-white font-medium"
+                                                            : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+                                                    )}
+                                                >
+                                                    {persona}
+                                                    {activePersona === persona && <Check size={14} className="text-[#FF9500]" />}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <div className="px-4 py-3 bg-zinc-900/50 border-t border-zinc-800/50">
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles size={12} className="text-purple-400" />
+                                                <p className="text-[10px] text-zinc-400 font-medium italic">
+                                                    More coming soon... (if you behave)
+                                                </p>
+                                            </div>
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -151,9 +184,16 @@ export function Chat() {
                         <div className="relative profile-menu-container">
                             <button
                                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                                className="w-8 h-8 rounded-full bg-zinc-800 hover:bg-zinc-700 flex items-center justify-center text-zinc-400 transition-colors border border-zinc-700"
+                                className={clsx(
+                                    "w-8 h-8 rounded-full flex items-center justify-center transition-all border",
+                                    showProfileMenu ? "bg-zinc-700 border-zinc-500 text-white" : "bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                                )}
                             >
-                                <User size={16} />
+                                {user?.imageUrl ? (
+                                    <img src={user.imageUrl} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                                ) : (
+                                    <User size={16} />
+                                )}
                             </button>
 
                             {/* Dropdown Menu */}
@@ -163,28 +203,34 @@ export function Chat() {
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
-                                        className="absolute top-full right-0 mt-2 w-64 bg-[#1A1A1A] border border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-50"
+                                        className="absolute top-full right-0 mt-2 w-64 bg-[#0F0F0F] border border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-50 ring-1 ring-white/5"
                                     >
-                                        <div className="p-4 border-b border-zinc-800/50">
-                                            <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Signed in as</p>
-                                            <p className="text-sm font-semibold text-white truncate">{MOCK_USER_EMAIL}</p>
+                                        <div className="p-4 border-b border-zinc-800/50 bg-zinc-900/30">
+                                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1">Signed in as</p>
+                                            <p className="text-sm font-semibold text-white truncate">
+                                                {user?.primaryEmailAddress?.emailAddress || "Guest User"}
+                                            </p>
                                         </div>
 
                                         <div className="p-2">
                                             <button
-                                                onClick={() => setShowPaywall(true)}
-                                                className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-orange-500 hover:bg-zinc-800 transition-colors flex items-center justify-between group"
+                                                onClick={() => {
+                                                    setShowPaywall(true);
+                                                    setShowProfileMenu(false);
+                                                }}
+                                                className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-[#FF9500] hover:bg-[#FF9500]/10 transition-colors flex items-center justify-between group"
                                             >
-                                                Upgrade to Pro
-                                                <span className="bg-orange-500/10 text-orange-500 text-[10px] px-1.5 py-0.5 rounded group-hover:bg-orange-500 group-hover:text-black transition-colors">NEW</span>
+                                                <span>Upgrade to Pro</span>
+                                                <span className="bg-[#FF9500]/10 text-[#FF9500] text-[10px] px-1.5 py-0.5 rounded border border-[#FF9500]/20 group-hover:border-[#FF9500]/40 transition-colors">NEW</span>
                                             </button>
 
-                                            <a
-                                                href="/api/auth/logout"
-                                                className="block w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+                                            <button
+                                                onClick={() => signOut()}
+                                                className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-2 mt-1"
                                             >
+                                                <LogOut size={14} />
                                                 Log Out
-                                            </a>
+                                            </button>
                                         </div>
                                     </motion.div>
                                 )}
@@ -233,7 +279,14 @@ export function Chat() {
             {/* Messages Area */}
             <div className="flex-1 overflow-y-auto px-4 py-6 custom-scrollbar bg-black">
                 {messages.length === 0 ? (
-                    <div className="flex items-center justify-center h-full opacity-0"></div>
+                    <div className="flex flex-col items-center justify-center h-full max-w-lg mx-auto text-center px-4 animate-fade-in opacity-80">
+                        <h1 className="text-2xl font-bold text-zinc-800 mb-2 select-none tracking-tight">
+                            PERSONA AI
+                        </h1>
+                        <p className="text-lg text-zinc-500 font-medium leading-relaxed">
+                            "{getEmptyStateText()}"
+                        </p>
+                    </div>
                 ) : (
                     <div className="space-y-6 max-w-3xl mx-auto pb-8">
                         <AnimatePresence initial={false}>
