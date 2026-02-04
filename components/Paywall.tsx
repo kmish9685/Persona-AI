@@ -110,8 +110,8 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     onSuccess();
                 },
                 prefill: {
-                    name: name || user.email,
-                    email: user.email,
+                    name: name || user.primaryEmailAddress?.emailAddress,
+                    email: user.primaryEmailAddress?.emailAddress,
                 },
                 theme: { color: "#F59E0B" },
                 modal: {
@@ -238,7 +238,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     </button>
                                 ) : (
                                     <a
-                                        href={`https://buy.polar.sh/polar_cl_yRdwa0cqXG8R7odwLf0MlAat2L4xjIgmmtF1S0u8ayb?email=${encodeURIComponent(user?.email || '')}`}
+                                        href={`https://buy.polar.sh/polar_cl_yRdwa0cqXG8R7odwLf0MlAat2L4xjIgmmtF1S0u8ayb?email=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
                                         data-polar-checkout
                                         data-polar-checkout-theme="dark"
                                         className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer text-center no-underline"
