@@ -54,6 +54,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
     }, [user, isIndia]);
 
     async function handleRazorpayUpgrade() {
+        alert("Starting Razorpay..."); // DEBUG: Confirm button works
         if (!user) {
             window.location.href = "/api/auth/login?returnTo=/chat";
             return;
