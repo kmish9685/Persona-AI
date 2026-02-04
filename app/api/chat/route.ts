@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getSession } from '@auth0/nextjs-auth0';
+import { currentUser } from '@clerk/nextjs/server';
 
 // --- Configuration ---
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
@@ -134,12 +134,14 @@ export async function POST(req: NextRequest) {
         if (!message) return NextResponse.json({ error: "Message is required" }, { status: 400 });
 
         // 1. Identify User
-        let identifier = req.headers.get("x-forwarded-for")?.split(',')[0] || "unknown_ip";
-        try {
-            const session = await getSession(); // Correct usage of global import
-            if (session?.user?.email) identifier = session.user.email;
-        } catch (e) {
-            // e.g. AccessTokenError if no session, ignore
+        const user = await currentUser();
+        let identifier = "guest@example.com";
+
+        if (user) {
+            identifier = user.emailAddresses[0]?.emailAddress || user.id;
+        } else {
+            // Optional: Return 401 if you want to force login
+            // return NextResponse.json({ detail: 'You must be logged in.' }, { status: 401 });
         }
 
         // 2. Limits

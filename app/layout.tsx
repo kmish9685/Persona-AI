@@ -29,8 +29,9 @@ export const metadata: Metadata = {
 
 // V4 suggests Auth0Provider or similar may be needed, OR UserProvider is in a different path?
 // Error log: "Did you mean to import Auth0Provider?"
-import { UserProvider } from '@auth0/nextjs-auth0/client';
-import { AuthProvider } from '@/src/contexts/AuthContext';
+// import { UserProvider } from '@auth0/nextjs-auth0/client';
+// import { AuthProvider } from '@/src/contexts/AuthContext';
+import { ClerkProvider } from "@clerk/nextjs";
 
 export default function RootLayout({
   children,
@@ -38,16 +39,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <UserProvider loginUrl="/api/auth/login" profileUrl="/api/auth/me">
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </UserProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
