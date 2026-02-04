@@ -55,8 +55,9 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
     async function handleRazorpayUpgrade() {
         if (!user) {
-            // Redirect to Clerk sign in with upgrade trigger
-            window.location.href = "/sign-in?redirect_url=/chat?upgrade=true";
+            // Force redirect to Clerk's sign-up/sign-in page
+            // We use the environment variable or fallback to standard path
+            window.location.href = process.env.NEXT_PUBLIC_CLERK_SIGN_IN_URL || "/sign-in?redirect_url=/chat?upgrade=true";
             return;
         }
 

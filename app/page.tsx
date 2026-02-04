@@ -180,7 +180,7 @@ function LandingPageContent() {
           <div className="flex justify-center gap-6 mb-6 text-sm text-gray-400 font-medium">
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+            <a href="mailto:kmish9685@gmail.com" className="hover:text-white transition-colors">Contact</a>
           </div>
           <p className="text-sm text-gray-600 mb-2">
             Contact: <a href="mailto:kmish9685@gmail.com" className="text-gray-400 hover:text-white">kmish9685@gmail.com</a>

@@ -2,19 +2,40 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ChevronDown, Check, LogOut, Sparkles, Lock, LogIn } from 'lucide-react';
+import { User, ChevronDown, Check, LogOut, Sparkles, Lock, LogIn, AlertCircle } from 'lucide-react';
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
 import { useClerk, useUser } from '@clerk/nextjs';
-import { useSearchParams } from 'next/navigation'; // Added for query params
+import { useSearchParams, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
 
+// Simple Toast Component
+function Toast({ message, onClose }: { message: string, onClose: () => void }) {
+    useEffect(() => {
+        const timer = setTimeout(onClose, 3000);
+        return () => clearTimeout(timer);
+    }, [onClose]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-[#1A1A1A] border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 min-w-[300px]"
+        >
+            <AlertCircle size={18} className="text-amber-500" />
+            <p className="text-sm font-medium">{message}</p>
+        </motion.div>
+    );
+}
+
 export function Chat() {
     const { user } = useUser();
-    const { signOut } = useClerk();
-    const searchParams = useSearchParams(); // To check for ?upgrade=true
+    const { signOut, openSignIn } = useClerk(); // Using openSignIn for modal/redirect
+    const searchParams = useSearchParams();
+    const router = useRouter();
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
@@ -22,6 +43,7 @@ export function Chat() {
     const [showPaywall, setShowPaywall] = useState(false);
     const [remaining, setRemaining] = useState<number>(10);
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
 
     // Dropdown States
     const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -108,12 +130,12 @@ export function Chat() {
 
     const personas = [
         { id: 'Elon Manager', name: 'Elon Manager', locked: false },
-        { id: 'Sam Product', name: 'Sam Product', locked: true }, // Locked
-        { id: 'Naval Angel', name: 'Naval Angel', locked: true }  // Locked
+        { id: 'Sam Product', name: 'Sam Product', locked: true },
+        { id: 'Naval Angel', name: 'Naval Angel', locked: true }
     ];
 
     return (
-        <div className="w-full h-[100dvh] flex flex-col bg-black text-white overflow-hidden font-sans">
+        <div className="w-full h-[100dvh] flex flex-col bg-black text-white overflow-hidden font-sans relative">
 
             {/* Header */}
             <header className="sticky top-0 z-30 w-full border-b border-gray-800 bg-black/95 backdrop-blur">
@@ -162,7 +184,8 @@ export function Chat() {
                                                             setActivePersona(persona.id);
                                                             setShowPersonaMenu(false);
                                                         } else {
-                                                            setShowPaywall(true); // Trigger upgrade on locked click
+                                                            // Locked Logic: Show Toast instead of Paywall
+                                                            setToastMessage("Still training. Creator is feeding me their public data...");
                                                             setShowPersonaMenu(false);
                                                         }
                                                     }}
@@ -179,7 +202,7 @@ export function Chat() {
                                                         {persona.locked && <Lock size={12} className="text-zinc-600" />}
                                                     </span>
                                                     {activePersona === persona.id && <Check size={14} className="text-[#FF9500]" />}
-                                                    {persona.locked && <span className="text-[10px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-700">PRO</span>}
+                                                    {persona.locked && <span className="text-[10px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-700">LOCKED</span>}
                                                 </button>
                                             ))}
                                         </div>
@@ -247,15 +270,13 @@ export function Chat() {
                                             </button>
 
                                             {!user ? (
-                                                <>
-                                                    <a
-                                                        href="/sign-in?redirect_url=/chat"
-                                                        className="block w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-2 mt-1"
-                                                    >
-                                                        <LogIn size={14} />
-                                                        Log In / Sign Up
-                                                    </a>
-                                                </>
+                                                <button
+                                                    onClick={() => openSignIn({ redirectUrl: '/chat' })}
+                                                    className="w-full text-left px-3 py-2.5 rounded-lg text-sm text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors flex items-center gap-2 mt-1"
+                                                >
+                                                    <LogIn size={14} />
+                                                    Log In / Sign Up
+                                                </button>
                                             ) : (
                                                 <button
                                                     onClick={() => signOut()}
@@ -406,8 +427,11 @@ export function Chat() {
                 </div>
             </div>
 
-            {/* Modals */}
+            {/* Modals and Toasts */}
             {showPaywall && <Paywall onClose={() => setShowPaywall(false)} onSuccess={() => setRemaining(9999)} />}
+            <AnimatePresence>
+                {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
+            </AnimatePresence>
         </div>
     );
 }
