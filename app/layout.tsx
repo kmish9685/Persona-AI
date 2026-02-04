@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 // V4 suggests Auth0Provider or similar may be needed, OR UserProvider is in a different path?
 // Error log: "Did you mean to import Auth0Provider?"
 // import { UserProvider } from '@auth0/nextjs-auth0/client';
-// import { AuthProvider } from '@/src/contexts/AuthContext';
+import { AuthProvider } from '@/src/contexts/AuthContext';
 import { ClerkProvider } from "@clerk/nextjs";
 
 export default function RootLayout({
@@ -44,7 +44,9 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </body>
       </html>
     </ClerkProvider>
