@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
 import { X, Zap, Check } from 'lucide-react';
-import { useAuth } from '../src/contexts/AuthContext';
+import { useUser, useClerk } from '@clerk/nextjs';
 
 interface PaywallProps {
     onClose: () => void;
@@ -11,7 +11,7 @@ interface PaywallProps {
 }
 
 export function Paywall({ onClose, onSuccess }: PaywallProps) {
-    const { user } = useAuth();
+    const { user } = useUser();
     const [loading, setLoading] = useState(false);
 
     // Manual Location State
@@ -53,9 +53,15 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         }
     }, [user, isIndia]);
 
+    const { openSignIn } = useClerk(); // Ensure this hook is imported
+
     async function handleRazorpayUpgrade() {
         if (!user) {
-            window.location.href = "/api/auth/login?returnTo=/chat";
+            openSignIn({
+                afterSignInUrl: '/chat?upgrade=true',
+                afterSignUpUrl: '/chat?upgrade=true',
+                redirectUrl: '/chat?upgrade=true' // covering bases
+            });
             return;
         }
 
@@ -104,8 +110,8 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     onSuccess();
                 },
                 prefill: {
-                    name: name || user.email,
-                    email: user.email,
+                    name: name || user.primaryEmailAddress?.emailAddress,
+                    email: user.primaryEmailAddress?.emailAddress,
                 },
                 theme: { color: "#F59E0B" },
                 modal: {
@@ -200,7 +206,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-3xl font-light text-white">
-                                                {isIndia ? '₹199' : '$6.70'}
+                                                {isIndia ? '₹149' : '$6.70'}
                                             </p>
                                             <p className="text-xs text-zinc-500">per month</p>
                                             <p className="text-[10px] text-red-500/80 mt-1 font-medium tracking-wide uppercase">Non-refundable</p>
@@ -232,7 +238,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     </button>
                                 ) : (
                                     <a
-                                        href={`https://buy.polar.sh/polar_cl_yRdwa0cqXG8R7odwLf0MlAat2L4xjIgmmtF1S0u8ayb?email=${encodeURIComponent(user?.email || '')}`}
+                                        href={`https://buy.polar.sh/polar_cl_yRdwa0cqXG8R7odwLf0MlAat2L4xjIgmmtF1S0u8ayb?email=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
                                         data-polar-checkout
                                         data-polar-checkout-theme="dark"
                                         className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer text-center no-underline"

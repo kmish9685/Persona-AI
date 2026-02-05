@@ -28,7 +28,7 @@ export default function PrivacyPage() {
 
                     <section>
                         <h2 className="text-2xl font-semibold text-white mb-3">Contact</h2>
-                        <p>For privacy concerns, contact us at: <a href="mailto:support@personai.fun" className="text-[#FF9500] hover:underline">support@personai.fun</a></p>
+                        <p>For privacy concerns, contact us at: <a href="mailto:kmish9685@gmail.com" className="text-[#FF9500] hover:underline">kmish9685@gmail.com</a></p>
                     </section>
                 </div>
             </div>

@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     title: "Persona AI - Stop Getting Polite BS From AI. Get Brutal Truth.",
     description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
   },
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 // V4 suggests Auth0Provider or similar may be needed, OR UserProvider is in a different path?
