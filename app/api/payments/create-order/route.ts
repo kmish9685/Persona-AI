@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         });
 
         const subscription = await razorpay.subscriptions.create({
-            plan_id: 'plan_SBvweKiucUyCuD', // Provided by user
+            plan_id: 'plan_SCLhJzyCEkvZwn', // Provided by user
             customer_notify: 1,
             total_count: 120, // 10 years monthly
             notes: {

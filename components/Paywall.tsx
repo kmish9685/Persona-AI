@@ -206,7 +206,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         </div>
                                         <div className="text-right">
                                             <p className="text-3xl font-light text-white">
-                                                {isIndia ? '₹199' : '$6.70'}
+                                                {isIndia ? '₹149' : '$6.70'}
                                             </p>
                                             <p className="text-xs text-zinc-500">per month</p>
                                             <p className="text-[10px] text-red-500/80 mt-1 font-medium tracking-wide uppercase">Non-refundable</p>

@@ -79,7 +79,7 @@ export default function PricingPage() {
                             <div className="mb-8">
                                 <h3 className="text-xl font-bold text-white mb-2">Founding Access</h3>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-white">₹299</span>
+                                    <span className="text-4xl font-bold text-white">₹149</span>
                                     <span className="text-zinc-500">/month</span>
                                 </div>
                                 {/* <p className="text-[#FF9500] text-sm mt-4 font-medium">Cheaper than one bad decision.</p> */}

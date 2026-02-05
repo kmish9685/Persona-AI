@@ -11,7 +11,7 @@ client = None
 if KEY_ID and "your_razorpay" not in KEY_ID:
     client = razorpay.Client(auth=(KEY_ID, KEY_SECRET))
 
-def create_order(amount_paise: int = 29900):
+def create_order(amount_paise: int = 14900):
     if not client:
         return {"error": "Razorpay keys not configured"}
     

@@ -157,7 +157,7 @@ function LandingPageContent() {
               <p className="text-sm leading-relaxed text-gray-400">
                 <strong className="text-white block mb-2 text-base">ChatGPT tells you what you want to hear.</strong>
                 Persona AI tells you what you need to know. Get 10 free brutal answers daily. Upgrade to unlimited
-                for ₹299/month.
+                for ₹149/month.
               </p>
             </div>
 
