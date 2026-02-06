@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from gemini_handler import call_gemini
+from groq_handler import call_groq
 # HUGGING FACE (Network issues - DNS resolution failed)
 # from huggingface_handler import call_huggingface
 from database import check_can_chat, save_contact_submission
@@ -62,7 +62,7 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "backend": "serverless-gemini"}
+    return {"status": "ok", "backend": "serverless-groq"}
 
 from auth import router as auth_router
 from middleware.auth_middleware import get_user_identifier
@@ -93,8 +93,8 @@ async def chat(request: ChatRequest, raw_request: Request):
     # 3. Build system prompt
     base_prompt = rules.get("system_prompt_template", "You are a helpful assistant.")
     
-    # 4. Call Gemini API (1.5 Pro)
-    response_text = call_gemini(base_prompt, request.message, rules)
+    # 4. Call Groq API (Llama 3.3 70B)
+    response_text = call_groq(base_prompt, request.message, rules)
     # HUGGING FACE (dormant): response_text = call_huggingface(base_prompt, request.message, rules)
     print(f"Generated Response: {response_text[:50]}...") # Log partial response
     

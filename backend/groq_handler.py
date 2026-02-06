@@ -1,14 +1,15 @@
 import os
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configure Gemini Client
-api_key = os.getenv("GOOGLE_API_KEY")
+# Configure Groq Client
+client = None
+api_key = os.getenv("GROQ_API_KEY")
 
 if api_key:
-    genai.configure(api_key=api_key)
+    client = Groq(api_key=api_key)
 
 def validate_response(text: str, rules: dict) -> str:
     """
@@ -33,15 +34,16 @@ def validate_response(text: str, rules: dict) -> str:
              
     return text
 
-def call_gemini(system_prompt: str, user_message: str, rules: dict = {}) -> str:
+def call_groq(system_prompt: str, user_message: str, rules: dict = {}) -> str:
     """
-    Calls Gemini API with Elon-style persona prompt.
+    Calls Groq API with Elon-style persona prompt.
+    Uses 70B model for better reasoning + persona adherence.
     """
-    if not api_key:
-        return "Error: GOOGLE_API_KEY not set in .env"
+    if not client:
+        return "Error: GROQ_API_KEY not set in .env"
 
     try:
-        # User message wrapper (reinforcement)
+        # User message wrapper (reinforcement logic similar to what we added for Gemini)
         enforced_user_message = f"""[USER QUESTION]: {user_message}
 
 [INSTRUCTION]: Answer this as Elon Musk would. 
@@ -52,35 +54,36 @@ def call_gemini(system_prompt: str, user_message: str, rules: dict = {}) -> str:
 - Make it quotable."""
         
         # DEBUG: Print what we're actually sending
-        print(f"[DEBUG] Using model: gemini-1.5-pro")
+        print(f"[DEBUG] Using model: llama-3.3-70b-versatile")
         print(f"[DEBUG] User question: {user_message}")
         print(f"[DEBUG] System Prompt: {system_prompt[:50]}...")
         
-        # Configure model with system instruction
-        model = genai.GenerativeModel(
-            model_name="gemini-1.5-pro",
-            system_instruction=system_prompt  # Pass the real system prompt here
-        )
+        # Minimal system prompt structure for Groq
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": enforced_user_message}
+        ]
         
-        response = model.generate_content(
-            enforced_user_message,
-            generation_config=genai.types.GenerationConfig(
-                temperature=0.9,  # Higher temperature for more "red pilled" creativity
-                max_output_tokens=300,
-                top_p=0.95,
-            )
+        completion = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",  # Current model (cheap + fast + effective)
+            messages=messages,
+            temperature=0.9,  # Higher temperature for "red pilled" creativity
+            max_tokens=300,   # More room for detailed reasoning
+            top_p=0.95,
+            stream=False,
+            stop=None,
         )
 
-        response_text = response.text
+        response_text = completion.choices[0].message.content
         
         # DEBUG: Print response
         print(f"[DEBUG] Raw response length: {len(response_text)} chars")
         
         if not response_text:
-             return "Error: Empty response from Gemini."
+             return "Error: Empty response from Groq."
 
         # Validate and return
         return validate_response(response_text, rules)
 
     except Exception as e:
-        return f"Error calling Gemini: {str(e)}"
+        return f"Error calling Groq: {str(e)}"

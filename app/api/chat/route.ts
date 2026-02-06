@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@supabase/supabase-js';
 import { currentUser } from '@clerk/nextjs/server';
 
 // --- Configuration ---
 // --- Configuration ---
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -126,9 +125,9 @@ export async function POST(req: NextRequest) {
         const limitStatus = await checkCanChat(identifier);
         if (!limitStatus.allowed) return NextResponse.json({ error: limitStatus.reason }, { status: 402 });
 
-        // 3. Gemini
-        if (!GOOGLE_API_KEY) {
-            console.error("❌ ERROR: GOOGLE_API_KEY is missing in environment variables.");
+        // 3. Groq
+        if (!GROQ_API_KEY) {
+            console.error("❌ ERROR: GROQ_API_KEY is missing in environment variables.");
             return NextResponse.json({ error: "Configuration Error: API Key missing" }, { status: 500 });
         }
 
@@ -145,19 +144,26 @@ Question: ${message}
 
 Response:`;
 
-        console.log("🚀 Initializing Gemini Client...");
-        const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
-        const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-pro",
-            systemInstruction: systemPrompt
+        console.log("🚀 Initializing Groq Client...");
+        const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: personaReinforcement }],
+                temperature: 0.9, max_tokens: 150, top_p: 0.9
+            })
         });
 
-        console.log("📝 Sending request to Gemini...");
-        const result = await model.generateContent(personaReinforcement);
-        const responseTextRaw = result.response.text();
-        console.log("✅ Gemini Response received.");
+        if (!groqResponse.ok) {
+            const errText = await groqResponse.text();
+            console.error("🔥 Groq API Error:", errText);
+            throw new Error(`Groq API Error: ${groqResponse.statusText}`);
+        }
 
-        let responseText = responseTextRaw || "Error: Empty response.";
+        const groqData = await groqResponse.json();
+        let responseText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
+        console.log("✅ Groq Response received.");
 
         // 4. Validate
         const words = responseText.split(/\s+/);
