@@ -37,21 +37,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         }
     }, [user, isIndia]);
 
-    // 2. Load Polar Script (Global Embed)
-    useEffect(() => {
-        if (user && !isIndia) {
-            const script = document.createElement('script');
-            script.src = "https://cdn.jsdelivr.net/npm/@polar-sh/checkout@0.1/dist/embed.global.js";
-            script.defer = true;
-            script.setAttribute('data-auto-init', 'true');
-            document.body.appendChild(script);
-            return () => {
-                if (document.body.contains(script)) {
-                    document.body.removeChild(script);
-                }
-            };
-        }
-    }, [user, isIndia]);
+    // 2. Load Polar Script (Global Embed) - REMOVED: Using Hosted Checkout SDK Flow
 
     const { openSignIn } = useClerk(); // Ensure this hook is imported
 
@@ -155,10 +141,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                 <Zap size={28} className="text-amber-500 fill-amber-500" />
                             </div>
                             <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2">
-                                Founding Access v4
+                                Feed the Silicon Brains 🧠
                             </h2>
                             <p className="text-zinc-400 text-sm">
-                                Unlimited access to first-principles reasoning
+                                High-IQ inferences are expensive. The GPU hamsters need premium electricity to keep roasting you.
                             </p>
                         </div>
 
@@ -238,13 +224,11 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     </button>
                                 ) : (
                                     <a
-                                        href={`https://buy.polar.sh/polar_cl_yRdwa0cqXG8R7odwLf0MlAat2L4xjIgmmtF1S0u8ayb?email=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
-                                        data-polar-checkout
-                                        data-polar-checkout-theme="dark"
+                                        href={`/api/polar/checkout?products=466c9b89-a140-4718-a180-fd06f3b33135&customerEmail=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
                                         className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-medium rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer text-center no-underline"
                                     >
                                         <Zap size={18} className="fill-black/50" />
-                                        Pay with Polar (Embed)
+                                        Pay with Polar (Hosted)
                                     </a>
                                 )}
 
