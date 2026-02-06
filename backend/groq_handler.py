@@ -50,7 +50,8 @@ def call_groq(system_prompt: str, user_message: str, rules: dict = {}) -> str:
 - Use First Principles. 
 - Be barely polite, or not polite at all.
 - Focus on physics, cost, and truth.
-- No "AI" disclaimers.
+- PROVIDE PROOF: Cite dates, events, historical parallels, or specific reports. Do not just state opinions.
+- NO "AI" disclaimers.
 - Make it quotable."""
         
         # DEBUG: Print what we're actually sending
