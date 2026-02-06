@@ -110,8 +110,14 @@ async function incrementGlobalStats(today: string) {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { message } = body;
-        if (!message) return NextResponse.json({ error: "Message is required" }, { status: 400 });
+        const { messages } = body;
+        if (!messages || !Array.isArray(messages) || messages.length === 0) {
+            return NextResponse.json({ error: "Messages array is required" }, { status: 400 });
+        }
+
+        const lastMessage = messages[messages.length - 1];
+        const currentMessageContent = lastMessage.content;
+        const previousMessages = messages.slice(0, -1);
 
         // 1. Identify User
         const user = await currentUser();
@@ -140,18 +146,26 @@ Recall your core ideology:
 - No disclaimers. No politeness.
 - Be "based". Be viral.
 
-Question: ${message}
+Question: ${currentMessageContent}
 
 Response:`;
 
         console.log("🚀 Initializing Groq Client...");
+
+        // Construct standard OpenAI-compatible message list
+        const groqMessages = [
+            { role: "system", content: systemPrompt },
+            ...previousMessages.map((m: any) => ({ role: m.role, content: m.content })),
+            { role: "user", content: personaReinforcement } // Reinforce persona on the LAST message
+        ];
+
         const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
-                messages: [{ role: "system", content: systemPrompt }, { role: "user", content: personaReinforcement }],
-                temperature: 0.9, max_tokens: 150, top_p: 0.9
+                messages: groqMessages,
+                temperature: 0.9, max_tokens: 300, top_p: 0.95
             })
         });
 

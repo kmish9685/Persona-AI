@@ -118,8 +118,9 @@ export function Chat() {
         setInput('');
         setLoading(true);
 
+        const updatedMessages = [...messages, userMsg];
         try {
-            const data = await sendMessage(userMsg.content);
+            const data = await sendMessage(updatedMessages);
             const aiMsg: Message = { role: 'assistant', content: data.response };
 
             if (data.remaining_free !== undefined) {
