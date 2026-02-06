@@ -120,9 +120,6 @@ export async function POST(req: NextRequest) {
 
         if (user) {
             identifier = user.emailAddresses[0]?.emailAddress || user.id;
-        } else {
-            // Optional: Return 401 if you want to force login
-            // return NextResponse.json({ detail: 'You must be logged in.' }, { status: 401 });
         }
 
         // 2. Limits
@@ -130,7 +127,10 @@ export async function POST(req: NextRequest) {
         if (!limitStatus.allowed) return NextResponse.json({ error: limitStatus.reason }, { status: 402 });
 
         // 3. Gemini
-        if (!GOOGLE_API_KEY) return NextResponse.json({ error: "Configuration Error" }, { status: 500 });
+        if (!GOOGLE_API_KEY) {
+            console.error("❌ ERROR: GOOGLE_API_KEY is missing in environment variables.");
+            return NextResponse.json({ error: "Configuration Error: API Key missing" }, { status: 500 });
+        }
 
         const systemPrompt = PERSONA.system_prompt;
         const personaReinforcement = `You are simulated Elon Musk (Unfiltered).
@@ -145,14 +145,18 @@ Question: ${message}
 
 Response:`;
 
+        console.log("🚀 Initializing Gemini Client...");
         const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
         const model = genAI.getGenerativeModel({
             model: "gemini-1.5-pro",
             systemInstruction: systemPrompt
         });
 
+        console.log("📝 Sending request to Gemini...");
         const result = await model.generateContent(personaReinforcement);
         const responseTextRaw = result.response.text();
+        console.log("✅ Gemini Response received.");
+
         let responseText = responseTextRaw || "Error: Empty response.";
 
         // 4. Validate
@@ -166,7 +170,7 @@ Response:`;
         return NextResponse.json({ response: responseText, remaining_free: limitStatus.remaining, plan: limitStatus.plan });
 
     } catch (error: any) {
-        console.error("Chat Route Error:", error);
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        console.error("🔥 Chat Route Error:", error);
+        return NextResponse.json({ error: `Internal Server Error: ${error.message}` }, { status: 500 });
     }
 }
