@@ -40,7 +40,7 @@ function LandingPageContent() {
       <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center animate-slide-up">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] mb-8 tracking-tight text-white">
-            Talk to Famous Minds. Get Brutal Opinions.
+            Talk to Famous Minds.<br />Get Brutal Opinions.
           </h1>
 
           <p className="text-lg sm:text-xl text-gray-400 leading-relaxed mb-10 max-w-2xl mx-auto">
