@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 import { AuthProvider } from '@/src/contexts/AuthContext';
 import { ClerkProvider } from "@clerk/nextjs";
 
-import { PostHogProvider } from './providers';
+
 
 export default function RootLayout({
   children,
@@ -49,11 +49,9 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <PostHogProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-          </PostHogProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
         </body>
       </html>
     </ClerkProvider>
