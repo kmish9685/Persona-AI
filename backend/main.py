@@ -141,7 +141,7 @@ async def submit_contact(request: ContactRequest, raw_request: Request):
 @app.post("/api/payments/create-order")
 async def create_payment_order():
     from payments import create_order
-    order = create_order()
+    order = create_order(amount_paise=9900)
     if "error" in order:
         raise HTTPException(status_code=500, detail=order["error"])
     return order
