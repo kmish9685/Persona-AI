@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
+import posthog from 'posthog-js';
 
 export default function PricingPage() {
     return (
@@ -79,10 +80,9 @@ export default function PricingPage() {
                             <div className="mb-8">
                                 <h3 className="text-xl font-bold text-white mb-2">Founding Access</h3>
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold text-white">₹149</span>
+                                    <span className="text-4xl font-bold text-white">₹99</span>
                                     <span className="text-zinc-500">/month</span>
                                 </div>
-                                {/* <p className="text-[#FF9500] text-sm mt-4 font-medium">Cheaper than one bad decision.</p> */}
                                 <p className="text-[#FF9500] text-sm mt-4 font-medium">Warning: May cause rapid career growth.</p>
                             </div>
 
@@ -103,14 +103,14 @@ export default function PricingPage() {
                                     <Check size={20} className="text-[#FF9500] shrink-0 mt-0.5" />
                                     <span className="text-white font-medium">Priority Support (We actually reply)</span>
                                 </li>
-                                <li className="flex items-start gap-3">
-                                    <Check size={20} className="text-[#FF9500] shrink-0 mt-0.5" />
-                                    <span className="text-white font-medium">Early Access to Voice Mode</span>
-                                </li>
                             </ul>
 
                             <div className="text-center">
-                                <Link href="/chat?upgrade=true" className="block w-full py-4 text-center rounded-xl font-bold bg-[#FF9500] text-black hover:bg-orange-500 transition-colors mb-3">
+                                <Link
+                                    href="/chat?upgrade=true"
+                                    onClick={() => posthog.capture('checkout_started', { plan: 'founding_99' })}
+                                    className="block w-full py-4 text-center rounded-xl font-bold bg-[#FF9500] text-black hover:bg-orange-500 transition-colors mb-3"
+                                >
                                     Get Serious
                                 </Link>
                                 <p className="text-xs text-zinc-500">Cancel anytime. No lock-in.</p>

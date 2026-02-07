@@ -11,6 +11,7 @@ import { useClerk, useUser } from '@clerk/nextjs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 
 // Simple Toast Component
 function Toast({ message, onClose }: { message: string, onClose: () => void }) {
@@ -67,6 +68,7 @@ export function Chat() {
 
         // Instant Unlock on Payment Success
         if (searchParams.get('payment') === 'success') {
+            posthog.capture('payment_success', { plan: 'founding_99' });
             setRemaining(9999);
             setShowPaywall(false);
             setToastMessage("Payment Successful! You are now a Founding Member.");
@@ -117,6 +119,11 @@ export function Chat() {
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
+
+        posthog.capture('message_sent', {
+            persona: activePersona,
+            is_authenticated: !!user
+        });
 
         const updatedMessages = [...messages, userMsg];
         try {

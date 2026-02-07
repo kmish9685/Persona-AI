@@ -40,13 +40,11 @@ function LandingPageContent() {
       <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center animate-slide-up">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] mb-8 tracking-tight text-white">
-            Talk to AI personas that think, argue, and respond like real people
+            Talk to Famous Minds. Get Brutal Opinions.
           </h1>
 
           <p className="text-lg sm:text-xl text-gray-400 leading-relaxed mb-10 max-w-2xl mx-auto">
-            AI personas that think like real professionals behind closed doors.
-            Blunt. Experienced. The brutal advice they'd give you in private,
-            not what sounds safe.
+            AI personas that think like real professionals behind closed doors. Blunt. Experienced. The brutal advice they'd give you in private—not what sounds safe.
           </p>
 
           <div className="flex flex-col items-center">
@@ -157,7 +155,7 @@ function LandingPageContent() {
               <p className="text-sm leading-relaxed text-gray-400">
                 <strong className="text-white block mb-2 text-base">ChatGPT tells you what you want to hear.</strong>
                 Persona AI tells you what you need to know. Get 10 free brutal answers daily. Upgrade to unlimited
-                for ₹149/month.
+                for ₹99/month.
               </p>
             </div>
 
@@ -178,8 +176,10 @@ function LandingPageContent() {
       <footer className="border-t border-gray-800 py-12 bg-black">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex justify-center gap-6 mb-6 text-sm text-gray-400 font-medium">
+            <Link href="/about" className="hover:text-white transition-colors">About</Link>
+            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+            <Link href="/how-it-works" className="hover:text-white transition-colors">How it Works</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <a href="mailto:kmish9685@gmail.com" className="hover:text-white transition-colors">Contact</a>
           </div>
           <p className="text-sm text-gray-600 mb-2">
