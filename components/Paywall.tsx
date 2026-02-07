@@ -88,10 +88,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
             const options = {
                 key: rzpKey,
-                subscription_id: data.subscription_id, // Recurring
+                order_id: data.id, // One-time payment (Manual Recurring for now)
                 name: "Persona AI",
                 description: "Founding Membership (Monthly)",
-                // Removed amount/currency/order_id as per Subscription flow
+                // subscription_id: data.subscription_id, -> Backend creates an Order, not a Sub
                 handler: function (_response: any) {
                     onSuccess();
                 },
