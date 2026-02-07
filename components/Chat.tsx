@@ -6,10 +6,12 @@ import { User, ChevronDown, Check, LogOut, Sparkles, Lock, LogIn, AlertCircle } 
 import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
+import { FeedbackModal } from './FeedbackModal';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 
 // Simple Toast Component
 function Toast({ message, onClose }: { message: string, onClose: () => void }) {
@@ -41,6 +43,7 @@ export function Chat() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPaywall, setShowPaywall] = useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [remaining, setRemaining] = useState<number>(10);
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -62,7 +65,17 @@ export function Chat() {
         if (searchParams.get('upgrade') === 'true') {
             setShowPaywall(true);
         }
-    }, [searchParams]);
+
+        // Instant Unlock on Payment Success
+        if (searchParams.get('payment') === 'success') {
+            posthog.capture('payment_success', { plan: 'founding_99' });
+            setRemaining(9999);
+            setShowPaywall(false);
+            setToastMessage("Payment Successful! You are now a Founding Member.");
+            // Optional: Clean URL
+            router.replace('/chat');
+        }
+    }, [searchParams, router]);
 
     // Close menus on click outside
     useEffect(() => {
@@ -90,24 +103,56 @@ export function Chat() {
 
     // Handle Sending
     async function handleSend() {
-        if (!input.trim() || loading || remaining === 0) return;
+        if (!input.trim() || loading || remaining === 0) {
+            // If try to send when remaining is 0 (and button disabled, but just in case)
+            if (remaining === 0) {
+                if (!user) {
+                    openSignIn({ redirectUrl: '/chat' });
+                } else {
+                    setShowPaywall(true);
+                }
+            }
+            return;
+        }
 
         const userMsg: Message = { role: 'user', content: input };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
         setLoading(true);
 
+        posthog.capture('message_sent', {
+            persona: activePersona,
+            is_authenticated: !!user
+        });
+
+        const updatedMessages = [...messages, userMsg];
         try {
-            const data = await sendMessage(userMsg.content);
+            const data = await sendMessage(updatedMessages);
             const aiMsg: Message = { role: 'assistant', content: data.response };
 
             if (data.remaining_free !== undefined) {
                 setRemaining(data.remaining_free);
-                if (data.remaining_free === 0) setTimeout(() => setShowPaywall(true), 1000);
+                if (data.remaining_free === 0) {
+                    // Logic: Limit Reached after this message.
+                    setTimeout(() => {
+                        if (!user) {
+                            // 1. Force Login first
+                            openSignIn({ redirectUrl: '/chat' });
+                        } else {
+                            // 2. If already logged in, show Paywall
+                            setShowPaywall(true);
+                        }
+                    }, 1000);
+                }
             }
             setMessages(prev => [...prev, aiMsg]);
         } catch (error) {
-            setShowPaywall(true);
+            // On error (likely 402), check login status
+            if (!user) {
+                openSignIn({ redirectUrl: '/chat' });
+            } else {
+                setShowPaywall(true);
+            }
         } finally {
             setLoading(false);
             setTimeout(() => inputRef.current?.focus(), 100);
@@ -428,7 +473,17 @@ export function Chat() {
             </div>
 
             {/* Modals and Toasts */}
-            {showPaywall && <Paywall onClose={() => setShowPaywall(false)} onSuccess={() => setRemaining(9999)} />}
+            {showPaywall && (
+                <Paywall
+                    onClose={() => {
+                        setShowPaywall(false);
+                        // Trigger Feedback Modal on Paywall Abandonment
+                        setTimeout(() => setShowFeedbackModal(true), 300);
+                    }}
+                    onSuccess={() => setRemaining(9999)}
+                />
+            )}
+            <FeedbackModal isOpen={showFeedbackModal} onClose={() => setShowFeedbackModal(false)} />
             <AnimatePresence>
                 {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
             </AnimatePresence>

@@ -62,7 +62,7 @@ async def log_requests(request: Request, call_next):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "ok", "backend": "serverless-gemini"}
+    return {"status": "ok", "backend": "serverless-groq"}
 
 from auth import router as auth_router
 from middleware.auth_middleware import get_user_identifier

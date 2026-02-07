@@ -13,16 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Persona AI - Stop Getting Polite BS From AI. Get Brutal Truth.",
+  title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
   description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
   openGraph: {
-    title: "Persona AI - Stop Getting Polite BS From AI. Get Brutal Truth.",
+    title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
     description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Persona AI - Stop Getting Polite BS From AI. Get Brutal Truth.",
+    title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
     description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
   },
   icons: {
@@ -35,6 +35,8 @@ export const metadata: Metadata = {
 // import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AuthProvider } from '@/src/contexts/AuthContext';
 import { ClerkProvider } from "@clerk/nextjs";
+
+
 
 export default function RootLayout({
   children,

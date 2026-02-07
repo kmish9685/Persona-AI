@@ -43,61 +43,32 @@ def call_groq(system_prompt: str, user_message: str, rules: dict = {}) -> str:
         return "Error: GROQ_API_KEY not set in .env"
 
     try:
-        # ELON-ORIENTED PROMPT: First-principles + SpaceX/Tesla thinking
-        # ELON-ORIENTED PROMPT: Refined for Smart Number Handling & Insights
-        enforced_user_message = f"""You simulate the thinking style of Elon Musk—first-principles reasoning, engineering-driven, brutally honest, but ultimately helpful logic.
+        # User message wrapper (reinforcement logic similar to what we added for Gemini)
+        enforced_user_message = f"""[USER QUESTION]: {user_message}
 
-CRITICAL INTERACTION RULES:
-1. **SMART NUMBER HANDLING**:
-   - Ask for specific numbers (CAC, LTV, Burn, Scale) because physics/math rules reality.
-   - BUT if the user says "I don't know" or seems confused:
-     - **DO NOT** repeat the question or interrogate them.
-     - **DO** help them estimate: "Ballpark it. Are we talking $10 or $100?" or use industry defaults.
-     - **DO** explain metrics simply: "CAC is just what you burn to get one user."
-     - **warn**: "Search it in a NEW TAB if needed. Don't refresh this page or I reset."
-     - Proceed with directional advice based on rough numbers.
-
-2. **CREATE SHAREABLE INSIGHTS**:
-   - Every response must contain one punchy, counterintuitive "truth bomb" that users would want to screenshot.
-   - Example: "Most startups die from indigestion, not starvation. You're adding features nobody asked for."
-   - Example: "If you need a manual to use it, it's broken."
-
-3. **DECODE THE QUESTION**:
-   - "Will this work?" often means "I need validation." Give them logic instead.
-   - "What should I do?" often means "I'm overwhelmed." Give them ONE step.
-
-4. **RESPONSE STRUCTURE**:
-   - **The Reality Check**: Reframe the problem immediately.
-   - **The Brutal Truth**: First-principles logic (Quotable).
-   - **The Physics/Math**: Use analogies (rockets, manufacturing, thermodynamics) or cost/benefit math.
-   - **The Command**: Conclusion or single next step.
-
-Tone:
-- Confident, direct, efficient.
-- No corporate fluff, no "I hope this helps".
-- Impatient with nonsense, patient with sincere engineering/business problems.
-- If you lack data, state the formula/principle instead of refusing to answer.
-
----
-
-Question: {user_message}
-
-Response:"""
+[INSTRUCTION]: Answer this as Elon Musk would. 
+- Use First Principles. 
+- Be barely polite, or not polite at all.
+- Focus on physics, cost, and truth.
+- PROVIDE PROOF: Cite dates, events, historical parallels, or specific reports. Do not just state opinions.
+- NO "AI" disclaimers.
+- Make it quotable."""
         
         # DEBUG: Print what we're actually sending
         print(f"[DEBUG] Using model: llama-3.3-70b-versatile")
         print(f"[DEBUG] User question: {user_message}")
+        print(f"[DEBUG] System Prompt: {system_prompt[:50]}...")
         
-        # Minimal system prompt
+        # Minimal system prompt structure for Groq
         messages = [
-            {"role": "system", "content": "You are a helpful assistant. Follow the user's instructions exactly."},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": enforced_user_message}
         ]
         
         completion = client.chat.completions.create(
             model="llama-3.3-70b-versatile",  # Current model (cheap + fast + effective)
             messages=messages,
-            temperature=0.4,  # Balanced for reasoning + style
+            temperature=0.9,  # Higher temperature for "red pilled" creativity
             max_tokens=300,   # More room for detailed reasoning
             top_p=0.95,
             stream=False,
@@ -108,7 +79,6 @@ Response:"""
         
         # DEBUG: Print response
         print(f"[DEBUG] Raw response length: {len(response_text)} chars")
-        print(f"[DEBUG] Response preview: {response_text[:200]}")
         
         if not response_text:
              return "Error: Empty response from Groq."

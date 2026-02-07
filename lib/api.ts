@@ -3,14 +3,14 @@ import { ChatResponse } from '../types/chat';
 
 const API_URL = '/api';
 
-export async function sendMessage(message: string): Promise<ChatResponse> {
+export async function sendMessage(messages: { role: 'user' | 'assistant', content: string }[]): Promise<ChatResponse> {
     try {
         const response = await fetch(`${API_URL}/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify({ messages }),
         });
 
         if (!response.ok) {
