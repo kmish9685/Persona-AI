@@ -1,56 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { currentUser } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
+import Razorpay from 'razorpay';
 
-export async function POST(request: NextRequest) {
+export const dynamic = 'force-dynamic';
+
+export async function POST(req: Request) {
     try {
-        const razorpayKeyId = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-        const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+        const key_id = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+        const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
-        // 1. Verify Authentication (Clerk)
-        const user = await currentUser();
-        if (!user) {
-            return NextResponse.json({ detail: 'Authentication required' }, { status: 401 });
-        }
-        const userEmail = user.emailAddresses[0]?.emailAddress;
-
-        if (!userEmail) {
-            return NextResponse.json({ detail: 'User email not found' }, { status: 400 });
+        if (!key_id || !key_secret) {
+            console.error("Razorpay keys missing via env");
+            return NextResponse.json({ error: "Razorpay keys not configured" }, { status: 500 });
         }
 
-        if (!razorpayKeyId || !razorpayKeySecret) {
-            return NextResponse.json(
-                { detail: 'Razorpay keys not configured' },
-                { status: 500 }
-            );
-        }
-
-        // Create Razorpay Subscription (Recurring)
-        const Razorpay = require('razorpay');
-        const razorpay = new Razorpay({
-            key_id: razorpayKeyId,
-            key_secret: razorpayKeySecret
+        const instance = new Razorpay({
+            key_id: key_id,
+            key_secret: key_secret,
         });
 
-        const subscription = await razorpay.subscriptions.create({
-            plan_id: 'plan_SCLhJzyCEkvZwn', // Provided by user
-            customer_notify: 1,
-            total_count: 120, // 10 years monthly
-            notes: {
-                user_email: userEmail
-            }
-        });
+        const options = {
+            amount: 9900, // ₹99.00
+            currency: "INR",
+            payment_capture: 1, // Auto capture
+        };
 
-        return NextResponse.json({
-            subscription_id: subscription.id,
-            currency: 'INR',
-            key: razorpayKeyId
-        });
+        const order = await instance.orders.create(options);
 
+        return NextResponse.json(order);
     } catch (error: any) {
-        console.error('Razorpay order creation error:', error);
-        return NextResponse.json(
-            { detail: error.message || 'Failed to create order' },
-            { status: 500 }
-        );
+        console.error("Razorpay Order Creation Error:", error);
+        return NextResponse.json({ error: error.message || "Something went wrong" }, { status: 500 });
     }
 }
