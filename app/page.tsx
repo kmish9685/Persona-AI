@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { Disclosure, Transition } from '@headlessui/react';
-import { ChevronDown, Check, X, Zap, ArrowRight, Target, Rocket, Briefcase } from 'lucide-react';
+import { ChevronDown, Check, X, ArrowRight, Target, Rocket, Briefcase } from 'lucide-react';
 import clsx from 'clsx';
 
 function LandingPageContent() {
@@ -70,9 +70,10 @@ function LandingPageContent() {
                 Pricing
               </Link>
 
+              {/* Glass Button - Minimal */}
               <Link
                 href="/chat"
-                className="px-5 py-2 text-sm font-bold bg-white hover:bg-zinc-200 text-black rounded-full transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                className="px-5 py-2 text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-full transition-all backdrop-blur-md"
               >
                 Start Now
               </Link>
@@ -106,15 +107,15 @@ function LandingPageContent() {
           </div>
 
           <div className="flex flex-col items-center gap-5">
+            {/* Glass Button - Hero */}
             <Link
               href="/chat"
               className="
                 group relative inline-flex items-center justify-center px-8 py-4 
-                bg-white hover:bg-zinc-200 text-black 
-                font-bold rounded-full text-lg
-                transition-all duration-200
+                bg-white/5 border border-white/10 hover:bg-white/10 text-white 
+                font-medium rounded-full text-lg
+                transition-all duration-200 backdrop-blur-md
                 hover:scale-105 active:scale-95
-                shadow-[0_0_30px_rgba(255,255,255,0.15)]
                 "
             >
               Start Chatting Free
@@ -128,7 +129,7 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* Use Cases Section (New) */}
+      {/* Use Cases Section */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-20 bg-black border-y border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -158,21 +159,22 @@ function LandingPageContent() {
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Other AI Card - Muted */}
-            <div className="group bg-[#0A0A0A] border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col gap-6 opacity-60 hover:opacity-80 transition-opacity">
+            {/* Other AI Card - Fixed Visibility */}
+            {/* Removed opacity-60/grayscale to make it visible but distinct */}
+            <div className="group bg-[#080808] border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col gap-6 transition-colors">
               <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                <div className="p-2 rounded-lg bg-zinc-800 text-zinc-400"><X size={18} /></div>
-                <h3 className="font-bold text-zinc-500 tracking-wider text-sm uppercase">Standard AI</h3>
+                <div className="p-2 rounded-lg bg-zinc-900 text-zinc-500"><X size={18} /></div>
+                <h3 className="font-bold text-zinc-600 tracking-wider text-sm uppercase">Standard AI</h3>
               </div>
 
-              <div className="space-y-6 select-none grayscale">
+              <div className="space-y-6">
                 <div className="flex justify-end">
-                  <div className="bg-zinc-800 text-zinc-400 rounded-2xl px-5 py-3 max-w-[90%] text-sm">
+                  <div className="bg-zinc-900 text-zinc-500 rounded-2xl px-5 py-3 max-w-[90%] text-sm border border-white/5">
                     Should I add more features?
                   </div>
                 </div>
                 <div className="flex justify-start">
-                  <div className="bg-zinc-900 rounded-2xl p-5 max-w-[90%] border border-white/5">
+                  <div className="bg-zinc-900/50 rounded-2xl p-5 max-w-[90%] border border-white/5">
                     <p className="text-sm text-zinc-500 leading-relaxed italic">
                       "Well, it depends on your situation. You might want to consider user feedback, market validation, and..."
                     </p>
@@ -247,14 +249,14 @@ function LandingPageContent() {
           </div>
 
           <div className="mt-16 text-center">
+            {/* Glass Button - CTA */}
             <Link
               href="/chat"
               className="
                 inline-flex items-center justify-center px-8 py-3 
-                bg-white hover:bg-zinc-200 text-black 
-                font-bold rounded-full text-base
-                transition-all duration-200
-                shadow-lg shadow-white/10
+                bg-white/5 border border-white/10 hover:bg-white/10 text-white 
+                font-medium rounded-full text-base
+                transition-all duration-200 backdrop-blur-md
                 "
             >
               Get Started
