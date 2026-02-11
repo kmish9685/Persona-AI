@@ -3,14 +3,23 @@ import { ChatResponse } from '../types/chat';
 
 const API_URL = '/api';
 
-export async function sendMessage(messages: { role: 'user' | 'assistant', content: string }[]): Promise<ChatResponse> {
+export async function sendMessage(
+    messages: { role: 'user' | 'assistant', content: string }[],
+    persona: string = 'elon'
+): Promise<ChatResponse> {
     try {
+        // Extract just the last user message for the API
+        const lastMessage = messages[messages.length - 1];
+
         const response = await fetch(`${API_URL}/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ messages }),
+            body: JSON.stringify({
+                message: lastMessage.content,
+                persona: persona
+            }),
         });
 
         if (!response.ok) {

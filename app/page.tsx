@@ -72,7 +72,7 @@ function LandingPageContent() {
 
               {/* Glass Button - Minimal */}
               <Link
-                href="/chat"
+                href="/personas"
                 className="px-5 py-2 text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-full transition-all backdrop-blur-md"
               >
                 Start Now
@@ -109,7 +109,7 @@ function LandingPageContent() {
           <div className="flex flex-col items-center gap-5">
             {/* Glass Button - Hero */}
             <Link
-              href="/chat"
+              href="/personas"
               className="
                 group relative inline-flex items-center justify-center px-8 py-4 
                 bg-white/5 border border-white/10 hover:bg-white/10 text-white 
@@ -251,7 +251,7 @@ function LandingPageContent() {
           <div className="mt-16 text-center">
             {/* Glass Button - CTA */}
             <Link
-              href="/chat"
+              href="/personas"
               className="
                 inline-flex items-center justify-center px-8 py-3 
                 bg-white/5 border border-white/10 hover:bg-white/10 text-white 

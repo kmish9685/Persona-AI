@@ -8,11 +8,13 @@ import { Message } from '../types/chat';
 import { sendMessage } from '../lib/api';
 import { Paywall } from './Paywall';
 import { FeedbackModal } from './FeedbackModal';
+import { PersonaSwitcher } from './PersonaSwitcher';
 import { useClerk, useUser } from '@clerk/nextjs';
 import { useSearchParams, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
 import posthog from 'posthog-js';
+import { getPersonaById } from '@/lib/personas';
 
 // Simple Toast Component
 function Toast({ message, onClose }: { message: string, onClose: () => void }) {
@@ -40,6 +42,10 @@ export function Chat() {
     const searchParams = useSearchParams();
     const router = useRouter();
 
+    // Get persona from URL or default to elon
+    const personaId = searchParams.get('persona') || 'elon';
+    const personaData = getPersonaById(personaId);
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -48,9 +54,6 @@ export function Chat() {
     const [remaining, setRemaining] = useState<number>(10);
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-    // Dropdown States (Removed manual states in favor of Headless UI)
-    const [activePersona, setActivePersona] = useState('Elon Manager');
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -109,13 +112,13 @@ export function Chat() {
         setLoading(true);
 
         posthog.capture('message_sent', {
-            persona: activePersona,
+            persona: personaId,
             is_authenticated: !!user
         });
 
         const updatedMessages = [...messages, userMsg];
         try {
-            const data = await sendMessage(updatedMessages);
+            const data = await sendMessage(updatedMessages, personaId);
             const aiMsg: Message = { role: 'assistant', content: data.response };
 
             if (data.remaining_free !== undefined) {
@@ -147,25 +150,18 @@ export function Chat() {
         }
     }
 
-    // Dynamic Sarcastic Empty State
+    // Dynamic Empty State based on persona
     const getEmptyStateText = () => {
-        switch (activePersona) {
-            case 'Elon Manager':
-                return "Production is at zero. Ask me something useful or go back to work.";
-            case 'Sam Product':
-                return "The interface is blank because you haven't shipped a prompt yet.";
-            case 'Naval Angel':
-                return "A quiet mind is good. But a quiet chat won't build you wealth. Ask.";
-            default:
-                return "Silence is golden, but I'm expensive. Ask me something.";
-        }
+        const emptyStates: Record<string, string> = {
+            elon: "Production is at zero. Ask me something useful or go back to work.",
+            naval: "A quiet mind is good. But a quiet chat won't build you wealth. Ask.",
+            paul: "The interface is blank because you haven't shipped a prompt yet.",
+            bezos: "Customer obsession starts with asking the right questions. Start.",
+            jobs: "Simplicity is the ultimate sophistication. But first, you need to ask.",
+            thiel: "Secrets are found by asking questions no one else asks. Begin."
+        };
+        return emptyStates[personaId] || "Silence is golden, but I'm expensive. Ask me something.";
     };
-
-    const personas = [
-        { id: 'Elon Manager', name: 'Elon Manager', locked: false },
-        { id: 'Sam Product', name: 'Sam Product', locked: true },
-        { id: 'Naval Angel', name: 'Naval Angel', locked: true }
-    ];
 
     return (
         <div className="w-full h-[100dvh] flex flex-col bg-black text-white overflow-hidden font-sans relative">
@@ -174,83 +170,23 @@ export function Chat() {
             <header className="sticky top-0 z-30 w-full border-b border-gray-800 bg-black/95 backdrop-blur">
                 <div className="flex items-center justify-between px-4 h-14 max-w-5xl mx-auto w-full">
 
-                    {/* Left: Logo (Clean) */}
-                    <Link href="/" className="flex items-center gap-3">
-                        <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-md opacity-90" />
-                        <span className="font-semibold text-sm sm:text-base hidden sm:inline-block tracking-tight text-zinc-100">Persona AI</span>
-                    </Link>
+                    {/* Left: Logo + Active Persona */}
+                    <div className="flex items-center gap-3">
+                        <Link href="/" className="flex items-center gap-2">
+                            <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-md opacity-90" />
+                            <span className="font-semibold text-sm hidden lg:inline-block tracking-tight text-zinc-100">Persona AI</span>
+                        </Link>
+                        <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
+                            <span>•</span>
+                            <span className="text-white font-medium">{personaData.icon} {personaData.name}</span>
+                        </div>
+                    </div>
 
                     {/* Right: Controls */}
                     <div className="flex items-center gap-3 sm:gap-4">
 
-                        {/* Persona Switcher (Headless UI Menu) */}
-                        <Menu as="div" className="relative">
-                            <Menu.Button className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 transition-all hover:border-zinc-700 active:scale-95 group focus:outline-none focus:ring-1 focus:ring-zinc-700">
-                                {({ open }) => (
-                                    <>
-                                        <span className="text-[10px] sm:text-xs font-bold text-zinc-500 uppercase tracking-widest group-hover:text-zinc-400 transition-colors">MODEL</span>
-                                        <div className="h-3 w-[1px] bg-zinc-700 mx-0.5"></div>
-                                        <span className="text-sm font-semibold text-white tracking-wide">{activePersona}</span>
-                                        <ChevronDown size={14} className={`text-zinc-500 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-                                    </>
-                                )}
-                            </Menu.Button>
-
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
-                            >
-                                <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-[#0F0F0F] border border-zinc-800 rounded-xl shadow-2xl overflow-hidden z-50 ring-1 ring-white/5 focus:outline-none">
-                                    <div className="px-4 py-2.5 border-b border-zinc-800/50 bg-zinc-900/30">
-                                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Select Intelligence</p>
-                                    </div>
-                                    <div className="p-1.5 space-y-0.5">
-                                        {personas.map((persona) => (
-                                            <Menu.Item key={persona.id}>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => {
-                                                            if (!persona.locked) {
-                                                                setActivePersona(persona.id);
-                                                            } else {
-                                                                setToastMessage("Still training. Creator is feeding me their public data...");
-                                                            }
-                                                        }}
-                                                        className={clsx(
-                                                            "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center justify-between group",
-                                                            active || activePersona === persona.id
-                                                                ? "bg-zinc-800 text-white font-medium"
-                                                                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50",
-                                                            persona.locked && "opacity-75"
-                                                        )}
-                                                    >
-                                                        <span className="flex items-center gap-2">
-                                                            {persona.name}
-                                                            {persona.locked && <Lock size={12} className="text-zinc-600" />}
-                                                        </span>
-                                                        {activePersona === persona.id && <Check size={14} className="text-[#FF9500]" />}
-                                                        {persona.locked && <span className="text-[10px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-700">LOCKED</span>}
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-                                        ))}
-                                    </div>
-                                    <div className="px-4 py-3 bg-zinc-900/50 border-t border-zinc-800/50">
-                                        <div className="flex items-center gap-2">
-                                            <Sparkles size={12} className="text-purple-400" />
-                                            <p className="text-[10px] text-zinc-400 font-medium italic">
-                                                More coming soon...
-                                            </p>
-                                        </div>
-                                    </div>
-                                </Menu.Items>
-                            </Transition>
-                        </Menu>
+                        {/* Persona Switcher */}
+                        <PersonaSwitcher currentPersona={personaId} />
 
                         {/* Message Count */}
                         <span className={clsx("text-xs font-mono hidden sm:block", remaining === 0 ? "text-red-500" : "text-gray-500")}>
