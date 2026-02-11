@@ -178,7 +178,12 @@ export function Chat() {
                         </Link>
                         <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400">
                             <span>•</span>
-                            <span className="text-white font-medium">{personaData.icon} {personaData.name}</span>
+                            <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded-full overflow-hidden border border-gray-600">
+                                    <img src={personaData.image} alt={personaData.name} className="w-full h-full object-cover" />
+                                </div>
+                                <span className="text-white font-medium">{personaData.name}</span>
+                            </div>
                         </div>
                     </div>
 
