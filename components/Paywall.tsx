@@ -12,8 +12,8 @@ interface PaywallProps {
 }
 
 const countries = [
-    { id: 'IN', name: 'India (₹ INR)', price: '₹99' },
-    { id: 'US', name: 'United States ($ USD)', price: '$6.70' },
+    { id: 'IN', name: 'India (₹ INR)', price: '₹99', symbol: '₹' },
+    { id: 'US', name: 'United States ($ USD)', price: '$6.7', symbol: '$' },
 ];
 
 export function Paywall({ onClose, onSuccess }: PaywallProps) {
@@ -218,19 +218,60 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                <div className="p-6 rounded-xl border-2 border-amber-500/50 bg-amber-500/5 relative overflow-hidden">
+                                {/* Free Tier Card */}
+                                <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6">
+                                    <div className="mb-4">
+                                        <h3 className="text-sm font-bold text-zinc-400 mb-2 uppercase tracking-widest">The "Dabbler"</h3>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-3xl font-bold text-white">Free</span>
+                                            <span className="text-zinc-500 text-sm">/forever</span>
+                                        </div>
+                                        <p className="text-zinc-500 text-xs mt-2">For those who like to window shop success.</p>
+                                    </div>
+
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start gap-2 text-sm text-zinc-300">
+                                            <div className="p-1 rounded-full bg-white/5 text-white mt-0.5">
+                                                <Check size={12} />
+                                            </div>
+                                            10 Brutal Messages / Day
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-zinc-300">
+                                            <div className="p-1 rounded-full bg-white/5 text-white mt-0.5">
+                                                <Check size={12} />
+                                            </div>
+                                            Access to Elon Persona Only
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-zinc-300">
+                                            <div className="p-1 rounded-full bg-white/5 text-white mt-0.5">
+                                                <Check size={12} />
+                                            </div>
+                                            Standard Speed
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-zinc-500 opacity-50">
+                                            <div className="p-1 rounded-full bg-red-500/10 text-red-500 mt-0.5">
+                                                <X size={12} />
+                                            </div>
+                                            Other Personas Locked
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {/* Paid Tier Card - Highlighted */}
+                                <div className="bg-[#0F0F0F] border-2 border-amber-500/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
                                     <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-2xl" />
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-500 text-black text-[10px] font-bold tracking-wider rounded-full uppercase shadow-lg shadow-amber-500/20">
                                         Founding Members
                                     </div>
-                                    <div className="flex justify-between items-end mb-2 relative z-10">
+
+                                    <div className="flex justify-between items-end mb-4 relative z-10">
                                         <div>
-                                            <h3 className="text-lg font-bold text-white tracking-tight">Founding Access</h3>
-                                            <p className="text-xs text-amber-400/90 font-medium mt-0.5">Price locked permanently</p>
+                                            <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Founding Access</h3>
+                                            <p className="text-xs text-amber-400/90 font-medium">Price locked permanently</p>
                                         </div>
                                         <div className="text-right">
                                             <div className="flex items-baseline gap-1 justify-end">
-                                                <p className="text-3xl font-light text-white tracking-tighter">
+                                                <p className="text-3xl font-bold text-white tracking-tighter">
                                                     {selectedCountry.price}
                                                 </p>
                                                 <p className="text-xs text-zinc-500 font-medium">/mo</p>
@@ -238,47 +279,61 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                             <p className="text-[10px] text-red-400 mt-1 font-bold tracking-wide uppercase">Non-refundable</p>
                                         </div>
                                     </div>
-                                    <ul className="space-y-2 my-4 border-t border-white/5 pt-4 relative z-10">
-                                        <li className="flex items-center gap-2 text-sm text-zinc-200">
-                                            <div className="p-1 rounded-full bg-amber-500/10">
+
+                                    <ul className="space-y-3 mb-4 border-t border-white/5 pt-4 relative z-10">
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
                                                 <Check size={12} className="text-amber-500" />
                                             </div>
-                                            Unlimited high-IQ messages
+                                            <span className="font-medium">Unlimited Brutal Truths</span>
                                         </li>
-                                        <li className="flex items-center gap-2 text-sm text-zinc-200">
-                                            <div className="p-1 rounded-full bg-amber-500/10">
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
                                                 <Check size={12} className="text-amber-500" />
                                             </div>
-                                            Access to future personas
+                                            <span className="font-medium">Unlock ALL Personas (6 total)</span>
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
+                                                <Check size={12} className="text-amber-500" />
+                                            </div>
+                                            <span className="font-medium">Faster Response Times</span>
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
+                                                <Check size={12} className="text-amber-500" />
+                                            </div>
+                                            <span className="font-medium">Priority Support</span>
                                         </li>
                                     </ul>
-                                    <p className="text-[10px] text-zinc-500 text-center mt-3 font-medium">
+
+                                    <p className="text-[10px] text-zinc-500 text-center mb-4 font-medium relative z-10">
                                         By subscribing, you agree to our <a href="/refund" target="_blank" className="text-zinc-400 underline hover:text-white transition-colors">No Refund Policy</a>.
                                     </p>
-                                </div>
 
-                                {isIndia ? (
-                                    <button
-                                        onClick={handleRazorpayUpgrade}
-                                        disabled={loading}
-                                        className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
-                                    >
-                                        {loading ? 'Processing...' : (
-                                            <>
-                                                <Zap size={18} className="fill-black/20" />
-                                                Pay with Razorpay
-                                            </>
-                                        )}
-                                    </button>
-                                ) : (
-                                    <a
-                                        href={`/api/polar/checkout?products=466c9b89-a140-4718-a180-fd06f3b33135&customerEmail=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
-                                        className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)]"
-                                    >
-                                        <Zap size={18} className="fill-black/20" />
-                                        Pay with Polar (Hosted)
-                                    </a>
-                                )}
+                                    {isIndia ? (
+                                        <button
+                                            onClick={handleRazorpayUpgrade}
+                                            disabled={loading}
+                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
+                                        >
+                                            {loading ? 'Processing...' : (
+                                                <>
+                                                    <Zap size={18} className="fill-black/20" />
+                                                    Pay with Razorpay
+                                                </>
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <a
+                                            href={`/api/polar/checkout?products=466c9b89-a140-4718-a180-fd06f3b33135&customerEmail=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
+                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
+                                        >
+                                            <Zap size={18} className="fill-black/20" />
+                                            Pay with Polar (Hosted)
+                                        </a>
+                                    )}
+                                </div>
 
                                 <button
                                     onClick={() => setStep('details')}

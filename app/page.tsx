@@ -66,9 +66,6 @@ function LandingPageContent() {
               <Link href="/about" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
                 About
               </Link>
-              <Link href="/pricing" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                Pricing
-              </Link>
 
               {/* Glass Button - Minimal */}
               <Link
@@ -270,7 +267,6 @@ function LandingPageContent() {
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex flex-wrap justify-center gap-8 mb-8 text-sm text-zinc-500 font-medium">
             <Link href="/about" className="hover:text-white transition-colors">About</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
             <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           </div>
