@@ -3,42 +3,42 @@ export const PERSONAS = [
         id: "elon",
         name: "Elon Musk",
         description: "First-principles engineering thinking. Physics-based problem solving.",
-        icon: "🚀",
+        image: "/personas/elon.jpg",
         tagline: "First Principles"
     },
     {
         id: "naval",
         name: "Naval Ravikant",
         description: "Leverage, wealth principles, and philosophical startup wisdom.",
-        icon: "🧠",
+        image: "/personas/naval.jpg",
         tagline: "Leverage & Wealth"
     },
     {
         id: "paul",
         name: "Paul Graham",
         description: "Y Combinator wisdom. Essays-based startup fundamentals.",
-        icon: "📚",
+        image: "/personas/paul.jpg",
         tagline: "YC Wisdom"
     },
     {
         id: "bezos",
         name: "Jeff Bezos",
         description: "Customer obsession. Long-term thinking. Day 1 mindset.",
-        icon: "📦",
+        image: "/personas/bezos.jpg",
         tagline: "Customer Obsessed"
     },
     {
         id: "jobs",
         name: "Steve Jobs",
         description: "Design-first simplicity. Saying no. Taste and vision.",
-        icon: "🎨",
+        image: "/personas/jobs.jpg",
         tagline: "Design & Taste"
     },
     {
         id: "thiel",
         name: "Peter Thiel",
         description: "Contrarian strategy. Zero-to-one thinking. Monopoly focus.",
-        icon: "🎯",
+        image: "/personas/thiel.jpg",
         tagline: "Contrarian Strategy"
     }
 ];

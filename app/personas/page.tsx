@@ -47,9 +47,15 @@ export default function PersonasPage() {
                                          hover:border-[#FF9500] transition-all duration-200 
                                          cursor-pointer group text-left h-full flex flex-col"
                             >
-                                {/* Icon */}
-                                <div className="text-5xl mb-4 text-center">
-                                    {persona.icon}
+                                {/* Profile Image */}
+                                <div className="mb-6 flex justify-center">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#2A2A2A] group-hover:border-[#FF9500] transition-all">
+                                        <img
+                                            src={persona.image}
+                                            alt={persona.name}
+                                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                                        />
+                                    </div>
                                 </div>
 
                                 {/* Name */}

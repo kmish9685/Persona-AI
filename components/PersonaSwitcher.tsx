@@ -27,8 +27,10 @@ export function PersonaSwitcher({ currentPersona }: PersonaSwitcherProps) {
                 className="flex items-center gap-2 px-3 py-1.5 bg-[#1A1A1A] border border-gray-700 
                          rounded-lg text-sm hover:border-orange-500 transition-colors"
             >
+                <div className="w-6 h-6 rounded-full overflow-hidden border border-gray-600">
+                    <img src={currentPersonaData.image} alt={currentPersonaData.name} className="w-full h-full object-cover" />
+                </div>
                 <span className="hidden sm:inline">Switch Persona</span>
-                <span className="sm:hidden">{currentPersonaData.icon}</span>
                 <ChevronDown size={14} className={`transition-transform ${isOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -53,7 +55,9 @@ export function PersonaSwitcher({ currentPersona }: PersonaSwitcherProps) {
                                     ${persona.id === currentPersona ? 'bg-[#2A2A2A]' : ''}
                                 `}
                             >
-                                <span className="text-xl">{persona.icon}</span>
+                                <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-600">
+                                    <img src={persona.image} alt={persona.name} className="w-full h-full object-cover" />
+                                </div>
                                 <div className="flex-1">
                                     <div className="text-sm font-medium">{persona.name}</div>
                                     <div className="text-xs text-gray-500">{persona.tagline}</div>
