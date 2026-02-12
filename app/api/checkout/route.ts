@@ -3,7 +3,7 @@ import { Polar } from '@polar-sh/sdk';
 
 const polar = new Polar({
     accessToken: process.env.POLAR_ACCESS_TOKEN,
-    server: 'sandbox', // Use 'production' in production, or let SDK handle defaults. Usually defaults to production.
+    server: 'sandbox', // Use 'production' in production
 });
 
 export async function GET(request: NextRequest) {
@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
+        console.log("Creating checkout for product:", priceId);
         const result = await polar.checkouts.create({
             products: [priceId],
             successUrl: `${request.nextUrl.origin}/chat?upgrade=true&success=true`,
