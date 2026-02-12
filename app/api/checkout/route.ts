@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 
     try {
         const result = await polar.checkouts.create({
-            productPriceId: priceId,
+            products: [priceId],
             successUrl: `${request.nextUrl.origin}/chat?upgrade=true&success=true`,
         });
 
