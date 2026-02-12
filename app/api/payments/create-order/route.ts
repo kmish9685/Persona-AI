@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
+import { PRICING_CONFIG } from '@/lib/pricing-config';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
     try {
+        const body = await req.json();
+        const { plan = 'annual' } = body; // Default to annual if not specified
+
         const key_id = process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
         const key_secret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -18,10 +22,18 @@ export async function POST(req: Request) {
             key_secret: key_secret,
         });
 
+        // Determine amount based on plan
+        const amount = plan === 'monthly'
+            ? PRICING_CONFIG.IN.plans.monthly.amount
+            : PRICING_CONFIG.IN.plans.annual.amount;
+
         const options = {
-            amount: 9900, // ₹99.00
+            amount: amount,
             currency: "INR",
             payment_capture: 1, // Auto capture
+            notes: {
+                plan_type: plan // Store plan type in notes for reference
+            }
         };
 
         const order = await instance.orders.create(options);

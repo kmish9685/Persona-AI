@@ -2,8 +2,9 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
-import { X, Zap, Check, ChevronDown } from 'lucide-react';
+import { X, Zap, Check, ChevronDown, Globe } from 'lucide-react';
 import { useUser, useClerk } from '@clerk/nextjs';
+import { PRICING_CONFIG } from '@/lib/pricing-config';
 import clsx from 'clsx';
 
 interface PaywallProps {
@@ -12,21 +13,39 @@ interface PaywallProps {
 }
 
 const countries = [
-    { id: 'IN', name: 'India (₹ INR)', price: '₹99', symbol: '₹' },
-    { id: 'US', name: 'United States ($ USD)', price: '$6.7', symbol: '$' },
+    { id: 'IN', name: 'India (₹ INR)', currency: 'INR' },
+    { id: 'US', name: 'International ($ USD)', currency: 'USD' },
 ];
 
 export function Paywall({ onClose, onSuccess }: PaywallProps) {
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
 
-    // Manual Location State
+    // State
     const [step, setStep] = useState<'details' | 'payment'>('details');
     const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+    const [billingCycle, setBillingCycle] = useState<'annual' | 'monthly'>('annual'); // Default to Annual
     const [name, setName] = useState('');
 
     // Derived state
     const isIndia = selectedCountry.id === 'IN';
+    const config = isIndia ? PRICING_CONFIG.IN : PRICING_CONFIG.US;
+    const planDetails = config.plans[billingCycle];
+
+    // Auto-detect location on mount
+    useEffect(() => {
+        try {
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (timeZone === 'Asia/Calcutta' || timeZone === 'Asia/Kolkata') {
+                setSelectedCountry(countries[0]); // India
+            } else {
+                setSelectedCountry(countries[1]); // International
+            }
+        } catch (e) {
+            console.error("Location detection failed", e);
+        }
+    }, []);
+
 
     // 1. Load Razorpay Script
     useEffect(() => {
@@ -61,28 +80,18 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
             const res = await fetch('/api/payments/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plan: billingCycle }) // Send selected plan
             });
 
             if (!res.ok) {
                 const errorText = await res.text();
-                let errorMessage = errorText;
-                try {
-                    const errorJson = JSON.parse(errorText);
-                    errorMessage = errorJson.detail || errorJson.error || errorText;
-                } catch (e) { }
-
-                throw new Error(errorMessage || 'Failed to create subscription');
+                throw new Error(errorText || 'Failed to create order');
             }
 
             const data = await res.json();
-            console.log("Subscription created:", data);
+            console.log("Order created:", data);
 
             const rzpKey = data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-            if (!rzpKey) {
-                alert("Configuration Error: Razorpay Key ID is missing.");
-                setLoading(false);
-                return;
-            }
 
             if (!(window as any).Razorpay) {
                 alert('Razorpay SDK failed to load. Please check your connection.');
@@ -94,7 +103,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                 key: rzpKey,
                 order_id: data.id,
                 name: "Persona AI",
-                description: "Founding Membership (Monthly)",
+                description: `Founding Membership (${billingCycle})`,
                 handler: function (_response: any) {
                     onSuccess();
                 },
@@ -114,7 +123,6 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
             rzp.open();
 
             rzp.on('payment.failed', function (response: any) {
-                console.error("Payment Failed", response.error);
                 alert("Payment Failed: " + response.error.reason);
                 setLoading(false);
             });
@@ -139,15 +147,15 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     </button>
 
                     <div className="p-6 md:p-8">
-                        <div className="text-center mb-6 md:mb-8">
+                        <div className="text-center mb-6">
                             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-4 ring-1 ring-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
                                 <Zap size={28} className="text-amber-500 fill-amber-500" />
                             </div>
                             <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2">
-                                Feed the Silicon Brains 🧠
+                                Founding Membership
                             </h2>
                             <p className="text-zinc-400 text-sm leading-relaxed">
-                                High-IQ inferences are expensive. The GPU hamsters need premium electricity to keep roasting you.
+                                Lock in early adopter pricing before it increases.
                             </p>
                         </div>
 
@@ -164,11 +172,14 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     />
                                 </div>
                                 <div className="relative">
-                                    <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Country</label>
+                                    <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Billing Location</label>
                                     <Listbox value={selectedCountry} onChange={setSelectedCountry}>
                                         <div className="relative mt-1">
                                             <Listbox.Button className="relative w-full w-full cursor-pointer bg-zinc-900 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-left text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all sm:text-sm">
-                                                <span className="block truncate font-medium">{selectedCountry.name}</span>
+                                                <span className="block truncate font-medium flex items-center gap-2">
+                                                    <Globe size={16} className="text-zinc-400" />
+                                                    {selectedCountry.name}
+                                                </span>
                                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                                                     <ChevronDown className="h-4 w-4 text-zinc-400" aria-hidden="true" />
                                                 </span>
@@ -213,124 +224,100 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     disabled={!name.trim()}
                                     className="w-full py-3.5 mt-2 bg-white text-black font-semibold rounded-xl hover:bg-zinc-200 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                 >
-                                    Continue
+                                    Continue to Plans
                                 </button>
                             </div>
                         ) : (
                             <div className="space-y-6">
-                                {/* Free Tier Card */}
-                                <div className="bg-[#0A0A0A] border border-white/5 rounded-2xl p-6">
-                                    <div className="mb-4">
-                                        <h3 className="text-sm font-bold text-zinc-400 mb-2 uppercase tracking-widest">The "Dabbler"</h3>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-3xl font-bold text-white">Free</span>
-                                            <span className="text-zinc-500 text-sm">/forever</span>
-                                        </div>
-                                        <p className="text-zinc-500 text-xs mt-2">For those who like to window shop success.</p>
-                                    </div>
+                                {/* Billing Toggle */}
+                                <div className="flex justify-center mb-6">
+                                    <div className="bg-zinc-900 p-1 rounded-xl border border-white/5 flex relative">
+                                        {/* Animation Background */}
+                                        <div
+                                            className={`absolute top-1 bottom-1 w-[50%] bg-zinc-800 rounded-lg transition-all duration-300 ${billingCycle === 'annual' ? 'left-1' : 'left-[48.5%]'}`}
+                                        />
 
-                                    <ul className="space-y-3">
-                                        <li className="flex items-start gap-2 text-sm text-zinc-300">
-                                            <div className="p-1 rounded-full bg-white/5 text-white mt-0.5">
-                                                <Check size={12} />
-                                            </div>
-                                            10 Brutal Messages / Day
-                                        </li>
-                                        <li className="flex items-start gap-2 text-sm text-zinc-300">
-                                            <div className="p-1 rounded-full bg-white/5 text-white mt-0.5">
-                                                <Check size={12} />
-                                            </div>
-                                            Access to Elon Persona Only
-                                        </li>
-                                        <li className="flex items-start gap-2 text-sm text-zinc-300">
-                                            <div className="p-1 rounded-full bg-white/5 text-white mt-0.5">
-                                                <Check size={12} />
-                                            </div>
-                                            Standard Speed
-                                        </li>
-                                        <li className="flex items-start gap-2 text-sm text-zinc-500 opacity-50">
-                                            <div className="p-1 rounded-full bg-red-500/10 text-red-500 mt-0.5">
-                                                <X size={12} />
-                                            </div>
-                                            Other Personas Locked
-                                        </li>
-                                    </ul>
+                                        <button
+                                            onClick={() => setBillingCycle('annual')}
+                                            className={`relative z-10 px-6 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${billingCycle === 'annual' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                        >
+                                            Annual
+                                            <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                                                Save 44%
+                                            </span>
+                                        </button>
+                                        <button
+                                            onClick={() => setBillingCycle('monthly')}
+                                            className={`relative z-10 px-6 py-2 text-sm font-medium rounded-lg transition-colors ${billingCycle === 'monthly' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
+                                        >
+                                            Monthly
+                                        </button>
+                                    </div>
                                 </div>
 
-                                {/* Paid Tier Card - Highlighted */}
-                                <div className="bg-[#0F0F0F] border-2 border-amber-500/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)]">
+                                {/* Plan Details Card */}
+                                <div className="bg-[#0F0F0F] border-2 border-amber-500/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)] animate-in fade-in zoom-in duration-300">
                                     <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-2xl" />
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-500 text-black text-[10px] font-bold tracking-wider rounded-full uppercase shadow-lg shadow-amber-500/20">
-                                        Founding Members
-                                    </div>
 
-                                    <div className="flex justify-between items-end mb-4 relative z-10">
+                                    <div className="flex justify-between items-end mb-6 relative z-10">
                                         <div>
-                                            <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Founding Access</h3>
-                                            <p className="text-xs text-amber-400/90 font-medium">Price locked permanently</p>
+                                            <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Founding Member</h3>
+                                            <p className="text-xs text-amber-400/90 font-medium">
+                                                {billingCycle === 'annual' ? 'Billed annually' : 'Billed monthly'}
+                                            </p>
                                         </div>
                                         <div className="text-right">
                                             <div className="flex items-baseline gap-1 justify-end">
-                                                <p className="text-3xl font-bold text-white tracking-tighter">
-                                                    {selectedCountry.price}
+                                                <p className="text-4xl font-bold text-white tracking-tighter">
+                                                    {planDetails.label}
                                                 </p>
-                                                <p className="text-xs text-zinc-500 font-medium">/mo</p>
+                                                <p className="text-xs text-zinc-500 font-medium">{planDetails.period}</p>
                                             </div>
-                                            <p className="text-[10px] text-red-400 mt-1 font-bold tracking-wide uppercase">Non-refundable</p>
+                                            {/* Show monthly equivalent for annual plans if helpful, for now just simple price */}
                                         </div>
                                     </div>
 
-                                    <ul className="space-y-3 mb-4 border-t border-white/5 pt-4 relative z-10">
+                                    <ul className="space-y-3 mb-6 border-t border-white/5 pt-4 relative z-10">
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
-                                                <Check size={12} className="text-amber-500" />
-                                            </div>
-                                            <span className="font-medium">Unlimited Brutal Truths</span>
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <span className="font-medium">Unlimited Messages</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
-                                                <Check size={12} className="text-amber-500" />
-                                            </div>
-                                            <span className="font-medium">Unlock ALL Personas (6 total)</span>
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <span className="font-medium">All 6 Personas (Elon, Naval...)</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
-                                                <Check size={12} className="text-amber-500" />
-                                            </div>
-                                            <span className="font-medium">Faster Response Times</span>
-                                        </li>
-                                        <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5">
-                                                <Check size={12} className="text-amber-500" />
-                                            </div>
-                                            <span className="font-medium">Priority Support</span>
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <span className="font-medium">Reasoning Breakdown Engine</span>
                                         </li>
                                     </ul>
 
                                     <p className="text-[10px] text-zinc-500 text-center mb-4 font-medium relative z-10">
-                                        By subscribing, you agree to our <a href="/refund" target="_blank" className="text-zinc-400 underline hover:text-white transition-colors">No Refund Policy</a>.
+                                        By subscribing, you agree to our No Refund Policy.
                                     </p>
 
                                     {isIndia ? (
                                         <button
                                             onClick={handleRazorpayUpgrade}
                                             disabled={loading}
-                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
+                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
                                         >
                                             {loading ? 'Processing...' : (
                                                 <>
                                                     <Zap size={18} className="fill-black/20" />
-                                                    Pay with Razorpay
+                                                    Pay {planDetails.label} via Razorpay
                                                 </>
                                             )}
                                         </button>
                                     ) : (
                                         <a
-                                            href={`/api/polar/checkout?products=466c9b89-a140-4718-a180-fd06f3b33135&customerEmail=${encodeURIComponent(user?.primaryEmailAddress?.emailAddress || '')}`}
-                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
+                                            href={(planDetails as any).link} // Type casting for TS check
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
                                         >
                                             <Zap size={18} className="fill-black/20" />
-                                            Pay with Polar (Hosted)
+                                            Pay {planDetails.label} via Polar
                                         </a>
                                     )}
                                 </div>
@@ -339,7 +326,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     onClick={() => setStep('details')}
                                     className="w-full text-xs font-medium text-zinc-500 hover:text-white transition-colors py-2"
                                 >
-                                    ← Back to details
+                                    ← Change billing details
                                 </button>
                             </div>
                         )}
