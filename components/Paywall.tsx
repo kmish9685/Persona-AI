@@ -329,9 +329,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         </button>
                                     ) : (
                                         <a
-                                            href={(planDetails as any).link} // Type casting for TS check
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                            href={`/api/checkout?priceId=${(planDetails as any).link.split('/').pop()}`}
                                             className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
                                         >
                                             <Zap size={18} className="fill-black/20" />
