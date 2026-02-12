@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
         });
 
         return NextResponse.redirect(result.url);
-    } catch (error) {
-        console.error('Polar Checkout Error:', error);
-        return new NextResponse('Checkout failed', { status: 500 });
+    } catch (error: any) {
+        console.error('Polar Checkout Error Details:', JSON.stringify(error, null, 2));
+        return new NextResponse(`Checkout failed: ${error.message || 'Unknown error'}`, { status: 500 });
     }
 }
