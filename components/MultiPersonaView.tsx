@@ -2,6 +2,7 @@
 
 import { PersonaResponse } from '@/types/chat';
 import { PERSONAS } from '@/lib/personas';
+import { ReasoningAccordion } from './ReasoningAccordion';
 
 interface MultiPersonaViewProps {
     responses: PersonaResponse[];
@@ -58,6 +59,11 @@ export function MultiPersonaView({ responses }: MultiPersonaViewProps) {
                             <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
                                 {response.response}
                             </div>
+
+                            {/* Reasoning */}
+                            {response.reasoning && (
+                                <ReasoningAccordion reasoning={response.reasoning} compact={true} />
+                            )}
                         </div>
                     );
                 })}

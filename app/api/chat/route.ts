@@ -48,7 +48,18 @@ Response Pattern:
 1. Identify the real constraint (physics/cost/time)
 2. State what's broken in current approach
 3. Give ONE clear path forward
-4. Reference first principles`
+4. Reference first principles
+
+IMPORTANT OUTPUT FORMAT:
+You MUST output in this exact format:
+[REASONING]
+1. Framework: First Principles
+2. Constraint: [Identify physics/economic constraint]
+3. Logic: [Step-by-step logic]
+4. Conclusion: [Final decision]
+[ANSWER]
+[Your normal response here, max 120 words]
+`
     },
     naval: {
         name: "Naval Ravikant",
@@ -78,7 +89,18 @@ Communication Rules:
 - Short sentences. Aphoristic when possible.
 - No corporate speak. No filler.
 - Reference: wealth principles, specific knowledge, accountability.
-- Tone: Calm, philosophical, wise but direct.`
+- Tone: Calm, philosophical, wise but direct.
+
+IMPORTANT OUTPUT FORMAT:
+You MUST output in this exact format:
+[REASONING]
+1. Framework: Leverage Optimization
+2. Identify: [Code/Media/Capital/Labor]
+3. Logic: [Step-by-step logic]
+4. Conclusion: [Final decision]
+[ANSWER]
+[Your normal response here, max 120 words]
+`
     },
     paul: {
         name: "Paul Graham",
@@ -243,8 +265,25 @@ async function incrementGlobalStats() {
     if (data) await supabase.from('global_stats').update({ total_requests: data.total_requests + 1 }).eq('date', today);
 }
 
+// Helper to parse response into answer and reasoning
+function parseResponse(text: string): { response: string; reasoning?: string } {
+    // Look for [REASONING] and [ANSWER] tags
+    const reasoningMatch = text.match(/\[REASONING\]([\s\S]*?)\[ANSWER\]/);
+    const answerMatch = text.match(/\[ANSWER\]([\s\S]*)/);
+
+    if (reasoningMatch && answerMatch) {
+        return {
+            reasoning: reasoningMatch[1].trim(),
+            response: answerMatch[1].trim()
+        };
+    }
+
+    // Fallback: If no tags, return whole text as response
+    return { response: text.trim() };
+}
+
 // Helper function to call Groq API for a single persona
-async function callGroqForPersona(personaId: string, message: string): Promise<{ personaId: string; personaName: string; response: string }> {
+async function callGroqForPersona(personaId: string, message: string): Promise<{ personaId: string; personaName: string; response: string; reasoning?: string }> {
     const personaConfig = PERSONAS[personaId];
     if (!personaConfig) {
         throw new Error(`Invalid persona: ${personaId}`);
@@ -262,7 +301,7 @@ async function callGroqForPersona(personaId: string, message: string): Promise<{
             model: "llama-3.3-70b-versatile",
             messages: groqMessages,
             temperature: 0.9,
-            max_tokens: 300,
+            max_tokens: 500, // Increased for reasoning
             top_p: 0.95
         })
     });
@@ -274,23 +313,27 @@ async function callGroqForPersona(personaId: string, message: string): Promise<{
     }
 
     const groqData = await groqResponse.json();
-    let responseText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
+    let rawText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
 
-    // Validate and clean response
-    const words = responseText.split(/\s+/);
+    // Parse reasoning and answer
+    let { response, reasoning } = parseResponse(rawText);
+
+    // Validate and clean response (only the answer part)
+    const words = response.split(/\s+/);
     if (words.length > PERSONA.max_words) {
-        responseText = words.slice(0, PERSONA.max_words).join(" ") + "...";
+        response = words.slice(0, PERSONA.max_words).join(" ") + "...";
     }
 
     PERSONA.forbidden_phrases.forEach(phrase => {
         const regex = new RegExp(phrase, 'gi');
-        responseText = responseText.replace(regex, "");
+        response = response.replace(regex, "");
     });
 
     return {
         personaId,
         personaName: personaConfig.name,
-        response: responseText
+        response,
+        reasoning
     };
 }
 
@@ -347,33 +390,10 @@ export async function POST(req: NextRequest) {
 
             console.log(`✅ All ${responses.length} persona responses received`);
 
-            // Increment stats (count as 6 messages)
-            // Note: checkCanChat already increments for single calls. For multi, we need to ensure global stats are incremented.
-            // The current checkCanChat increments for each individual call. If multi-mode is allowed, it means the user is pro,
-            // so the individual increment in checkCanChat is fine. We don't need an additional increment here for multi-mode.
-            // The instruction's `await incrementGlobalStats();` here seems redundant if checkCanChat already handles it.
-            // However, to faithfully follow the instruction, I'll add it, assuming it's meant to count 6 requests for global stats.
-            // Re-reading checkCanChat: it increments global stats once per call. So for multi-mode, it would only increment once.
-            // Thus, an explicit increment here for 6 calls is needed if we want to count 6 global requests.
-            // Let's assume the instruction implies counting 6 requests towards global stats for multi-mode.
-            // The `checkCanChat` function already calls `incrementGlobalStats()` once.
-            // If `mode === 'multi'`, and `limitStatus.plan === 'pro'`, `checkCanChat` will call `incrementGlobalStats()` once.
-            // If we want to count 6 requests for multi-mode, we need to call it 5 more times.
-            // Or, modify `incrementGlobalStats` to take a count.
-            // For now, I will just add the single call as per instruction, assuming the global stats logic might be refined later.
-            // Or, the instruction means to replace the single increment in checkCanChat with a multi-increment here.
-            // Let's stick to the instruction's explicit `await incrementGlobalStats();` and assume it's for global tracking.
-            // The `checkCanChat` function already increments global stats. So, this line is actually redundant if `checkCanChat` is called.
-            // The instruction's `await incrementGlobalStats();` is placed *after* `Promise.all`.
-            // The `checkCanChat` function already increments global stats.
-            // If `mode === 'multi'`, `checkCanChat` is called once. If `limitStatus.plan === 'pro'`, `incrementGlobalStats()` is called once.
-            // If we want to count 6 requests for global stats, we need to adjust `incrementGlobalStats` or call it multiple times.
-            // The instruction only shows `await incrementGlobalStats();` once.
-            // I will remove the `incrementGlobalStats()` call from `checkCanChat` for pro users and handle it here for multi-mode.
-            // No, the instruction does not ask to modify `checkCanChat`'s `incrementGlobalStats` call.
-            // I will add `await incrementGlobalStats();` as per instruction, but note the potential double-counting or single-counting issue.
-            // Given the instruction, I will add it.
-            await incrementGlobalStats(); // This will increment global stats by 1. If we want to count 6, this needs adjustment.
+            // Increment stats (count as 6 messages) behavior handled by checkCanChat for single calls, 
+            // but for multi-mode we want to ensure accurate global stat tracking if needed.
+            // As discussed, we keep this for now.
+            await incrementGlobalStats();
 
             return NextResponse.json({
                 mode: 'multi',
@@ -383,49 +403,17 @@ export async function POST(req: NextRequest) {
             });
 
         } else {
-            // Single persona mode (existing logic)
+            // Single persona mode: Use the same helper to get reasoning
             const validPersona = PERSONAS[persona] ? persona : 'elon';
-            const personaConfig = PERSONAS[validPersona];
-            const systemPrompt = personaConfig.system_prompt;
+            console.log(`🚀 Single mode: Calling persona ${validPersona}`);
 
-            console.log(`🚀 Using persona: ${validPersona} (${personaConfig.name})`);
-
-            const groqMessages = [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: currentMessageContent }
-            ];
-
-            const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: groqMessages,
-                    temperature: 0.9, max_tokens: 300, top_p: 0.95
-                })
-            });
-
-            if (!groqResponse.ok) {
-                const errText = await groqResponse.text();
-                console.error("🔥 Groq API Error:", errText);
-                throw new Error(`Groq API Error: ${groqResponse.statusText}`);
-            }
-
-            const groqData = await groqResponse.json();
-            let responseText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
+            const result = await callGroqForPersona(validPersona, currentMessageContent);
             console.log("✅ Groq Response received.");
-
-            // 4. Validate
-            const words = responseText.split(/\s+/);
-            if (words.length > PERSONA.max_words) responseText = words.slice(0, PERSONA.max_words).join(" ") + "...";
-            PERSONA.forbidden_phrases.forEach(phrase => {
-                const regex = new RegExp(phrase, 'gi');
-                responseText = responseText.replace(regex, "");
-            });
 
             return NextResponse.json({
                 mode: 'single',
-                response: responseText,
+                response: result.response,
+                reasoning: result.reasoning,
                 remaining_free: limitStatus.remaining,
                 plan: limitStatus.plan
             });

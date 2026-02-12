@@ -16,6 +16,7 @@ import Link from 'next/link';
 import posthog from 'posthog-js';
 import { getPersonaById } from '@/lib/personas';
 import { MultiPersonaView } from './MultiPersonaView';
+import { ReasoningAccordion } from './ReasoningAccordion';
 import { PersonaResponse } from '@/types/chat';
 
 // Simple Toast Component
@@ -54,6 +55,7 @@ export function Chat() {
     const [showPaywall, setShowPaywall] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [remaining, setRemaining] = useState<number>(10);
+    const [plan, setPlan] = useState<string>('free');
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
     const [mode, setMode] = useState<'single' | 'multi'>('single');
@@ -76,6 +78,7 @@ export function Chat() {
         if (searchParams.get('payment') === 'success') {
             posthog.capture('payment_success', { plan: 'founding_99' });
             setRemaining(9999);
+            setPlan('pro');
             setShowPaywall(false);
             setToastMessage("Payment Successful! You are now a Founding Member.");
             // Optional: Clean URL
@@ -135,13 +138,19 @@ export function Chat() {
                 setMessages(prev => [...prev, summaryMsg]);
             } else if (data.response) {
                 // Single persona mode: Display single response
-                const aiMsg: Message = { role: 'assistant', content: data.response };
+                const aiMsg: Message = {
+                    role: 'assistant',
+                    content: data.response,
+                    reasoning: data.reasoning // Capture reasoning
+                };
                 setMessages(prev => [...prev, aiMsg]);
                 setMultiPersonaResponses(null);
             }
 
             if (data.remaining_free !== undefined) {
                 setRemaining(data.remaining_free);
+                if (data.plan) setPlan(data.plan);
+
                 if (data.remaining_free === 0) {
                     // Logic: Limit Reached after this message.
                     setTimeout(() => {
@@ -383,6 +392,17 @@ export function Chat() {
                                             {msg.role === 'user' ? 'You' : 'Persona AI'}
                                         </p>
                                         <div className="whitespace-pre-wrap">{msg.content}</div>
+
+                                        {/* Reasoning Display for Single Mode */}
+                                        {msg.reasoning && (
+                                            <div className="mt-2 pt-2 border-t border-white/10">
+                                                <ReasoningAccordion
+                                                    reasoning={msg.reasoning}
+                                                    isPremium={plan === 'pro' || remaining > 20} // Simple check
+                                                    onUnlock={() => setShowPaywall(true)}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
                             ))}
