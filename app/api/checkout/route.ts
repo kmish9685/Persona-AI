@@ -3,7 +3,7 @@ import { Polar } from '@polar-sh/sdk';
 
 const polar = new Polar({
     accessToken: process.env.POLAR_ACCESS_TOKEN,
-    server: 'sandbox', // Use 'production' in production
+    server: 'production', // Switched to production as 401 usually means token/env mismatch
 });
 
 export async function GET(request: NextRequest) {
