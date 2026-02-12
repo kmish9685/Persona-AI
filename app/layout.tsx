@@ -14,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
-  description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
+  title: "Persona AI - Stop Chatting. Start Deciding.",
+  description: "GPTs give you options. Persona AI gives you answers. Simulate the minds of Musk, Naval, and Graham to make better decisions.",
   openGraph: {
-    title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
-    description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
+    title: "Persona AI - Stop Chatting. Start Deciding.",
+    description: "GPTs give you options. Persona AI gives you answers. Simulate the minds of Musk, Naval, and Graham to make better decisions.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
-    description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
+    title: "Persona AI - Stop Chatting. Start Deciding.",
+    description: "GPTs give you options. Persona AI gives you answers. Simulate the minds of Musk, Naval, and Graham to make better decisions.",
   },
   icons: {
     icon: '/logo.png',
