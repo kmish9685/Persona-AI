@@ -1,6 +1,28 @@
-import { Checkout } from '@polar-sh/nextjs';
+import { type NextRequest, NextResponse } from 'next/server';
+import { Polar } from '@polar-sh/sdk';
 
-export const GET = Checkout({
+const polar = new Polar({
     accessToken: process.env.POLAR_ACCESS_TOKEN,
-    successUrl: process.env.POLAR_SUCCESS_URL,
+    server: 'sandbox', // Use 'production' in production, or let SDK handle defaults. Usually defaults to production.
 });
+
+export async function GET(request: NextRequest) {
+    const searchParams = request.nextUrl.searchParams;
+    const priceId = searchParams.get('priceId');
+
+    if (!priceId) {
+        return new NextResponse('Missing priceId', { status: 400 });
+    }
+
+    try {
+        const result = await polar.checkouts.create({
+            productPriceId: priceId,
+            successUrl: `${request.nextUrl.origin}/chat?upgrade=true&success=true`,
+        });
+
+        return NextResponse.redirect(result.url);
+    } catch (error) {
+        console.error('Polar Checkout Error:', error);
+        return new NextResponse('Checkout failed', { status: 500 });
+    }
+}
