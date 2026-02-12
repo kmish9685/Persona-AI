@@ -21,12 +21,12 @@ export const PRICING_CONFIG = {
         symbol: '$',
         plans: {
             monthly: {
-                link: 'https://buy.polar.sh/polar_cl_xxx_monthly', // User to update
+                link: 'https://buy.polar.sh/checkout/4eae0341-7769-41ac-931d-e4b80f9f469a', // Direct checkout link for Monthly
                 label: '$4.99',
                 period: '/mo'
             },
             annual: {
-                link: 'https://buy.polar.sh/polar_cl_xxx_annual', // User to update
+                link: 'https://buy.polar.sh/checkout/d0f35be5-5956-4b66-8a87-903e8a320c28', // Direct checkout link for Annual
                 label: '$39',
                 period: '/yr',
                 savings: 'Save 35%'
