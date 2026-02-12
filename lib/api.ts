@@ -5,7 +5,8 @@ const API_URL = '/api';
 export async function sendMessage(
     message: string,
     persona: string = 'elon',
-    mode: 'single' | 'multi' = 'single'
+    mode: 'single' | 'multi' = 'single',
+    history: { role: string; content: string }[] = []
 ): Promise<ChatResponse> {
     const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
@@ -13,13 +14,14 @@ export async function sendMessage(
         body: JSON.stringify({
             message,
             persona,
-            mode
+            mode,
+            history
         }),
     });
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to send message');
+        throw error; // Throw full error object (contains waitTime)
     }
 
     return response.json();

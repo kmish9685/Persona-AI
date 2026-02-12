@@ -105,7 +105,7 @@ export function Chat() {
             // If try to send when remaining is 0 (and button disabled, but just in case)
             if (remaining === 0) {
                 if (!user) {
-                    openSignIn({ redirectUrl: '/chat' });
+                    router.push('/login');
                 } else {
                     setShowPaywall(true);
                 }
@@ -125,7 +125,13 @@ export function Chat() {
 
         const updatedMessages = [...messages, userMsg];
         try {
-            const data = await sendMessage(input, personaId, mode);
+            // Prepare history (last 10 messages context)
+            const history = messages.slice(-10).map(m => ({
+                role: m.role,
+                content: m.content
+            }));
+
+            const data = await sendMessage(input, personaId, mode, history);
 
             if (data.mode === 'multi' && data.responses) {
                 // Multi-persona mode: Display all responses
@@ -153,21 +159,29 @@ export function Chat() {
 
                 if (data.remaining_free === 0) {
                     // Logic: Limit Reached after this message.
+                    setToastMessage("Daily limit reached. Resets in 24 hours.");
                     setTimeout(() => {
                         if (!user) {
                             // 1. Force Login first
-                            openSignIn({ redirectUrl: '/chat' });
+                            router.push('/login');
                         } else {
-                            // 2. If already logged in, show Paywall
                             setShowPaywall(true);
                         }
-                    }, 1000);
+                    }, 2000); // Give them 2s to see the toast
                 }
             }
-        } catch (error) {
-            // On error (likely 402), check login status
+        } catch (error: any) {
+            // Check if error contains waitTime
+            const waitTime = error.waitTime;
+
+            if (waitTime) {
+                setToastMessage(`Daily limit reached. Resets in ${waitTime} hours.`);
+            } else {
+                setToastMessage("Limit reached. Upgrade for unlimited access.");
+            }
+
             if (!user) {
-                openSignIn({ redirectUrl: '/chat' });
+                router.push('/login');
             } else {
                 setShowPaywall(true);
             }
@@ -285,7 +299,7 @@ export function Chat() {
                                             <Menu.Item>
                                                 {({ active }) => (
                                                     <button
-                                                        onClick={() => openSignIn({ redirectUrl: '/chat' })}
+                                                        onClick={() => router.push('/login')}
                                                         className={clsx(
                                                             "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors flex items-center gap-2 mt-1",
                                                             active ? "bg-zinc-800 text-white" : "text-zinc-400"

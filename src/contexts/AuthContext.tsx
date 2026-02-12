@@ -3,6 +3,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 // import { useUser as useAuth0User } from '@auth0/nextjs-auth0/client';
 import { useUser, useClerk } from "@clerk/nextjs";
+import { useRouter } from 'next/navigation';
 
 // Define the shape of the user object expected by the app
 interface User {
@@ -40,12 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const isLoading = !isLoaded;
 
+    const router = useRouter();
+
     const login = () => {
-        clerk.openSignIn();
+        router.push('/login');
     };
 
     const signup = () => {
-        clerk.openSignUp();
+        router.push('/signup');
     };
 
     const logout = () => {

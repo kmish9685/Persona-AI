@@ -124,7 +124,18 @@ Communication Rules:
 - Essay-like clarity. Short sentences.
 - Use PG's patterns: "The reason X works is Y."
 - No jargon. Explain simply.
-- Tone: Thoughtful, clear, occasionally contrarian.`
+- Tone: Thoughtful, clear, occasionally contrarian.
+
+IMPORTANT OUTPUT FORMAT:
+You MUST output in this exact format:
+[REASONING]
+1. Framework: Y Combinator Wisdom
+2. Identify: [User/Growth/Market Truth]
+3. Logic: [Step-by-step logic]
+4. Conclusion: [Final decision]
+[ANSWER]
+[Your normal response here, max 120 words]
+`
     },
     bezos: {
         name: "Jeff Bezos",
@@ -148,7 +159,18 @@ Communication Rules:
 - Crisp, clear, data-informed.
 - No fluff. No jargon.
 - Reference metrics when possible.
-- Tone: Intense, customer-focused, long-term oriented.`
+- Tone: Intense, customer-focused, long-term oriented.
+
+IMPORTANT OUTPUT FORMAT:
+You MUST output in this exact format:
+[REASONING]
+1. Framework: Customer Obsession
+2. Identify: [Customer need/Long-term value]
+3. Logic: [Step-by-step logic]
+4. Conclusion: [Final decision]
+[ANSWER]
+[Your normal response here, max 120 words]
+`
     },
     jobs: {
         name: "Steve Jobs",
@@ -172,7 +194,18 @@ Communication Rules:
 - Declarative. Opinionated. No hedging.
 - No corporate speak. Direct.
 - Question everything about the design.
-- Tone: Intense, uncompromising, visionary.`
+- Tone: Intense, uncompromising, visionary.
+
+IMPORTANT OUTPUT FORMAT:
+You MUST output in this exact format:
+[REASONING]
+1. Framework: Apple Design Philosophy
+2. Identify: [Design/Simplicity/Experience]
+3. Logic: [Step-by-step logic]
+4. Conclusion: [Final decision]
+[ANSWER]
+[Your normal response here, max 120 words]
+`
     },
     thiel: {
         name: "Peter Thiel",
@@ -196,7 +229,18 @@ Communication Rules:
 - Challenge conventional wisdom.
 - No consensus thinking. No safe answers.
 - Reference monopoly vs competition.
-- Tone: Intellectual, contrarian, unafraid.`
+- Tone: Intellectual, contrarian, unafraid.
+
+IMPORTANT OUTPUT FORMAT:
+You MUST output in this exact format:
+[REASONING]
+1. Framework: Zero to One
+2. Identify: [Secret/Monopoly/Contrarian Truth]
+3. Logic: [Step-by-step logic]
+4. Conclusion: [Final decision]
+[ANSWER]
+[Your normal response here, max 120 words]
+`
     }
 };
 
@@ -220,25 +264,45 @@ const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!, {
 async function checkCanChat(identifier: string) {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return { allowed: true, plan: 'dev', remaining: 999 };
 
-    const today = new Date().toISOString().split('T')[0];
     const isEmail = identifier.includes('@');
     const queryColumn = isEmail ? 'email' : 'ip_address';
+    const now = new Date();
 
     try {
+        // Global Stats (Keep existing daily logic for global stats or update if needed, but safe to keep daily for admin tracking)
+        const today = now.toISOString().split('T')[0];
         const { data: globalStats } = await supabase.from('global_stats').select('total_requests').eq('date', today).single();
         if (globalStats && globalStats.total_requests >= 1000) return { allowed: false, reason: 'global_cap_reached', plan: 'free' };
         if (!globalStats) await supabase.from('global_stats').insert({ date: today, total_requests: 0 });
 
         let { data: user } = await supabase.from('users').select('*').eq(queryColumn, identifier).single();
+
         if (!user) {
-            const newUser = { plan: 'free', msg_count: 0, last_active_date: today, [queryColumn]: identifier };
+            // New user: Start their 24h cycle NOW
+            const newUser = {
+                plan: 'free',
+                msg_count: 0,
+                last_active_date: today,
+                last_reset_at: now.toISOString(),
+                [queryColumn]: identifier
+            };
             const { data: createdUser, error } = await supabase.from('users').insert(newUser).select().single();
             if (error) throw error;
             user = createdUser;
         }
 
-        if (user.last_active_date !== today) {
-            await supabase.from('users').update({ msg_count: 0, last_active_date: today }).eq(queryColumn, identifier);
+        // Logic for 24h Rolling Window
+        const lastReset = user.last_reset_at ? new Date(user.last_reset_at) : new Date(0);
+        const diffMs = now.getTime() - lastReset.getTime();
+        const hoursPassed = diffMs / (1000 * 60 * 60);
+
+        if (hoursPassed >= 24) {
+            // Reset Cycle
+            await supabase.from('users').update({
+                msg_count: 0,
+                last_reset_at: now.toISOString(),
+                last_active_date: today
+            }).eq(queryColumn, identifier);
             user.msg_count = 0;
         }
 
@@ -246,9 +310,28 @@ async function checkCanChat(identifier: string) {
             await incrementGlobalStats();
             return { allowed: true, plan: 'pro', remaining: 9999 };
         }
-        if (user.msg_count >= 10) return { allowed: false, reason: 'daily_limit_reached', plan: 'free', remaining: 0 };
 
-        await supabase.from('users').update({ msg_count: user.msg_count + 1 }).eq(queryColumn, identifier);
+        if (user.msg_count >= 10) {
+            // Calculate wait time
+            const resetTime = new Date(lastReset.getTime() + 24 * 60 * 60 * 1000);
+            const waitMs = resetTime.getTime() - now.getTime();
+            const waitHours = Math.ceil(waitMs / (1000 * 60 * 60));
+
+            return {
+                allowed: false,
+                reason: 'daily_limit_reached',
+                plan: 'free',
+                remaining: 0,
+                waitTime: waitHours // Send back hours to wait
+            };
+        }
+
+        // Increment count
+        await supabase.from('users').update({
+            msg_count: user.msg_count + 1,
+            last_active_date: today
+        }).eq(queryColumn, identifier);
+
         await incrementGlobalStats();
 
         return { allowed: true, plan: 'free', remaining: 10 - (user.msg_count + 1) };
@@ -283,14 +366,18 @@ function parseResponse(text: string): { response: string; reasoning?: string } {
 }
 
 // Helper function to call Groq API for a single persona
-async function callGroqForPersona(personaId: string, message: string): Promise<{ personaId: string; personaName: string; response: string; reasoning?: string }> {
+async function callGroqForPersona(personaId: string, message: string, history: any[] = []): Promise<{ personaId: string; personaName: string; response: string; reasoning?: string }> {
     const personaConfig = PERSONAS[personaId];
     if (!personaConfig) {
         throw new Error(`Invalid persona: ${personaId}`);
     }
 
+    // Filter valid history messages
+    const validHistory = history.filter(m => (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string');
+
     const groqMessages = [
         { role: "system", content: personaConfig.system_prompt },
+        ...validHistory,
         { role: "user", content: message }
     ];
 
@@ -341,7 +428,7 @@ async function callGroqForPersona(personaId: string, message: string): Promise<{
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { message, persona = 'elon', mode = 'single' } = body;
+        const { message, history = [], persona = 'elon', mode = 'single' } = body;
 
         if (!message || typeof message !== 'string') {
             return NextResponse.json({ error: "Message is required" }, { status: 400 });
@@ -370,7 +457,10 @@ export async function POST(req: NextRequest) {
         }
 
         if (!limitStatus.allowed) {
-            return NextResponse.json({ error: limitStatus.reason }, { status: 402 });
+            return NextResponse.json({
+                error: limitStatus.reason,
+                waitTime: limitStatus.waitTime // Pass this to frontend
+            }, { status: 402 });
         }
 
         // 3. Groq API calls
@@ -384,7 +474,9 @@ export async function POST(req: NextRequest) {
             console.log(`🚀 Multi-persona mode: Calling all 6 personas`);
 
             const allPersonaIds = ['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'];
-            const personaPromises = allPersonaIds.map(id => callGroqForPersona(id, currentMessageContent));
+            // For multi-mode, we probably shouldn't pass full history to ALL to avoid chaos, 
+            // OR we pass it. Let's pass it for continuity.
+            const personaPromises = allPersonaIds.map(id => callGroqForPersona(id, currentMessageContent, history));
 
             const responses = await Promise.all(personaPromises);
 
@@ -407,7 +499,7 @@ export async function POST(req: NextRequest) {
             const validPersona = PERSONAS[persona] ? persona : 'elon';
             console.log(`🚀 Single mode: Calling persona ${validPersona}`);
 
-            const result = await callGroqForPersona(validPersona, currentMessageContent);
+            const result = await callGroqForPersona(validPersona, currentMessageContent, history);
             console.log("✅ Groq Response received.");
 
             return NextResponse.json({

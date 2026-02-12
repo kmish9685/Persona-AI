@@ -66,11 +66,8 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
     async function handleRazorpayUpgrade() {
         if (!user) {
-            openSignIn({
-                afterSignInUrl: '/chat?upgrade=true',
-                afterSignUpUrl: '/chat?upgrade=true',
-                redirectUrl: '/chat?upgrade=true'
-            });
+            // Redirect to login with proper return URL
+            window.location.href = '/login?redirect_url=' + encodeURIComponent('/chat?upgrade=true');
             return;
         }
 
