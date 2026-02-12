@@ -22,7 +22,7 @@ export default function ContactPage() {
 
                         <div className="flex items-center gap-6">
                             <Link href="/about" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">About</Link>
-                            <Link href="/pricing" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">Pricing</Link>
+                            <Link href="/#pricing" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">Pricing</Link>
                             <Link
                                 href="/chat"
                                 className="px-5 py-2 text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-full transition-all backdrop-blur-md"

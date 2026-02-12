@@ -216,7 +216,7 @@ function LandingPageContent() {
       </section>
 
       {/* 4. Pricing / Features */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
+      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Founding Membership</h2>
           <div className="inline-block bg-orange-500/10 text-orange-400 px-4 py-1.5 rounded-full text-sm font-medium mb-10 border border-orange-500/20">

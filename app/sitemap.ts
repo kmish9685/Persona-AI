@@ -21,12 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: 'always',
             priority: 0.8,
         },
-        {
-            url: `${domain}/pricing`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly',
-            priority: 0.8,
-        },
+
         {
             url: `${domain}/how-it-works`,
             lastModified: new Date(),
