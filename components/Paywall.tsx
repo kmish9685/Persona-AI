@@ -267,13 +267,28 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <div className="flex items-baseline gap-1 justify-end">
-                                                <p className="text-4xl font-bold text-white tracking-tighter">
-                                                    {planDetails.label}
-                                                </p>
-                                                <p className="text-xs text-zinc-500 font-medium">{planDetails.period}</p>
+                                            <div className="flex flex-col items-end">
+                                                {billingCycle === 'annual' ? (
+                                                    <>
+                                                        <div className="flex items-baseline gap-1">
+                                                            <p className="text-4xl font-bold text-white tracking-tighter">
+                                                                {isIndia ? '₹83' : '$3.25'}
+                                                            </p>
+                                                            <p className="text-xs text-zinc-500 font-medium">/mo</p>
+                                                        </div>
+                                                        <p className="text-sm text-zinc-400 font-medium mt-1">
+                                                            {isIndia ? '₹999' : '$39'} <span className="text-xs opacity-70">/ year</span>
+                                                        </p>
+                                                    </>
+                                                ) : (
+                                                    <div className="flex items-baseline gap-1">
+                                                        <p className="text-4xl font-bold text-white tracking-tighter">
+                                                            {planDetails.label}
+                                                        </p>
+                                                        <p className="text-xs text-zinc-500 font-medium">{planDetails.period}</p>
+                                                    </div>
+                                                )}
                                             </div>
-                                            {/* Show monthly equivalent for annual plans if helpful, for now just simple price */}
                                         </div>
                                     </div>
 
@@ -305,7 +320,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                             {loading ? 'Processing...' : (
                                                 <>
                                                     <Zap size={18} className="fill-black/20" />
-                                                    Pay {planDetails.label} via Razorpay
+                                                    {billingCycle === 'annual' ?
+                                                        `Start for ${isIndia ? '₹83' : '$3.25'}/mo` :
+                                                        `Pay ${planDetails.label} via Razorpay`
+                                                    }
                                                 </>
                                             )}
                                         </button>
@@ -317,7 +335,10 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                             className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
                                         >
                                             <Zap size={18} className="fill-black/20" />
-                                            Pay {planDetails.label} via Polar
+                                            {billingCycle === 'annual' ?
+                                                `Start for ${isIndia ? '₹83' : '$3.25'}/mo` :
+                                                `Pay ${planDetails.label} via Polar`
+                                            }
                                         </a>
                                     )}
                                 </div>
