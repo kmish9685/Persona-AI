@@ -17,8 +17,8 @@ function LandingPageContent() {
       answer: "No. The Founding Membership is a lifetime price lock, but it is non-refundable. We prioritize committed users."
     },
     {
-      question: "How is this different from ChatGPT?",
-      answer: "ChatGPT is trained to be safe, polite, and generic. Persona AI is fine-tuned to be brutal, opinionated, and first-principles driven. It doesn't hedge."
+      question: "Why not just use GPTs?",
+      answer: "GPTs are trained to be safe and give you options. Persona AI is fine-tuned to be brutal, opinionated, and first-principles driven. It doesn't hedge."
     },
     {
       question: "Will you add more personas?",
@@ -26,181 +26,145 @@ function LandingPageContent() {
     }
   ];
 
-  const useCases = [
+  const features = [
     {
-      icon: <Target className="w-6 h-6 text-white" />,
-      title: "Startup Founders",
-      desc: "Get your pitch deck ripped apart before a VC does. Validate risky ideas fast."
+      icon: <Target className="w-5 h-5 text-orange-500" />,
+      title: "First Principles Logic",
+      desc: "No analogies. Just physics and economics."
     },
     {
-      icon: <Rocket className="w-6 h-6 text-white" />,
-      title: "Product Builders",
-      desc: "Stop building features nobody wants. Get a brutal reality check on your roadmap."
+      icon: <Rocket className="w-5 h-5 text-blue-500" />,
+      title: "Leverage Optimization",
+      desc: "Identify high-leverage activities instantly."
     },
     {
-      icon: <Briefcase className="w-6 h-6 text-white" />,
-      title: "Career Pivots",
-      desc: "Thinking of quitting?Get the cold, hard advice your friends are too polite to give."
+      icon: <Briefcase className="w-5 h-5 text-purple-500" />,
+      title: "Founder Psychology",
+      desc: "Y-Combinator style brutal feedback."
     }
   ];
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-white/30 overflow-x-hidden">
-      {/* Background Decor - Subtle & Premium */}
+      {/* Background Decor */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[20%] w-[60%] h-[60%] bg-gradient-to-b from-white/5 to-transparent rounded-full blur-[120px]" />
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-b from-white/5 to-transparent rounded-full blur-[120px]" />
       </div>
 
       {/* Header */}
       <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-lg" />
               <span className="font-bold text-lg tracking-tight text-white">Persona AI</span>
             </Link>
 
-            {/* Desktop Nav */}
             <div className="flex items-center gap-6">
               <Link href="/about" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                About
+                Mission
               </Link>
-
-              {/* Glass Button - Minimal */}
               <Link
                 href="/personas"
-                className="px-5 py-2 text-sm font-medium bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-full transition-all backdrop-blur-md"
+                className="px-5 py-2 text-sm font-medium bg-white text-black hover:bg-gray-200 rounded-full transition-all"
               >
-                Start Now
+                Start Deciding
               </Link>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* 1. Hero Section: Answers > Options */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center animate-slide-up">
-        <div className="max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 sm:mb-10 backdrop-blur-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">Online & Ready to Roast</span>
+        <div className="max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">Reasoning Engine v2.0 Live</span>
           </div>
 
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold leading-tight mb-8 tracking-tighter text-white">
-            Talk to Famous Minds.
+            Stop Chatting.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-white to-blue-400">
+              Start Deciding.
+            </span>
           </h1>
 
-          <div className="flex flex-col gap-2 mb-12 max-w-2xl mx-auto">
-            <p className="text-lg sm:text-xl text-zinc-400 leading-relaxed font-normal">
-              AI personas that think like real professionals behind closed doors.
-            </p>
-            <p className="text-lg sm:text-xl text-white font-medium">
-              Blunt. Experienced. Unfiltered.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center gap-5">
-            {/* Glass Button - Hero */}
-            <Link
-              href="/personas"
-              className="
-                group relative inline-flex items-center justify-center px-8 py-4 
-                bg-white/5 border border-white/10 hover:bg-white/10 text-white 
-                font-medium rounded-full text-lg
-                transition-all duration-200 backdrop-blur-md
-                hover:scale-105 active:scale-95
-                "
-            >
-              Start Chatting Free
-              <ArrowRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
-            </Link>
-
-            <p className="text-sm text-zinc-500 font-medium">
-              10 free messages/day • No credit card required
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Use Cases Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-20 bg-black border-y border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {useCases.map((item, idx) => (
-              <div key={idx} className="bg-[#0A0A0A] border border-white/5 hover:border-white/10 p-6 rounded-2xl transition-colors group">
-                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/10 transition-colors">
-                  {item.icon}
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Comparison Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505]">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-5xl font-bold text-center mb-4 text-white tracking-tight">
-            Same Question.
-          </h2>
-          <p className="text-xl sm:text-2xl text-zinc-500 text-center mb-16 font-medium">
-            Different Answer.
+          <p className="text-xl sm:text-2xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            GPTs give you options. Persona AI gives you answers.
+            <br className="hidden sm:block" />
+            Simulate the minds of Musk, Naval, and Graham.
           </p>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Other AI Card - Fixed Visibility */}
-            {/* Removed opacity-60/grayscale to make it visible but distinct */}
-            <div className="group bg-[#080808] border border-white/5 rounded-3xl p-6 md:p-8 flex flex-col gap-6 transition-colors">
-              <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                <div className="p-2 rounded-lg bg-zinc-900 text-zinc-500"><X size={18} /></div>
-                <h3 className="font-bold text-zinc-600 tracking-wider text-sm uppercase">Standard AI</h3>
-              </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/personas"
+              className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
+            >
+              Get Decisions (Free)
+            </Link>
+            <Link
+              href="#proof"
+              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium text-lg rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
+            >
+              See the Difference
+            </Link>
+          </div>
+        </div>
+      </section>
 
-              <div className="space-y-6">
-                <div className="flex justify-end">
-                  <div className="bg-zinc-900 text-zinc-500 rounded-2xl px-5 py-3 max-w-[90%] text-sm border border-white/5">
-                    Should I add more features?
-                  </div>
+      {/* 2. Proof Section: The Comparison */}
+      <section id="proof" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">The "Waffle" vs. The Answer</h2>
+            <p className="text-zinc-500">Why top founders stopped using standard ChatGPT.</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Standard AI */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-zinc-900 rounded-lg"><X size={20} className="text-zinc-500" /></div>
+                <h3 className="font-bold text-zinc-500">STANDARD AI</h3>
+              </div>
+              <div className="space-y-4">
+                <div className="bg-zinc-900 p-4 rounded-xl rounded-tr-none border border-white/5 text-sm text-zinc-400">
+                  Should I raise VC funding?
                 </div>
-                <div className="flex justify-start">
-                  <div className="bg-zinc-900/50 rounded-2xl p-5 max-w-[90%] border border-white/5">
-                    <p className="text-sm text-zinc-500 leading-relaxed italic">
-                      "Well, it depends on your situation. You might want to consider user feedback, market validation, and..."
-                    </p>
-                  </div>
+                <div className="bg-zinc-900/50 p-6 rounded-xl rounded-tl-none border border-white/5 text-sm leading-relaxed text-zinc-500">
+                  "Raising venture capital is a complex decision. There are pros and cons. On one hand, you get capital. On the other, you lose equity. Consider your market size, growth trajectory..."
                 </div>
               </div>
             </div>
 
-            {/* Persona AI Card - Highlighted */}
-            <div className="relative group bg-[#0A0A0A] border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_0_60px_rgba(255,255,255,0.03)] hover:border-white/20 transition-all">
-              <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                <div className="p-2 rounded-lg bg-white text-black"><Check size={18} /></div>
-                <h3 className="font-bold text-white tracking-wider text-sm uppercase">Persona AI</h3>
+            {/* Persona AI */}
+            <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-orange-500/10">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-purple-600"></div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-white rounded-lg"><Check size={20} className="text-black" /></div>
+                <h3 className="font-bold text-white">PERSONA AI (Naval Mode)</h3>
               </div>
-
-              <div className="space-y-6">
-                <div className="flex justify-end">
-                  <div className="bg-zinc-800/50 text-white rounded-2xl px-5 py-3 max-w-[90%] text-sm border border-white/5">
-                    Should I add more features?
-                  </div>
+              <div className="space-y-4">
+                <div className="bg-zinc-800 p-4 rounded-xl rounded-tr-none text-sm text-white inline-block">
+                  Should I raise VC funding?
+                </div>
+                <div className="bg-[#111] p-6 rounded-xl rounded-tl-none border-l-2 border-blue-500 text-sm leading-relaxed text-gray-200">
+                  "If you can grow without it, do not raise. Capital is not the scarce resource; specific knowledge is. Raising money is selling future freedom. Only raise if you are pouring fuel on a fire that is already burning."
                 </div>
 
-                <div className="flex justify-start">
-                  <div className="relative bg-[#111] rounded-2xl p-5 max-w-[90%] border-l-2 border-white overflow-hidden">
-                    <p className="text-[10px] text-zinc-400 mb-2 font-bold uppercase tracking-wider">ELON MODE</p>
-                    <p className="text-sm text-white leading-relaxed font-medium">
-                      "No. Ship what you have today. Features before users = death.
-                      Get 10 paying customers, then add features they demand."
-                    </p>
+                {/* Reasoning Component Showcase */}
+                <div className="mt-4 border border-white/10 rounded-lg overflow-hidden">
+                  <div className="bg-zinc-900/80 px-4 py-2 flex items-center justify-between border-b border-white/5">
+                    <div className="flex items-center gap-2 text-xs font-medium text-orange-400">
+                      <Target size={12} />
+                      <span>Reasoning Analysis</span>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-black/50 text-xs font-mono text-zinc-400 space-y-2">
+                    <p><span className="text-zinc-500">Framework:</span> Leverage Optimization</p>
+                    <p><span className="text-zinc-500">Logic:</span> Capital = permissionless leverage, but Equity = expensive cost.</p>
+                    <p><span className="text-zinc-500">Conclusion:</span> Bootstrapping provides higher long-term agency.</p>
                   </div>
                 </div>
               </div>
@@ -209,71 +173,102 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* FAQ Section (Headless UI) */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black border-t border-white/5">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-white tracking-tight">
-            Start brutally honest.
-          </h2>
+      {/* 3. Multi-Persona Section */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
+            <div className="max-w-xl">
+              <h2 className="text-3xl sm:text-5xl font-bold mb-6">One Question.<br />Six Perspectives.</h2>
+              <p className="text-xl text-zinc-400 leading-relaxed mb-8">
+                Why settle for one generic answer? In <strong>Multi-Persona Mode</strong>, you get a war room of advisors instantly. Compare First Principles (Elon) against YC Logic (Paul Graham) in real-time.
+              </p>
+              <div className="flex gap-4">
+                <div className="flex -space-x-3">
+                  {['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'].map((id) => (
+                    <div key={id} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 overflow-hidden">
+                      <img src={`/personas/${id}.jpg`} alt={id} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-zinc-500 flex items-center">6 Minds working for you</span>
+              </div>
+            </div>
 
-          <div className="space-y-4">
-            {faqs.map((faq, idx) => (
-              <Disclosure key={idx} as="div" className="border border-white/10 rounded-xl overflow-hidden bg-[#0A0A0A] hover:bg-[#111] transition-colors">
-                {({ open }) => (
-                  <>
-                    <Disclosure.Button className="flex w-full justify-between items-center px-6 py-4 text-left text-sm font-medium text-white focus:outline-none">
-                      <span className="text-base font-normal">{faq.question}</span>
-                      <ChevronDown
-                        className={clsx("h-5 w-5 text-zinc-500 transition-transform duration-200", open ? "rotate-180" : "")}
-                      />
-                    </Disclosure.Button>
-                    <Transition
-                      enter="transition duration-100 ease-out"
-                      enterFrom="transform scale-95 opacity-0"
-                      enterTo="transform scale-100 opacity-100"
-                      leave="transition duration-75 ease-out"
-                      leaveFrom="transform scale-100 opacity-100"
-                      leaveTo="transform scale-95 opacity-0"
-                    >
-                      <Disclosure.Panel className="px-6 pb-6 pt-0 text-sm text-zinc-400 leading-relaxed border-t border-white/5 mt-2 pt-4">
-                        {faq.answer}
-                      </Disclosure.Panel>
-                    </Transition>
-                  </>
-                )}
-              </Disclosure>
-            ))}
+            {/* Grid Visual Representation */}
+            <div className="w-full max-w-lg aspect-[4/3] bg-zinc-900/50 rounded-2xl border border-white/10 p-4 grid grid-cols-2 gap-3 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
+              {/* Fake Cards */}
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="bg-black border border-white/5 rounded-lg p-3 opacity-50">
+                  <div className="w-8 h-8 rounded-full bg-zinc-800 mb-2"></div>
+                  <div className="h-2 w-3/4 bg-zinc-800 rounded mb-2"></div>
+                  <div className="h-2 w-1/2 bg-zinc-800 rounded"></div>
+                </div>
+              ))}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+                <Link href="/personas" className="px-6 py-3 bg-white text-black font-bold rounded-full shadow-lg hover:scale-105 transition-transform whitespace-nowrap">
+                  Try Multi-Persona Mode
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Pricing / Features */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">Founding Membership</h2>
+          <div className="inline-block bg-orange-500/10 text-orange-400 px-4 py-1.5 rounded-full text-sm font-medium mb-10 border border-orange-500/20">
+            Limited Time Price Lock
           </div>
 
-          <div className="mt-16 text-center">
-            {/* Glass Button - CTA */}
-            <Link
-              href="/personas"
-              className="
-                inline-flex items-center justify-center px-8 py-3 
-                bg-white/5 border border-white/10 hover:bg-white/10 text-white 
-                font-medium rounded-full text-base
-                transition-all duration-200 backdrop-blur-md
-                "
-            >
-              Get Started
+          <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Rocket size={100} />
+            </div>
+
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/5 pb-8">
+              <div className="text-left">
+                <div className="text-sm text-zinc-500 uppercase tracking-widest font-bold mb-1">Lifetime Deal</div>
+                <div className="text-5xl font-bold text-white">₹99<span className="text-lg text-zinc-500 font-normal">/mo</span></div>
+              </div>
+              <div className="text-left md:text-right">
+                <p className="text-zinc-400 text-sm">Usually ₹999/mo.</p>
+                <p className="text-emerald-400 text-sm font-medium">Early Adopters Only.</p>
+              </div>
+            </div>
+
+            <ul className="space-y-4 text-left mb-10">
+              <li className="flex items-center gap-3">
+                <Check className="text-white shrink-0" size={18} />
+                <span className="text-zinc-300"><strong>Unlimited Messages</strong> (vs 10/day)</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="text-orange-400 shrink-0" size={18} />
+                <span className="text-white">Access <strong>Multi-Persona Mode</strong></span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="text-orange-400 shrink-0" size={18} />
+                <span className="text-white">Unlock <strong>Reasoning Breakdown</strong></span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="text-white shrink-0" size={18} />
+                <span className="text-zinc-300">Access to all future personas (Sam, Trump)</span>
+              </li>
+            </ul>
+
+            <Link href="/personas?upgrade=true" className="block w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-gray-200 transition-colors">
+              Lock In ₹99/mo Price
             </Link>
+            <p className="mt-4 text-xs text-zinc-600">Cancel anytime. Non-refundable.</p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-black border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex flex-wrap justify-center gap-8 mb-8 text-sm text-zinc-500 font-medium">
-            <Link href="/about" className="hover:text-white transition-colors">About</Link>
-            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-          </div>
-          <p className="text-sm text-zinc-700">
-            © 2025 Persona AI • Built for First Principles Thinkers
-          </p>
-        </div>
+      <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm">
+        <p>&copy; 2025 Persona AI. Built for the reckless ones.</p>
       </footer>
     </div>
   );
