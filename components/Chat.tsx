@@ -15,6 +15,8 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import posthog from 'posthog-js';
 import { getPersonaById } from '@/lib/personas';
+import { MultiPersonaView } from './MultiPersonaView';
+import { PersonaResponse } from '@/types/chat';
 
 // Simple Toast Component
 function Toast({ message, onClose }: { message: string, onClose: () => void }) {
@@ -54,6 +56,8 @@ export function Chat() {
     const [remaining, setRemaining] = useState<number>(10);
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const [mode, setMode] = useState<'single' | 'multi'>('single');
+    const [multiPersonaResponses, setMultiPersonaResponses] = useState<PersonaResponse[] | null>(null);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -118,8 +122,23 @@ export function Chat() {
 
         const updatedMessages = [...messages, userMsg];
         try {
-            const data = await sendMessage(updatedMessages, personaId);
-            const aiMsg: Message = { role: 'assistant', content: data.response };
+            const data = await sendMessage(input, personaId, mode);
+
+            if (data.mode === 'multi' && data.responses) {
+                // Multi-persona mode: Display all responses
+                setMultiPersonaResponses(data.responses);
+                // Also add a summary message to chat
+                const summaryMsg: Message = {
+                    role: 'assistant',
+                    content: `Received responses from all 6 personas. See below for their perspectives.`
+                };
+                setMessages(prev => [...prev, summaryMsg]);
+            } else if (data.response) {
+                // Single persona mode: Display single response
+                const aiMsg: Message = { role: 'assistant', content: data.response };
+                setMessages(prev => [...prev, aiMsg]);
+                setMultiPersonaResponses(null);
+            }
 
             if (data.remaining_free !== undefined) {
                 setRemaining(data.remaining_free);
@@ -136,7 +155,6 @@ export function Chat() {
                     }, 1000);
                 }
             }
-            setMessages(prev => [...prev, aiMsg]);
         } catch (error) {
             // On error (likely 402), check login status
             if (!user) {
@@ -189,6 +207,19 @@ export function Chat() {
 
                     {/* Right: Controls */}
                     <div className="flex items-center gap-3 sm:gap-4">
+
+                        {/* Mode Toggle */}
+                        <button
+                            onClick={() => setMode(mode === 'single' ? 'multi' : 'single')}
+                            className={clsx(
+                                "px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+                                mode === 'multi'
+                                    ? "bg-[#FF9500] text-black border-[#FF9500]"
+                                    : "bg-[#1A1A1A] text-gray-400 border-gray-700 hover:border-[#FF9500]"
+                            )}
+                        >
+                            {mode === 'single' ? 'Single' : 'All 6'}
+                        </button>
 
                         {/* Persona Switcher */}
                         <PersonaSwitcher currentPersona={personaId} />
@@ -356,6 +387,17 @@ export function Chat() {
                                 </motion.div>
                             ))}
                         </AnimatePresence>
+
+                        {/* Multi-Persona Responses - Displayed here */}
+                        {multiPersonaResponses && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="w-full mt-4"
+                            >
+                                <MultiPersonaView responses={multiPersonaResponses} />
+                            </motion.div>
+                        )}
 
                         {loading && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start w-full">
