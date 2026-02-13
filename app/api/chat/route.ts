@@ -261,36 +261,58 @@ const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-async function checkCanChat(identifier: string) {
+async function checkCanChat(identifiers: { email?: string | null, userId?: string | null, ip?: string | null }) {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return { allowed: true, plan: 'dev', remaining: 999 };
 
-    const isEmail = identifier.includes('@');
-    const isClerkId = identifier.startsWith('user_');
-    let queryColumn = 'ip_address';
-    if (isEmail) queryColumn = 'email';
-    if (isClerkId) queryColumn = 'user_id';
-
+    const { email, userId, ip } = identifiers;
     const now = new Date();
+    const today = now.toISOString().split('T')[0];
 
     try {
-        // Global Stats (Keep existing daily logic for global stats or update if needed, but safe to keep daily for admin tracking)
-        const today = now.toISOString().split('T')[0];
+        // Global Stats
         const { data: globalStats } = await supabase.from('global_stats').select('total_requests').eq('date', today).single();
         if (globalStats && globalStats.total_requests >= 1000) return { allowed: false, reason: 'global_cap_reached', plan: 'free' };
         if (!globalStats) await supabase.from('global_stats').insert({ date: today, total_requests: 0 });
 
-        let { data: user } = await supabase.from('users').select('*').eq(queryColumn, identifier).single();
+        let user = null;
 
+        // 1. Try finding by Email (Priority)
+        if (email) {
+            const { data } = await supabase.from('users').select('*').eq('email', email).single();
+            user = data;
+        }
+
+        // 2. If not found, try finding by User ID (Legacy/Clerk)
+        if (!user && userId) {
+            const { data } = await supabase.from('users').select('*').eq('user_id', userId).single();
+            user = data;
+
+            // HEALING: If found by ID but had no email (or different), update it now to match.
+            // This ensures future lookups by email (e.g. from Webhooks) work on this same record.
+            if (user && email && user.email !== email) {
+                console.log(`[Identity Merge] Linking email ${email} to user_id ${userId}`);
+                await supabase.from('users').update({ email: email }).eq('id', user.id);
+                user.email = email; // Update local obj
+            }
+        }
+
+        // 3. Fallback: IP for guests
+        if (!user && !email && !userId && ip) {
+            const { data } = await supabase.from('users').select('*').eq('ip_address', ip).single();
+            user = data;
+        }
+
+        // 4. Create New if absolutely nothing found
         if (!user) {
-            // New user: Start their 24h cycle NOW
             const newUser = {
                 plan: 'free',
                 msg_count: 0,
                 last_active_date: today,
                 last_reset_at: now.toISOString(),
-                [queryColumn]: identifier
+                email: email || null,
+                user_id: userId || null,
+                ip_address: ip || null
             };
-            // Only try to insert if we have a valid key. If identifying by IP, fine.
             const { data: createdUser, error } = await supabase.from('users').insert(newUser).select().single();
             if (error) throw error;
             user = createdUser;
@@ -307,13 +329,14 @@ async function checkCanChat(identifier: string) {
                 msg_count: 0,
                 last_reset_at: now.toISOString(),
                 last_active_date: today
-            }).eq(queryColumn, identifier);
+            }).eq('id', user.id); // Use internal UUID for safety
             user.msg_count = 0;
         }
 
         // Check if PRO and VALID (not expired)
         if (user.plan === 'pro') {
             let isExpired = false;
+            // Graceful handling of missing column (undefined) -> Not Expired
             if (user.subscription_end_date) {
                 const endDate = new Date(user.subscription_end_date);
                 if (endDate < now) {
@@ -328,7 +351,6 @@ async function checkCanChat(identifier: string) {
         }
 
         if (user.msg_count >= 10) {
-            // Calculate wait time
             const resetTime = new Date(lastReset.getTime() + 24 * 60 * 60 * 1000);
             const waitMs = resetTime.getTime() - now.getTime();
             const waitHours = Math.ceil(waitMs / (1000 * 60 * 60));
@@ -338,7 +360,7 @@ async function checkCanChat(identifier: string) {
                 reason: 'daily_limit_reached',
                 plan: 'free',
                 remaining: 0,
-                waitTime: waitHours // Send back hours to wait
+                waitTime: waitHours
             };
         }
 
@@ -346,7 +368,7 @@ async function checkCanChat(identifier: string) {
         await supabase.from('users').update({
             msg_count: user.msg_count + 1,
             last_active_date: today
-        }).eq(queryColumn, identifier);
+        }).eq('id', user.id);
 
         await incrementGlobalStats();
 
@@ -456,20 +478,23 @@ export async function POST(req: NextRequest) {
 
         // 1. Identify User
         const user = await currentUser();
-        let identifier = "guest@example.com";
+        let identifiers;
 
         if (user) {
-            // Use Email if available to match Razorpay/Supabase records
-            identifier = user.emailAddresses?.[0]?.emailAddress || user.id;
+            // Pass both Email and ID for robust matching/healing
+            identifiers = {
+                email: user.emailAddresses?.[0]?.emailAddress,
+                userId: user.id
+            };
         } else {
             // Fallback to IP for guests
             const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
-            identifier = ip;
+            identifiers = { ip };
         }
 
         // 2. Check limits based on mode
         const creditsNeeded = mode === 'multi' ? 6 : 1;
-        const limitStatus = await checkCanChat(identifier);
+        const limitStatus = await checkCanChat(identifiers);
 
         // For multi-persona mode, check if user has premium plan
         if (mode === 'multi' && limitStatus.plan === 'free') {

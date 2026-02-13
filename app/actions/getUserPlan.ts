@@ -11,43 +11,57 @@ export async function getUserPlan() {
         const user = await currentUser();
         if (!user) return { plan: 'free' };
 
-        const email = user.emailAddresses[0]?.emailAddress;
-        if (!email) return { plan: 'free' };
+        if (user) {
+            const email = user.emailAddresses[0]?.emailAddress;
+            const userId = user.id;
 
-        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+            const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+            let existingUser = null;
 
-        // Query by email
-        const { data: existingUser, error: fetchError } = await supabase
-            .from('users')
-            .select('plan, subscription_end_date')
-            .eq('email', email)
-            .single();
+            // 1. Try Email
+            if (email) {
+                const { data } = await supabase.from('users').select('plan, subscription_end_date, id, email').eq('email', email).single();
+                existingUser = data;
+            }
 
-        if (existingUser) {
-            // Check Expiration
-            if (existingUser.plan === 'pro' && existingUser.subscription_end_date) {
-                const endDate = new Date(existingUser.subscription_end_date);
-                if (endDate < new Date()) {
-                    console.log(`[getUserPlan] Subscription expired for ${email} on ${endDate.toISOString()}`);
-                    return { plan: 'free' };
+            // 2. Try User ID (for legacy/manual records without email)
+            if (!existingUser && userId) {
+                const { data } = await supabase.from('users').select('plan, subscription_end_date, id, email').eq('user_id', userId).single();
+                existingUser = data;
+
+                // HEAL: If found by ID, update Email so future lookups work
+                if (existingUser && email && existingUser.email !== email) {
+                    console.log(`[getUserPlan] Healing user identity: Linking ${email} to ${userId}`);
+                    await supabase.from('users').update({ email: email }).eq('id', existingUser.id);
                 }
             }
 
-            console.log(`[getUserPlan] Found user ${email}: ${existingUser.plan}`);
-            return { plan: existingUser.plan || 'free' };
-        } else {
-            console.log(`[getUserPlan] User ${email} not found. Auto-creating default entry.`);
-            // Lazy create to ensure subsequent webhooks have a target
-            const { error: insertError } = await supabase
-                .from('users')
-                .insert({ email, plan: 'free' });
+            if (existingUser) {
+                // Check Expiration
+                if (existingUser.plan === 'pro' && existingUser.subscription_end_date) {
+                    const endDate = new Date(existingUser.subscription_end_date);
+                    if (endDate < new Date()) {
+                        console.log(`[getUserPlan] Subscription expired for ${email || userId}`);
+                        return { plan: 'free' };
+                    }
+                }
+                return { plan: existingUser.plan || 'free' };
+            } else {
+                // Create New User (Lazy)
+                console.log(`[getUserPlan] User not found. Auto-creating.`);
+                const { error: insertError } = await supabase
+                    .from('users')
+                    .insert({
+                        email: email || null,
+                        user_id: userId,
+                        plan: 'free'
+                    });
 
-            if (insertError) {
-                console.error("[getUserPlan] Failed to auto-create user:", insertError);
+                if (insertError) console.error("[getUserPlan] Create failed:", insertError);
+                return { plan: 'free' };
             }
-
-            return { plan: 'free' };
         }
+        return { plan: 'free' };
 
     } catch (error) {
         console.error("[getUserPlan] Server error:", error);
