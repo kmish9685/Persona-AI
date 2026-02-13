@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 import { Suspense } from 'react';
 
 function ContactContent() {

@@ -1,12 +1,15 @@
+export const dynamic = 'force-dynamic';
+
 import Link from 'next/link';
 import { ArrowLeft, MessageSquare, Shield, Zap } from 'lucide-react';
+import { Suspense } from 'react';
 
 export const metadata = {
     title: 'How to Use Persona AI - The Brutal Feedback Guide',
     description: 'Learn how to use AI personas to get brutal, unfiltered feedback on your ideas in 3 simple steps.',
 };
 
-export default function HowItWorksPage() {
+function HowItWorksContent() {
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white font-sans selection:bg-orange-500/30">
             {/* Header */}
@@ -140,5 +143,13 @@ export default function HowItWorksPage() {
                 </div>
             </footer>
         </div>
+    );
+}
+
+export default function HowItWorksPage() {
+    return (
+        <Suspense fallback={null}>
+            <HowItWorksContent />
+        </Suspense>
     );
 }
