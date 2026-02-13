@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Clock, ArrowRight, Trash2, Loader2, TrendingUp, AlertTriangle } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { deleteDecision } from '@/app/actions/deleteDecision';
 
 export default function DecisionCard({ decision }: { decision: any }) {
     const router = useRouter();
@@ -23,24 +24,14 @@ export default function DecisionCard({ decision }: { decision: any }) {
 
         setIsDeleting(true);
         try {
-            // Attempt 1: Standard DELETE
-            let res = await fetch(`/api/analyze/${decision.id}`, { method: 'DELETE' });
+            // New Method: Server Action (Direct DB Access, no API route)
+            const result = await deleteDecision(decision.id);
 
-            // Attempt 2: Fallback to POST (Tunneling) if 405 or 400+
-            if (!res.ok) {
-                console.warn(`[Delete] DELETE method failed (${res.status}). Retrying with POST tunnel...`);
-                res = await fetch(`/api/analyze/${decision.id}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'delete' })
-                });
+            if (result.error) {
+                throw new Error(result.error);
             }
 
-            if (!res.ok) {
-                const errText = await res.text();
-                throw new Error(`Failed to delete: ${res.status} ${errText}`);
-            }
-
+            // Success
             router.refresh();
         } catch (error) {
             console.error("Delete failed:", error);

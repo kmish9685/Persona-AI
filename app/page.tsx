@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import ChatDemoSection from '@/components/landing/ChatDemoSection';
 import { Suspense, useState, useEffect } from 'react';
 import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap, BarChart3, HelpCircle, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
@@ -243,6 +244,9 @@ function LandingPageContent() {
 
       {/* NEW: COMPARISON SECTION (Show vs Tell) */}
       <ComparisonSection />
+
+      {/* NEW: CHAT DEMO SECTION (Proves the "Chat" feature) */}
+      <ChatDemoSection />
 
       {/* 4. USE CASE SCENARIOS */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
