@@ -21,21 +21,12 @@ export default function DecisionCard({ decision }: { decision: any }) {
         setIsDeleting(true);
 
         try {
-            // We need a route handler for this because we can't use Service Role on client
-            // But wait, the user SHOULD own the decision, so RLS should allow delete via standard client?
-            // Let's try standard client first. If RLS fails, we use an API route.
-            const supabase = createClient(
-                process.env.NEXT_PUBLIC_SUPABASE_URL!,
-                process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-            );
+            // Use Server-Side API to delete (bypasses potential RLS issues)
+            const res = await fetch(`/api/analyze/${decision.id}`, {
+                method: 'DELETE'
+            });
 
-            // Delete
-            const { error } = await supabase
-                .from('decisions')
-                .delete()
-                .eq('id', decision.id);
-
-            if (error) throw error;
+            if (!res.ok) throw new Error("Failed to delete");
 
             router.refresh();
         } catch (error) {
