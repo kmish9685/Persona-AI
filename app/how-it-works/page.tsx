@@ -126,7 +126,7 @@ export default function HowItWorksPage() {
                 <div className="max-w-7xl mx-auto px-4 text-center">
                     <div className="flex justify-center gap-6 mb-6 text-sm text-gray-400 font-medium">
                         <Link href="/about" className="hover:text-white transition-colors">About</Link>
-                        <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+                        <Link href="/#pricing" className="hover:text-white transition-colors">Pricing</Link>
                         <Link href="/how-it-works" className="hover:text-white transition-colors text-[#FF9500]">How it Works</Link>
                         <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
                         <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>

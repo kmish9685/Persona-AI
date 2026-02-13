@@ -40,6 +40,7 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
+    persona: str = "elon"  # Default to Elon
 
 class ContactRequest(BaseModel):
     name: str
@@ -66,41 +67,42 @@ async def health_check():
 
 from auth import router as auth_router
 from middleware.auth_middleware import get_user_identifier
+from personas import get_persona_prompt, is_valid_persona, PERSONA_DATA
 
 app.include_router(auth_router)
 
 @app.post("/chat")
 async def chat(request: ChatRequest, raw_request: Request):
     print(f"Received Message: {request.message}")
+    print(f"Requested Persona: {request.persona}")
     
-    # 1. Load persona rules
+    # 1. Validate persona
+    persona_id = request.persona if is_valid_persona(request.persona) else "elon"
+    if persona_id != request.persona:
+        print(f"Invalid persona '{request.persona}', defaulting to 'elon'")
+    
+    # 2. Load persona rules (for validation)
     rules = load_persona()
     
-    # 2. Check Limits (Database)
-    # Get user_identifier (Email if logged in, IP if not)
+    # 3. Check Limits (Database)
     user_identifier = get_user_identifier(raw_request)
-    # Note: check_can_chat logic needs to handle this identifier (which might be email or IP)
-    # Our Schema update supports checking both via the relaxed constraint
-    # But database.py check_can_chat likely assumes IP. 
-    # For MVP: We pass identifier as 'ip'. Schema is flexible.
-    
     limit_status = check_can_chat(user_identifier)
     
     if not limit_status['allowed']:
         # Return 402 Payment Required with details
         raise HTTPException(status_code=402, detail=limit_status)
 
-    # 3. Build system prompt
-    base_prompt = rules.get("system_prompt_template", "You are a helpful assistant.")
+    # 4. Get system prompt for selected persona
+    system_prompt = get_persona_prompt(persona_id)
     
-    # 4. Call Groq API (Llama 3.3 70B)
-    response_text = call_groq(base_prompt, request.message, rules)
-    # HUGGING FACE (dormant): response_text = call_huggingface(base_prompt, request.message, rules)
-    print(f"Generated Response: {response_text[:50]}...") # Log partial response
+    # 5. Call Groq API (Llama 3.3 70B) with persona-specific prompt
+    response_text = call_groq(system_prompt, request.message, rules)
+    print(f"Generated Response from {persona_id}: {response_text[:50]}...") # Log partial response
     
-    # 5. Return
+    # 6. Return
     return {
         "response": response_text,
+        "persona": persona_id,
         "remaining_free": limit_status.get('remaining', 0),
         "plan": limit_status.get('plan', 'unknown')
     }

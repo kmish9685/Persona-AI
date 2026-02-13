@@ -2,131 +2,169 @@
 
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { Disclosure, Transition } from '@headlessui/react';
+import { ChevronDown, Check, X, ArrowRight, Target, Rocket, Briefcase } from 'lucide-react';
+import clsx from 'clsx';
 
 function LandingPageContent() {
+  const faqs = [
+    {
+      question: "Is this really unlimited?",
+      answer: "Yes. If you upgrade to the Founding Membership (₹99/mo), you get unlimited messages. Free users get 10 messages/day."
+    },
+    {
+      question: "Can I cancel anytime?",
+      answer: "No. The Founding Membership is a lifetime price lock, but it is non-refundable. We prioritize committed users."
+    },
+    {
+      question: "Why not just use GPTs?",
+      answer: "GPTs are trained to be safe and give you options. Persona AI is fine-tuned to be brutal, opinionated, and first-principles driven. It doesn't hedge."
+    },
+    {
+      question: "Will you add more personas?",
+      answer: "Yes. We are training 'Sam Product', 'Naval Angel', and others. Founding Members get instant access to all future personas."
+    }
+  ];
+
+  const features = [
+    {
+      icon: <Target className="w-5 h-5 text-orange-500" />,
+      title: "First Principles Logic",
+      desc: "No analogies. Just physics and economics."
+    },
+    {
+      icon: <Rocket className="w-5 h-5 text-blue-500" />,
+      title: "Leverage Optimization",
+      desc: "Identify high-leverage activities instantly."
+    },
+    {
+      icon: <Briefcase className="w-5 h-5 text-purple-500" />,
+      title: "Founder Psychology",
+      desc: "Y-Combinator style brutal feedback."
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-orange-500/30">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-white/30 overflow-x-hidden">
+      {/* Background Decor */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-b from-white/5 to-transparent rounded-full blur-[120px]" />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800">
+      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-3">
-              <img src="/logo.png" alt="Persona AI" className="w-10 h-10 rounded-md opacity-90" />
-              <span className="font-bold text-xl tracking-tight">Persona AI</span>
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+              <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-lg" />
+              <span className="font-bold text-lg tracking-tight text-white">Persona AI</span>
             </Link>
 
-            {/* Desktop Nav */}
             <div className="flex items-center gap-6">
-              <Link href="/about" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
-                About
+              <Link href="/about" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+                Mission
               </Link>
-              <Link href="/pricing" className="hidden sm:block text-sm font-medium text-gray-400 hover:text-white transition-colors">
-                Pricing
-              </Link>
-
               <Link
-                href="/chat"
-                className="px-5 py-2 text-sm font-semibold bg-[#FF9500] hover:bg-orange-500 text-black rounded-lg transition-colors shadow-lg shadow-orange-500/10"
+                href="/personas"
+                className="px-5 py-2 text-sm font-medium bg-white text-black hover:bg-gray-200 rounded-full transition-all"
               >
-                Start Now
+                Start Deciding
               </Link>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center animate-slide-up">
+      {/* 1. Hero Section: Answers > Options */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center animate-slide-up">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] mb-8 tracking-tight text-white">
-            Talk to Famous Minds.<br />Get Brutal Opinions.
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">Reasoning Engine v2.0 Live</span>
+          </div>
+
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold leading-tight mb-8 tracking-tighter text-white">
+            Stop Chatting.<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-white to-blue-400">
+              Start Deciding.
+            </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-gray-400 leading-relaxed mb-10 max-w-2xl mx-auto">
-            AI personas that think like real professionals behind closed doors. Blunt. Experienced. The brutal advice they'd give you in private—not what sounds safe.
+          <p className="text-xl sm:text-2xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            GPTs give you options. Persona AI gives you answers.
+            <br className="hidden sm:block" />
+            Simulate the minds of Musk, Naval, and Graham.
           </p>
 
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/chat"
-              className="
-                inline-flex items-center justify-center px-8 py-4 bg-[#FF9500] text-black 
-                font-bold rounded-xl text-lg
-                hover:bg-orange-500 transition-all
-                transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(255,149,0,0.25)]
-                "
+              href="/personas"
+              className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
             >
-              Try It Free (10 Messages)
+              Get Decisions (Free)
             </Link>
-
-            <p className="text-sm text-gray-500 mt-4 font-medium">
-              No signup • Get brutal answers in seconds
-            </p>
+            <Link
+              href="#proof"
+              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium text-lg rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
+            >
+              See the Difference
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Comparison Section */}
-      <section className="px-4 sm:px-6 lg:px-8 py-16 bg-[#080808] border-y border-white/5 animate-slide-up-delay-1">
+      {/* 2. Proof Section: The Comparison */}
+      <section id="proof" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-12 text-gray-100">
-            Same Question, Different Answer
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">The "Waffle" vs. The Answer</h2>
+            <p className="text-zinc-500">Why top founders stopped using standard ChatGPT.</p>
+          </div>
 
-          {/* Mobile: Stacked, Desktop: Side-by-side */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-            {/* Other AI Card */}
-            <div className="bg-[#1A1A1A] border border-gray-800 rounded-2xl p-6 md:p-8 flex flex-col gap-6">
-              <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                <span className="text-red-500 text-xl">❌</span>
-                <h3 className="font-bold text-gray-500 tracking-wider text-sm uppercase">OTHER AI</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Standard AI */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-zinc-900 rounded-lg"><X size={20} className="text-zinc-500" /></div>
+                <h3 className="font-bold text-zinc-500">STANDARD AI</h3>
               </div>
-
               <div className="space-y-4">
-                <div className="flex justify-end">
-                  <div className="bg-[#0A84FF]/10 text-blue-200 border border-blue-500/20 rounded-xl px-4 py-3 inline-block max-w-[90%]">
-                    <p className="text-xs font-bold text-[#0A84FF] mb-1">YOU</p>
-                    <p className="text-sm">Should I add more features?</p>
-                  </div>
+                <div className="bg-zinc-900 p-4 rounded-xl rounded-tr-none border border-white/5 text-sm text-zinc-400">
+                  Should I raise VC funding?
                 </div>
-
-                <div className="flex justify-start">
-                  <div className="bg-[#252525] rounded-xl p-4 max-w-[90%]">
-                    <p className="text-xs text-gray-500 mb-1 font-bold">AI ASSISTANT</p>
-                    <p className="text-sm text-gray-400 leading-relaxed italic">
-                      "Well, it really depends on your specific situation. You might want to
-                      consider user feedback, market validation, and..."
-                    </p>
-                  </div>
+                <div className="bg-zinc-900/50 p-6 rounded-xl rounded-tl-none border border-white/5 text-sm leading-relaxed text-zinc-500">
+                  "Raising venture capital is a complex decision. There are pros and cons. On one hand, you get capital. On the other, you lose equity. Consider your market size, growth trajectory..."
                 </div>
               </div>
             </div>
 
-            {/* Persona AI Card */}
-            <div className="bg-[#1A1A1A] border-2 border-[#FF9500] rounded-2xl p-6 md:p-8 flex flex-col gap-6 shadow-[0_0_30px_rgba(255,149,0,0.1)] relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-[#FF9500]" />
-              <div className="flex items-center gap-3 pb-4 border-b border-white/5">
-                <span className="text-green-500 text-xl">✅</span>
-                <h3 className="font-bold text-white tracking-wider text-sm uppercase">PERSONA AI</h3>
+            {/* Persona AI */}
+            <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-orange-500/10">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-purple-600"></div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-white rounded-lg"><Check size={20} className="text-black" /></div>
+                <h3 className="font-bold text-white">PERSONA AI (Naval Mode)</h3>
               </div>
-
               <div className="space-y-4">
-                <div className="flex justify-end">
-                  <div className="bg-[#0A84FF]/10 text-blue-100 border border-blue-500/20 rounded-xl px-4 py-3 inline-block max-w-[90%]">
-                    <p className="text-xs font-bold text-[#0A84FF] mb-1">YOU</p>
-                    <p className="text-sm">Should I add more features?</p>
-                  </div>
+                <div className="bg-zinc-800 p-4 rounded-xl rounded-tr-none text-sm text-white inline-block">
+                  Should I raise VC funding?
+                </div>
+                <div className="bg-[#111] p-6 rounded-xl rounded-tl-none border-l-2 border-blue-500 text-sm leading-relaxed text-gray-200">
+                  "If you can grow without it, do not raise. Capital is not the scarce resource; specific knowledge is. Raising money is selling future freedom. Only raise if you are pouring fuel on a fire that is already burning."
                 </div>
 
-                <div className="flex justify-start">
-                  <div className="bg-[#2A2A2A] rounded-xl p-4 max-w-[90%] border-l-4 border-[#FF9500]">
-                    <p className="text-xs text-[#FF9500] mb-1 font-bold">ELON PERSONA</p>
-                    <p className="text-sm text-white leading-relaxed font-semibold">
-                      "No. Ship what you have today. Features before users = death.
-                      Get 10 paying customers, then add features they demand.
-                      Stop procrastinating."
-                    </p>
+                {/* Reasoning Component Showcase */}
+                <div className="mt-4 border border-white/10 rounded-lg overflow-hidden">
+                  <div className="bg-zinc-900/80 px-4 py-2 flex items-center justify-between border-b border-white/5">
+                    <div className="flex items-center gap-2 text-xs font-medium text-orange-400">
+                      <Target size={12} />
+                      <span>Reasoning Analysis</span>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-black/50 text-xs font-mono text-zinc-400 space-y-2">
+                    <p><span className="text-zinc-500">Framework:</span> Leverage Optimization</p>
+                    <p><span className="text-zinc-500">Logic:</span> Capital = permissionless leverage, but Equity = expensive cost.</p>
+                    <p><span className="text-zinc-500">Conclusion:</span> Bootstrapping provides higher long-term agency.</p>
                   </div>
                 </div>
               </div>
@@ -135,60 +173,102 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* Three Bullets */}
-      <section className="px-4 sm:px-6 lg:px-8 py-20 bg-[#0F0F0F] animate-slide-up-delay-2">
+      {/* 3. Multi-Persona Section */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {/* Bullet 1 */}
-            <div className="bg-[#141414] border border-[#222] rounded-2xl p-6 md:p-8 hover:border-[#333] transition-colors">
-              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4 text-green-500 text-xl">✓</div>
-              <p className="text-sm leading-relaxed text-gray-400">
-                <strong className="text-white block mb-2 text-base">Not another chatbot.</strong>
-                Persona AI is trained to replicate how real professionals think—no hedging, no "it depends",
-                just direct answers you'd get from a seasoned advisor in private.
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
+            <div className="max-w-xl">
+              <h2 className="text-3xl sm:text-5xl font-bold mb-6">One Question.<br />Six Perspectives.</h2>
+              <p className="text-xl text-zinc-400 leading-relaxed mb-8">
+                Why settle for one generic answer? In <strong>Multi-Persona Mode</strong>, you get a war room of advisors instantly. Compare First Principles (Elon) against YC Logic (Paul Graham) in real-time.
               </p>
+              <div className="flex gap-4">
+                <div className="flex -space-x-3">
+                  {['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'].map((id) => (
+                    <div key={id} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 overflow-hidden">
+                      <img src={`/personas/${id}.jpg`} alt={id} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+                <span className="text-sm font-medium text-zinc-500 flex items-center">6 Minds working for you</span>
+              </div>
             </div>
 
-            {/* Bullet 2 */}
-            <div className="bg-[#141414] border border-[#222] rounded-2xl p-6 md:p-8 hover:border-[#333] transition-colors">
-              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4 text-green-500 text-xl">✓</div>
-              <p className="text-sm leading-relaxed text-gray-400">
-                <strong className="text-white block mb-2 text-base">ChatGPT tells you what you want to hear.</strong>
-                Persona AI tells you what you need to know. Get 10 free brutal answers daily. Upgrade to unlimited
-                for ₹99/month.
-              </p>
+            {/* Grid Visual Representation */}
+            <div className="w-full max-w-lg aspect-[4/3] bg-zinc-900/50 rounded-2xl border border-white/10 p-4 grid grid-cols-2 gap-3 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
+              {/* Fake Cards */}
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="bg-black border border-white/5 rounded-lg p-3 opacity-50">
+                  <div className="w-8 h-8 rounded-full bg-zinc-800 mb-2"></div>
+                  <div className="h-2 w-3/4 bg-zinc-800 rounded mb-2"></div>
+                  <div className="h-2 w-1/2 bg-zinc-800 rounded"></div>
+                </div>
+              ))}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+                <Link href="/personas" className="px-6 py-3 bg-white text-black font-bold rounded-full shadow-lg hover:scale-105 transition-transform whitespace-nowrap">
+                  Try Multi-Persona Mode
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Pricing / Features */}
+      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-6">Founding Membership</h2>
+          <div className="inline-block bg-orange-500/10 text-orange-400 px-4 py-1.5 rounded-full text-sm font-medium mb-10 border border-orange-500/20">
+            Limited Time Price Lock
+          </div>
+
+          <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Rocket size={100} />
             </div>
 
-            {/* Bullet 3 */}
-            <div className="bg-[#141414] border border-[#222] rounded-2xl p-6 md:p-8 hover:border-[#333] transition-colors">
-              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4 text-green-500 text-xl">✓</div>
-              <p className="text-sm leading-relaxed text-gray-400">
-                <strong className="text-white block mb-2 text-base">Built by founders, for founders.</strong>
-                Every response is capped at 120 words, forced to be actionable, and filtered to remove corporate BS.
-                Test it free—no credit card needed.
-              </p>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/5 pb-8">
+              <div className="text-left">
+                <div className="text-sm text-zinc-500 uppercase tracking-widest font-bold mb-1">Lifetime Deal</div>
+                <div className="text-5xl font-bold text-white">₹99<span className="text-lg text-zinc-500 font-normal">/mo</span></div>
+              </div>
+              <div className="text-left md:text-right">
+                <p className="text-zinc-400 text-sm">Usually ₹999/mo.</p>
+                <p className="text-emerald-400 text-sm font-medium">Early Adopters Only.</p>
+              </div>
             </div>
+
+            <ul className="space-y-4 text-left mb-10">
+              <li className="flex items-center gap-3">
+                <Check className="text-white shrink-0" size={18} />
+                <span className="text-zinc-300"><strong>Unlimited Messages</strong> (vs 10/day)</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="text-orange-400 shrink-0" size={18} />
+                <span className="text-white">Access <strong>Multi-Persona Mode</strong></span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="text-orange-400 shrink-0" size={18} />
+                <span className="text-white">Unlock <strong>Reasoning Breakdown</strong></span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="text-white shrink-0" size={18} />
+                <span className="text-zinc-300">Access to all future personas (Sam, Trump)</span>
+              </li>
+            </ul>
+
+            <Link href="/personas?upgrade=true" className="block w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-gray-200 transition-colors">
+              Lock In ₹99/mo Price
+            </Link>
+            <p className="mt-4 text-xs text-zinc-600">Cancel anytime. Non-refundable.</p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-12 bg-black">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex justify-center gap-6 mb-6 text-sm text-gray-400 font-medium">
-            <Link href="/about" className="hover:text-white transition-colors">About</Link>
-            <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-            <Link href="/how-it-works" className="hover:text-white transition-colors">How it Works</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-            <a href="mailto:kmish9685@gmail.com" className="hover:text-white transition-colors">Contact</a>
-          </div>
-          <p className="text-sm text-gray-600 mb-2">
-            Contact: <a href="mailto:kmish9685@gmail.com" className="text-gray-400 hover:text-white">kmish9685@gmail.com</a>
-          </p>
-          <p className="text-sm text-gray-600">
-            © 2025 Persona AI. All rights reserved.
-          </p>
-        </div>
+      <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm">
+        <p>&copy; 2025 Persona AI. Built for the reckless ones.</p>
       </footer>
     </div>
   );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,17 +14,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
-  description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
+  title: "Persona AI - Stop Chatting. Start Deciding.",
+  description: "GPTs give you options. Persona AI gives you answers. Simulate the minds of Musk, Naval, and Graham to make better decisions.",
   openGraph: {
-    title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
-    description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
+    title: "Persona AI - Stop Chatting. Start Deciding.",
+    description: "GPTs give you options. Persona AI gives you answers. Simulate the minds of Musk, Naval, and Graham to make better decisions.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Persona AI - Talk to AI personas that think, argue, and respond like real people",
-    description: "AI personas that think like real professionals. Brutally honest startup advice without the politeness filter. Try 10 free messages daily.",
+    title: "Persona AI - Stop Chatting. Start Deciding.",
+    description: "GPTs give you options. Persona AI gives you answers. Simulate the minds of Musk, Naval, and Graham to make better decisions.",
   },
   icons: {
     icon: '/logo.png',
@@ -49,6 +50,20 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          {/* Google Analytics */}
+          <Script
+            src="https://www.googletagmanager.com/gtag/js?id=G-DGFC27782F"
+            strategy="afterInteractive"
+          />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-DGFC27782F');
+            `}
+          </Script>
+
           <AuthProvider>
             {children}
           </AuthProvider>
