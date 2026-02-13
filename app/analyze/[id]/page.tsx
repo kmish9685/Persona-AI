@@ -1,15 +1,32 @@
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, AlertTriangle, CheckCircle, TrendingUp, Skull } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, TrendingUp, Skull, CheckCircle } from 'lucide-react';
 
 export default async function AnalysisResultPage({ params }: { params: { id: string } }) {
-    // 1. Fetch Decision Data
-    const supabase = await createClient();
-    const { data: decision, error } = await supabase.from('decisions').select('*').eq('id', params.id).single();
+    const user = await currentUser();
+    if (!user) return redirect('/login');
+
+    // Bypass RLS using Service Role Key (since we use Clerk for Auth, not Supabase Auth)
+    const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { data: decision, error } = await supabase
+        .from('decisions')
+        .select('*')
+        .eq('id', params.id)
+        .single();
 
     if (error || !decision) {
-        return <div className="text-white p-10">Decision not found.</div>;
+        return <div className="text-white p-10">Decision not found. (ID: {params.id})</div>;
+    }
+
+    // Manual Security Check
+    if (decision.user_id !== user.id) {
+        return <div className="text-red-500 p-10">Unauthorized access to this decision.</div>;
     }
 
     const result = decision.analysis_result;
