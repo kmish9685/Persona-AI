@@ -2,9 +2,7 @@
 
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { ArrowRight, Check, X, Target, Brain, ShieldAlert, TrendingUp, Clock, Zap } from 'lucide-react';
-import clsx from 'clsx';
-import { motion } from 'framer-motion';
+import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap } from 'lucide-react';
 
 function LandingPageContent() {
   return (
@@ -32,7 +30,7 @@ function LandingPageContent() {
               </Link>
               <Link
                 href="/analyze/new"
-                className="px-5 py-2 text-sm font-bold bg-white text-black hover:bg-amber-500 hover:text-black rounded-full transition-all flex items-center gap-2"
+                className="px-5 py-2 text-sm font-bold bg-white text-black hover:bg-zinc-200 rounded-full transition-all flex items-center gap-2"
               >
                 Start Deciding <ArrowRight size={14} />
               </Link>
@@ -44,14 +42,16 @@ function LandingPageContent() {
       {/* 1. Hero Section */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center animate-slide-up">
         <div className="max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-8 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span className="text-xs font-bold text-amber-500 tracking-wide uppercase">The Decision Engine is Live</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">Reasoning Engine v2.0 Live</span>
           </div>
 
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold leading-tight mb-8 tracking-tighter text-white">
             Stop Spending <br />
-            2 Weeks on Decisions.
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-white to-blue-400">
+              2 Weeks on Decisions.
+            </span>
           </h1>
 
           <p className="text-xl sm:text-2xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed">
@@ -63,77 +63,63 @@ function LandingPageContent() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/analyze/new"
-              className="px-8 py-4 bg-amber-500 text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+              className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
             >
-              Start Analysis (Free) <ArrowRight size={20} />
+              Start Analysis (Decision Engine) <ArrowRight size={20} />
             </Link>
             <Link
-              href="#how-it-works"
+              href="/personas"
               className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium text-lg rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
             >
-              How it Works
+              Chat with Advisors
             </Link>
           </div>
 
-          <p className="mt-6 text-sm text-zinc-600">No credit card required • 1 Free Analysis</p>
+          <p className="mt-8 text-sm text-zinc-600">
+            Unsure? <Link href="/personas" className="text-zinc-400 hover:text-white underline underline-offset-4">Talk to a Persona first</Link> or <Link href="/analyze/new" className="text-zinc-400 hover:text-white underline underline-offset-4">Run a Deep Analysis</Link>.
+          </p>
         </div>
       </section>
 
-      {/* 2. Problem/Solution (The "Waffle" vs The Engine) */}
+      {/* 2. Hybrid Features Section */}
       <section id="proof" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-bold mb-4">Chatbots Waffle. Engines Decide.</h2>
-            <p className="text-zinc-500 text-lg">Why founders are switching from standard ChatGPT.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">Choose Your Mode</h2>
+            <p className="text-zinc-500 text-lg">Two ways to get clarity.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            {/* Standard AI */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 opacity-60 hover:opacity-80 transition-opacity">
+            {/* Mode A: Chat */}
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 hover:border-white/10 transition-all">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-zinc-900 rounded-lg"><X size={20} className="text-red-500" /></div>
-                <h3 className="font-bold text-zinc-500 tracking-widest text-sm">STANDARD CHATBOT</h3>
+                <div className="p-2 bg-zinc-800 rounded-lg"><Brain size={20} className="text-blue-400" /></div>
+                <h3 className="font-bold text-white tracking-widest text-sm">MODE A: ADVISOR CHAT</h3>
               </div>
-              <div className="space-y-4">
-                <div className="bg-zinc-900 p-4 rounded-xl rounded-tr-none border border-white/5 text-sm text-zinc-400">
-                  Should I pivot to B2B?
-                </div>
-                <div className="bg-zinc-800/50 p-6 rounded-xl rounded-tl-none border border-white/5 text-sm leading-relaxed text-zinc-500">
-                  "Pivoting to B2B has pros and cons. B2B often has higher LTV but longer sales cycles. Use a framework like SWOT analysis. Consider your team's strengths..."
-                </div>
-                <div className="text-xs text-red-500/50 italic font-mono mt-2">
-                  → Verdict: "It depends" (Useless)
-                </div>
-              </div>
+              <p className="text-zinc-400 mb-6 min-h-[60px]">
+                Best for: Brainstorming, general advice, and exploring ideas with specific personalities (Elon, Naval, etc).
+              </p>
+
+              <Link href="/personas" className="inline-flex items-center gap-2 text-white font-bold hover:gap-3 transition-all">
+                Chat Now <ArrowRight size={16} />
+              </Link>
             </div>
 
-            {/* Persona AI */}
-            <div className="bg-[#0A0A0A] border border-amber-500/20 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
-              <div className="absolute top-0 right-0 p-6 opacity-10 text-amber-500"><Zap size={80} /></div>
+            {/* Mode B: Engine */}
+            <div className="bg-[#0A0A0A] border border-orange-500/20 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-orange-900/5 hover:border-orange-500/40 transition-all">
+              <div className="absolute top-0 right-0 p-6 opacity-10 text-orange-500"><Zap size={80} /></div>
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-amber-500 rounded-lg"><Check size={20} className="text-black" /></div>
-                <h3 className="font-bold text-white tracking-widest text-sm">DECISION ENGINE</h3>
+                <div className="p-2 bg-orange-500 rounded-lg"><Target size={20} className="text-black" /></div>
+                <h3 className="font-bold text-white tracking-widest text-sm">MODE B: DECISION ENGINE</h3>
               </div>
-              <div className="space-y-4">
-                <div className="bg-zinc-800 p-4 rounded-xl rounded-tr-none text-sm text-white inline-block">
-                  Should I pivot to B2B?
-                </div>
-                <div className="bg-[#111] p-6 rounded-xl rounded-tl-none border-l-2 border-amber-500 text-sm leading-relaxed text-gray-200">
-                  <strong className="block text-white mb-2 text-lg">Verdict: PIVOT IMMEDIATELY.</strong>
-                  "Your runway is 4 months. B2C CAC is invalidating your unit economics. You have 2 warm B2B pilots. Pure survival logic dictates you chase the pilots."
-                </div>
+              <p className="text-zinc-400 mb-6 min-h-[60px]">
+                Best for: Hard binary choices (Pivot vs Stay, Hire vs Fire).
+                Deep structured analysis with kill signals and conviction scores.
+              </p>
 
-                {/* Kill Signals Showcase */}
-                <div className="mt-4 border border-red-500/20 rounded-lg overflow-hidden bg-red-900/5">
-                  <div className="px-4 py-2 flex items-center gap-2 border-b border-red-500/10">
-                    <ShieldAlert size={14} className="text-red-500" />
-                    <span className="text-xs font-bold text-red-400 uppercase">Kill Signal Identified</span>
-                  </div>
-                  <div className="p-3 text-xs text-zinc-400">
-                    If Pilot A doesn't close by <span className="text-white">Day 14</span>, kill the company.
-                  </div>
-                </div>
-              </div>
+              <Link href="/analyze/new" className="inline-flex items-center gap-2 text-orange-400 font-bold hover:gap-3 transition-all">
+                Start Analysis <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
         </div>
