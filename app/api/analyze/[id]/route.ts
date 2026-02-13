@@ -7,6 +7,8 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+console.log("[API STARTUP] analyze/[id] route loaded");
+
 /**
  * UUID Validation Helper
  */
