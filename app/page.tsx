@@ -2,8 +2,11 @@
 
 import Link from 'next/link';
 import { Suspense, useState, useEffect } from 'react';
-import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap, MessageSquare, BarChart3, Clock, Quote, ChevronLeft, ChevronRight, HelpCircle } from 'lucide-react';
+import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap, BarChart3, HelpCircle, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import BoardSection from '@/components/landing/BoardSection';
+import ComparisonSection from '@/components/landing/ComparisonSection';
+import TestimonialSection from '@/components/landing/TestimonialSection';
 
 function LandingPageContent() {
   const [currentFrame, setCurrentFrame] = useState(0);
@@ -189,6 +192,9 @@ function LandingPageContent() {
         </div>
       </section>
 
+      {/* NEW: THE BOARDROOM (Personas Showcase) */}
+      <BoardSection />
+
       {/* 2. Differentiator Section */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
         <div className="max-w-6xl mx-auto">
@@ -235,57 +241,8 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* 3. SHOW VS TELL (THE PROOF) */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Show, Don't Tell.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">The difference between a chat and a verdict.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-            {/* Generic Output */}
-            <div className="flex flex-col">
-              <div className="mb-4 text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-zinc-800"></div> Generic AI Output
-              </div>
-              <div className="flex-1 bg-zinc-900/30 border border-white/5 rounded-2xl p-6 text-zinc-500 font-serif leading-relaxed italic">
-                "Deciding whether to pivot is a complex choice that depends on many factors. You should consider your market fit, runway, and team morale. On one hand, staying the course shows grit. On the other hand, pivoting might reveal new opportunities. Perhaps you could try a hybrid approach for a few weeks and reassess..."
-              </div>
-            </div>
-
-            {/* Persona AI Output */}
-            <div className="flex flex-col">
-              <div className="mb-4 text-xs font-bold text-amber-500 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div> Persona AI Engine Output
-              </div>
-              <div className="flex-1 glass-panel border border-amber-500/20 rounded-2xl p-6 font-mono text-sm shadow-xl shadow-amber-500/5">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-zinc-400">VERDICT:</span>
-                    <span className="text-green-500 font-black">PIVOT NOW</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-zinc-400">CONVICTION:</span>
-                    <span className="text-white font-black">84%</span>
-                  </div>
-                  <div>
-                    <span className="text-zinc-400 block mb-1 uppercase text-[10px] tracking-widest">Kill Signals:</span>
-                    <ul className="space-y-2">
-                      <li className="text-red-400/80 pl-2 border-l-2 border-red-500/30">If CAC &gt; $50 in first 48h</li>
-                      <li className="text-red-400/80 pl-2 border-l-2 border-red-500/30">If Retention &lt; 20% by week 2</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <span className="text-zinc-400 block mb-1 uppercase text-[10px] tracking-widest">Next Action:</span>
-                    <p className="text-zinc-200">Kill Option A immediately. Launch MVP-B by Friday.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* NEW: COMPARISON SECTION (Show vs Tell) */}
+      <ComparisonSection />
 
       {/* 4. USE CASE SCENARIOS */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
@@ -326,6 +283,9 @@ function LandingPageContent() {
           </div>
         </div>
       </section>
+
+      {/* NEW: TESTIMONIALS */}
+      <TestimonialSection />
 
       {/* 5. USER JOURNEY FLOW */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
@@ -506,21 +466,6 @@ function LandingPageContent() {
               <p className="text-sm text-zinc-500 leading-relaxed">These are specific, falsifiable conditions (e.g. CAC/Runway targets) that, if met, mean you should stop or pivot immediately.</p>
             </div>
           </div>
-
-          {/* Micro-Testimonial */}
-          <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-zinc-900/40 border border-white/5 relative">
-            <Quote className="absolute -top-4 -left-4 text-amber-500/20" size={60} />
-            <p className="text-zinc-400 italic text-lg text-center mb-6">
-              "Helped me cut through 3 weeks of indecision in under 2 minutes. The binary verdict is brutal but exactly what I needed."
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-zinc-800"></div>
-              <div className="text-left">
-                <div className="text-xs font-black uppercase tracking-widest">Early Beta User</div>
-                <div className="text-[10px] text-zinc-600">SaaS Founder</div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -541,8 +486,6 @@ function LandingPageContent() {
           </p>
         </div>
       </footer>
-
-
     </div>
   );
 }
