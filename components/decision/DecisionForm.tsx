@@ -68,8 +68,17 @@ export function DecisionForm() {
 
             if (!res.ok) throw new Error('Analysis failed');
 
-            const { id } = await res.json();
-            router.push(`/analyze/${id}`);
+            const data = await res.json();
+            console.log("🔍 Analyzer API Response:", data);
+
+            if (!data.id) {
+                console.error("❌ Missing ID in response!", data);
+                alert("Error: Analyzer returned no ID. Check console.");
+                setIsSubmitting(false);
+                return;
+            }
+
+            router.push(`/analyze/${data.id}`);
         } catch (error) {
             console.error(error);
             alert("Failed to generate analysis. Please try again.");

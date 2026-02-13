@@ -128,6 +128,10 @@ export async function POST(req: NextRequest) {
 
         await supabase.from('checkpoints').insert(checkpoints);
 
+        // debug log
+        console.log("✅ Checkpoints created. returning Decision ID:", decision.id);
+        console.log("Decision Object:", decision);
+
         return NextResponse.json({ id: decision.id });
 
     } catch (e: any) {
