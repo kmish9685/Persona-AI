@@ -73,7 +73,7 @@ export function DecisionForm() {
 
             if (!responseData.id) {
                 console.error("❌ Missing ID in response!", responseData);
-                alert("Error: Analyzer returned no ID. Check console.");
+                alert("DEBUG: ID Missing! API returned:\n" + JSON.stringify(responseData, null, 2));
                 setIsSubmitting(false);
                 return;
             }

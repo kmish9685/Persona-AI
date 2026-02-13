@@ -132,7 +132,10 @@ export async function POST(req: NextRequest) {
         console.log("✅ Checkpoints created. returning Decision ID:", decision.id);
         console.log("Decision Object:", decision);
 
-        return NextResponse.json({ id: decision.id });
+        return NextResponse.json({
+            id: decision?.id,
+            debug_decision: decision
+        });
 
     } catch (e: any) {
         console.error(e);
