@@ -27,6 +27,44 @@ export async function GET(
     return NextResponse.json({ message: "Route is active", id });
 }
 
+
+/**
+ * OPTIONS Handler (CORS Preflight & Method checks)
+ */
+export async function OPTIONS(request: Request) {
+    return new NextResponse(null, {
+        status: 200,
+        headers: {
+            'Allow': 'GET, POST, DELETE, OPTIONS',
+            'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+    });
+}
+
+/**
+ * POST Handler (Fallback for DELETE)
+ * Allows deleting via POST with body { action: 'delete' }
+ */
+export async function POST(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    try {
+        const body = await request.json().catch(() => ({}));
+        if (body.action === 'delete') {
+            console.log(`[DELETE_API] POST-tunneled delete request for ID: ${id}`);
+            return await DELETE(request, { params: Promise.resolve({ id }) });
+        }
+
+        return new NextResponse("Invalid action", { status: 400 });
+    } catch (error) {
+        return new NextResponse("Bad Request", { status: 400 });
+    }
+}
+
 /**
  * DELETE Handler
  */

@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-export const dynamic = 'force-dynamic';
 import { Chat } from '../../components/Chat';
 
 function ChatFallback() {

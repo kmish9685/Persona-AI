@@ -86,47 +86,47 @@ export function DecisionForm() {
 
     return (
         <div className="w-full max-w-2xl mx-auto">
-            {/* Progress Bar - Ultra Thin */}
-            <div className="mb-12">
-                <div className="flex justify-between text-[10px] text-zinc-500 mb-4 uppercase tracking-[0.2em] font-bold">
+            {/* Progress Bar */}
+            <div className="mb-8">
+                <div className="flex justify-between text-xs text-zinc-500 mb-2 uppercase tracking-widest font-bold">
                     <span>Inception</span>
                     <span>Analysis</span>
                 </div>
-                <div className="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
+                <div className="h-1 w-full bg-zinc-900 rounded-full overflow-hidden">
                     <motion.div
-                        className="h-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"
+                        className="h-full bg-amber-500"
                         initial={{ width: 0 }}
                         animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
-                        transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
+                        transition={{ duration: 0.3 }}
                     />
                 </div>
-                <div className="flex justify-between mt-6 px-1">
+                <div className="flex justify-between mt-4">
                     {STEPS.map((s, i) => (
                         <div key={s.id} className={clsx(
-                            "text-[10px] uppercase tracking-widest font-bold transition-colors duration-300",
-                            i === step ? "text-amber-500" : i < step ? "text-zinc-500" : "text-zinc-800"
+                            "text-xs font-medium transition-colors",
+                            i === step ? "text-amber-500" : i < step ? "text-zinc-300" : "text-zinc-700"
                         )}>
-                            {s.title}
+                            {i + 1}. {s.title}
                         </div>
                     ))}
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="glass-panel rounded-3xl p-8 md:p-12 min-h-[400px] flex flex-col relative overflow-hidden transition-all duration-500">
+            <form onSubmit={handleSubmit(onSubmit)} className="bg-[#0F0F0F] border border-white/5 rounded-2xl p-6 md:p-8 min-h-[400px] flex flex-col relative overflow-hidden">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={step}
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        transition={{ duration: 0.2 }}
                         className="flex-1"
                     >
                         {/* STEP 1: DECISION TYPE */}
                         {step === 0 && (
-                            <div className="space-y-8">
-                                <h2 className="text-2xl font-light text-white tracking-tight">What difficult decision are you facing?</h2>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-4">
+                                <h2 className="text-xl font-light text-white mb-6">What difficult decision are you facing?</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     {[
                                         { id: 'pivot', label: 'Should I pivot?' },
                                         { id: 'hire', label: 'Should I hire?' },
@@ -136,10 +136,10 @@ export function DecisionForm() {
                                         { id: 'custom', label: 'Something else...' },
                                     ].map((opt) => (
                                         <label key={opt.id} className={clsx(
-                                            "flex items-center p-5 rounded-2xl border cursor-pointer transition-all duration-300",
+                                            "flex items-center p-4 rounded-xl border cursor-pointer transition-all hover:scale-[1.01]",
                                             watch('decisionType') === opt.id
-                                                ? "bg-amber-500/10 border-amber-500/30 text-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.1)]"
-                                                : "bg-white/5 border-white/5 text-zinc-400 hover:bg-white/10 hover:text-white"
+                                                ? "bg-amber-500/10 border-amber-500/50 text-amber-500"
+                                                : "bg-zinc-900 border-white/5 text-zinc-400 hover:border-white/10 hover:text-zinc-200"
                                         )}>
                                             <input
                                                 type="radio"
@@ -147,58 +147,56 @@ export function DecisionForm() {
                                                 {...register('decisionType')}
                                                 className="opacity-0 w-0 h-0"
                                             />
-                                            <span className="font-medium text-sm tracking-wide">{opt.label}</span>
+                                            <span className="font-medium">{opt.label}</span>
                                         </label>
                                     ))}
                                 </div>
-                                {errors.decisionType && <p className="text-red-500 text-xs mt-2 font-mono uppercase tracking-wide">{errors.decisionType.message}</p>}
+                                {errors.decisionType && <p className="text-red-500 text-sm mt-2">{errors.decisionType.message}</p>}
                             </div>
                         )}
 
                         {/* STEP 2: CONSTRAINTS */}
                         {step === 1 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-light text-white mb-2 tracking-tight">Define your constraints.</h2>
-                                    <p className="text-sm text-zinc-500 font-light">Honest inputs = accurate analysis.</p>
-                                </div>
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-light text-white mb-1">Define your constraints.</h2>
+                                <p className="text-sm text-zinc-500 mb-6">Honest inputs = accurate analysis.</p>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="group">
-                                        <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Runway (Months)</label>
-                                        <input type="number" {...register('constraints.runwayMonths')} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none transition-all" />
-                                        {errors.constraints?.runwayMonths && <p className="text-red-500 text-xs mt-2 font-mono uppercase">{errors.constraints.runwayMonths.message}</p>}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Runway (Months)</label>
+                                        <input type="number" {...register('constraints.runwayMonths')} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500/50 focus:outline-none" />
+                                        {errors.constraints?.runwayMonths && <p className="text-red-500 text-xs mt-1">{errors.constraints.runwayMonths.message}</p>}
                                     </div>
-                                    <div className="group">
-                                        <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Monthly Burn ({`₹/$`})</label>
-                                        <input type="number" {...register('constraints.monthlyBurn')} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none transition-all" />
-                                        {errors.constraints?.monthlyBurn && <p className="text-red-500 text-xs mt-2 font-mono uppercase">{errors.constraints.monthlyBurn.message}</p>}
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Monthly Burn ({`₹/$`})</label>
+                                        <input type="number" {...register('constraints.monthlyBurn')} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500/50 focus:outline-none" />
+                                        {errors.constraints?.monthlyBurn && <p className="text-red-500 text-xs mt-1">{errors.constraints.monthlyBurn.message}</p>}
                                     </div>
-                                    <div className="group">
-                                        <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Current MRR</label>
-                                        <input type="number" {...register('constraints.currentMrr')} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none transition-all" />
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Current MRR</label>
+                                        <input type="number" {...register('constraints.currentMrr')} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500/50 focus:outline-none" />
                                     </div>
-                                    <div className="group">
-                                        <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Team Size</label>
-                                        <input type="number" {...register('constraints.teamSize')} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none transition-all" />
+                                    <div>
+                                        <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Team Size</label>
+                                        <input type="number" {...register('constraints.teamSize')} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500/50 focus:outline-none" />
                                     </div>
-                                </div>
-
-                                <div className="group">
-                                    <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Your Skillset (Be honest)</label>
-                                    <input type="text" placeholder="e.g., strong dev, weak marketing" {...register('constraints.skillset')} className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none transition-all" />
-                                    {errors.constraints?.skillset && <p className="text-red-500 text-xs mt-2 font-mono uppercase">{errors.constraints.skillset.message}</p>}
                                 </div>
 
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Risk Tolerance</label>
+                                    <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Your Skillset (Be honest)</label>
+                                    <input type="text" placeholder="e.g., strong dev, weak marketing" {...register('constraints.skillset')} className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500/50 focus:outline-none" />
+                                    {errors.constraints?.skillset && <p className="text-red-500 text-xs mt-1">{errors.constraints.skillset.message}</p>}
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Risk Tolerance</label>
                                     <div className="flex gap-4">
                                         {['low', 'medium', 'high'].map((lvl) => (
                                             <label key={lvl} className={clsx(
-                                                "flex-1 text-center py-4 rounded-xl border cursor-pointer text-xs uppercase tracking-widest transition-all duration-300",
+                                                "flex-1 text-center py-3 rounded-lg border cursor-pointer text-sm capitalize transition-colors",
                                                 watch('constraints.riskTolerance') === lvl
-                                                    ? "bg-amber-500/10 border-amber-500/30 text-amber-500 font-bold shadow-[0_0_15px_rgba(245,158,11,0.1)]"
-                                                    : "bg-white/5 border-white/5 text-zinc-500 hover:text-white hover:bg-white/10"
+                                                    ? "bg-amber-500/10 border-amber-500/50 text-amber-500 font-bold"
+                                                    : "bg-zinc-900 border-white/5 text-zinc-400 hover:text-white"
                                             )}>
                                                 <input type="radio" value={lvl} {...register('constraints.riskTolerance')} className="hidden" />
                                                 {lvl}
@@ -211,27 +209,25 @@ export function DecisionForm() {
 
                         {/* STEP 3: OPTIONS */}
                         {step === 2 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-light text-white mb-2 tracking-tight">List your options.</h2>
-                                    <p className="text-sm text-zinc-500 font-light">Valid decisions require at least two distinct paths.</p>
-                                </div>
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-light text-white mb-1">List your options.</h2>
+                                <p className="text-sm text-zinc-500 mb-6">Valid decisions require at least two distinct paths.</p>
 
-                                <div className="space-y-5">
+                                <div className="space-y-3">
                                     {fields.map((field, index) => (
-                                        <div key={field.id} className="group">
-                                            <div className="flex justify-between items-center mb-2">
-                                                <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest group-hover:text-zinc-300 transition-colors">Option {String.fromCharCode(65 + index)}</label>
+                                        <div key={field.id}>
+                                            <div className="flex justify-between items-center mb-1">
+                                                <label className="text-xs font-bold text-zinc-500 uppercase">Option {String.fromCharCode(65 + index)}</label>
                                                 {index > 1 && (
-                                                    <button type="button" onClick={() => remove(index)} className="text-[10px] uppercase tracking-widest text-red-500/70 hover:text-red-500 font-bold transition-colors">Remove</button>
+                                                    <button type="button" onClick={() => remove(index)} className="text-xs text-red-500 hover:underline">Remove</button>
                                                 )}
                                             </div>
                                             <input
                                                 {...register(`options.${index}.title` as const)}
-                                                placeholder={`Enter Option ${index + 1}...`}
-                                                className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none transition-all"
+                                                placeholder={`Option ${index + 1}`}
+                                                className="w-full bg-zinc-900 border border-white/10 rounded-lg p-3 text-white focus:border-amber-500/50 focus:outline-none"
                                             />
-                                            {errors.options?.[index]?.title && <p className="text-red-500 text-xs mt-2 font-mono uppercase">{errors.options[index]?.title?.message}</p>}
+                                            {errors.options?.[index]?.title && <p className="text-red-500 text-xs mt-1">{errors.options[index]?.title?.message}</p>}
                                         </div>
                                     ))}
                                 </div>
@@ -240,9 +236,9 @@ export function DecisionForm() {
                                     <button
                                         type="button"
                                         onClick={() => append({ title: '' })}
-                                        className="text-xs text-amber-500 hover:text-amber-400 font-bold uppercase tracking-widest flex items-center gap-2 mt-4 transition-colors"
+                                        className="text-sm text-amber-500 hover:text-amber-400 font-medium flex items-center gap-1 mt-2"
                                     >
-                                        + Add Option
+                                        + Add another option
                                     </button>
                                 )}
                             </div>
@@ -250,19 +246,17 @@ export function DecisionForm() {
 
                         {/* STEP 4: BLINDSPOTS */}
                         {step === 3 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-light text-white mb-2 tracking-tight">Check your blindspots.</h2>
-                                    <p className="text-sm text-zinc-500 font-light">What are you intentionally ignoring or assuming?</p>
-                                </div>
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-light text-white mb-1">Check your blindspots.</h2>
+                                <p className="text-sm text-zinc-500 mb-6">What are you intentionally ignoring or assuming?</p>
 
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Trade-offs & Assumptions</label>
+                                    <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Trade-offs & Assumptions</label>
                                     <textarea
-                                        rows={8}
+                                        rows={6}
                                         {...register('blindspots')}
                                         placeholder="I'm assuming my co-founder won't quit... I'm ignoring the fact that competitor X is well-funded..."
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none resize-none transition-all leading-relaxed"
+                                        className="w-full bg-zinc-900 border border-white/10 rounded-lg p-4 text-white placeholder:text-zinc-600 focus:border-amber-500/50 focus:outline-none resize-none"
                                     />
                                 </div>
                             </div>
@@ -270,27 +264,25 @@ export function DecisionForm() {
 
                         {/* STEP 5: CONTEXT */}
                         {step === 4 && (
-                            <div className="space-y-8">
-                                <div>
-                                    <h2 className="text-2xl font-light text-white mb-2 tracking-tight">Final Context.</h2>
-                                    <p className="text-sm text-zinc-500 font-light">Any last details the engine should know?</p>
-                                </div>
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-light text-white mb-1">Final Context.</h2>
+                                <p className="text-sm text-zinc-500 mb-6">Any last details the engine should know?</p>
 
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Additional Context</label>
+                                    <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Additional Context</label>
                                     <textarea
-                                        rows={8}
+                                        rows={6}
                                         {...register('context')}
                                         placeholder="We are a B2B SaaS in the healthcare space..."
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-white placeholder:text-zinc-700 focus:border-amber-500/30 focus:bg-white/10 focus:outline-none resize-none transition-all leading-relaxed"
+                                        className="w-full bg-zinc-900 border border-white/10 rounded-lg p-4 text-white placeholder:text-zinc-600 focus:border-amber-500/50 focus:outline-none resize-none"
                                     />
                                 </div>
 
-                                <div className="p-5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex gap-4 items-start">
-                                    <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={20} />
+                                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex gap-3 items-start">
+                                    <AlertCircle className="text-amber-500 shrink-0 mt-0.5" size={18} />
                                     <div>
-                                        <p className="text-sm text-amber-200 font-medium tracking-wide">Ready to analyze?</p>
-                                        <p className="text-xs text-amber-500/60 mt-2 leading-relaxed">This will consume 1 credit. The engine will simulate outcomes, apply kill signals, and generate a binding verdict.</p>
+                                        <p className="text-sm text-amber-200 font-medium">Ready to analyze?</p>
+                                        <p className="text-xs text-amber-500/80 mt-1">This will consume 1 credit from your plan. The engine will simulate outcomes for all options.</p>
                                     </div>
                                 </div>
                             </div>
@@ -299,34 +291,34 @@ export function DecisionForm() {
                 </AnimatePresence>
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between mt-12 pt-8 border-t border-white/5">
+                <div className="flex justify-between mt-8 pt-6 border-t border-white/5">
                     <button
                         type="button"
                         onClick={prevStep}
                         disabled={step === 0 || isSubmitting}
                         className={clsx(
-                            "flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest transition-colors",
-                            step === 0 ? "text-zinc-800 cursor-not-allowed" : "text-zinc-500 hover:text-white"
+                            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                            step === 0 ? "text-zinc-700 cursor-not-allowed" : "text-zinc-400 hover:text-white"
                         )}
                     >
-                        <ArrowLeft size={14} /> Back
+                        <ArrowLeft size={16} /> Back
                     </button>
 
                     {step === STEPS.length - 1 ? (
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="btn-premium flex items-center gap-2 px-8 py-4 bg-white text-black font-bold rounded-full transition-all disabled:opacity-50 disabled:cursor-wait text-xs uppercase tracking-widest hover:bg-zinc-200"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-wait"
                         >
-                            {isSubmitting ? 'Analyzing...' : 'Generate Analysis'} <ArrowRight size={14} />
+                            {isSubmitting ? 'Analyzing...' : 'Generate Analysis'} <ArrowRight size={16} />
                         </button>
                     ) : (
                         <button
                             type="button"
                             onClick={nextStep}
-                            className="btn-premium flex items-center gap-2 px-8 py-4 bg-white/10 text-white border border-white/10 font-bold rounded-full hover:bg-white/20 transition-colors text-xs uppercase tracking-widest"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors"
                         >
-                            Next <ArrowRight size={14} />
+                            Next <ArrowRight size={16} />
                         </button>
                     )}
                 </div>
