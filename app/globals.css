@@ -1,17 +1,50 @@
 @import "tailwindcss";
 
 :root {
-  --foreground-rgb: 250, 250, 250;
-  --background-start-rgb: 9, 9, 11;
-  --background-end-rgb: 9, 9, 11;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0; /* Pure Black */
+  --background-end-rgb: 0, 0, 0;   /* Pure Black */
+  --accent-color: #F59E0B; /* Amber 500 */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
   background: rgb(var(--background-start-rgb));
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.02em; /* Tight tracking for modern feel */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom Scrollbar - Modern, minimal, auto-hide */
+/* ============================================
+   PREMIUM UTILITIES (Glassmorphism)
+   ============================================ */
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, #fff, #a1a1aa); /* White to Zinc-400 */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(to right, #fbbf24, #d97706); /* Amber 400 to 600 */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom Scrollbar */
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
@@ -26,179 +59,43 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
   transition: background 0.2s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.3);
 }
-
-/* Smooth scrolling */
-.custom-scrollbar {
-  scroll-behavior: smooth;
-}
-/* ============================================
-   ANIMATIONS - Mobile-First, 60fps
-   ============================================ */
-
-/* Fade in from bottom (landing page sections) */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Fade in (general) */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Slide in from left (sidebar) */
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-/* Slide in from right */
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-/* Pulse (loading states) */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-/* Shimmer (skeleton loaders) */
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-/* ============================================
-   ANIMATION CLASSES
-   ============================================ */
-
-.animate-slide-up {
-  animation: slideUp 0.6s ease-out;
-}
-
-.animate-slide-up-delay-1 {
-  animation: slideUp 0.6s ease-out 0.2s backwards;
-}
-
-.animate-slide-up-delay-2 {
-  animation: slideUp 0.6s ease-out 0.4s backwards;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-
-.animate-slide-left {
-  animation: slideInLeft 0.3s ease-out;
-}
-
-.animate-slide-right {
-  animation: slideInRight 0.3s ease-out;
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* ============================================
-   SMOOTH TRANSITIONS
-   ============================================ */
-
-/* Default smooth transition for interactive elements */
-button, a, input, textarea {
-  transition: all 0.2s ease;
-}
-
-/* Hover effects (desktop only) */
-@media (hover: hover) {
-  button:hover {
-    transform: translateY(-1px);
-  }
-  
-  button:active {
-    transform: translateY(0);
-  }
-}
-
-/* ============================================
-   SCROLL BEHAVIOR
-   ============================================ */
 
 html {
   scroll-behavior: smooth;
 }
 
-/* iOS Safari smooth scrolling */
-@supports (-webkit-overflow-scrolling: touch) {
-  html {
-    -webkit-overflow-scrolling: touch;
-  }
-}
-
 /* ============================================
-   PERFORMANCE OPTIMIZATIONS
+   ANIMATIONS (Premium Smoothness)
    ============================================ */
 
-/* GPU acceleration for animations */
-.will-animate {
-  will-change: transform, opacity;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); filter: blur(10px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
 }
 
-/* Remove will-change after animation */
-.animation-done {
-  will-change: auto;
+@keyframes fadeIn {
+  from { opacity: 0; filter: blur(10px); }
+  to { opacity: 1; filter: blur(0); }
 }
 
-/* Reduce motion for accessibility */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.animate-fade-up {
+  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Apple-like easing */
 }
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
 
 /* ============================================
-   MOBILE-SPECIFIC FIXES
+   MOBILE OPTIMIZATIONS
    ============================================ */
 
 /* Prevent iOS zoom on input focus */
@@ -214,20 +111,3 @@ html {
   min-height: 100dvh;
 }
 
-/* Prevent pull-to-refresh on chat */
-body {
-  overscroll-behavior-y: none;
-}
-
-/* Safe area insets for notched devices */
-.safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.safe-area-top {
-  padding-top: env(safe-area-inset-top);
-}
-
-/* ============================================
-   END ANIMATIONS
-   ============================================ */

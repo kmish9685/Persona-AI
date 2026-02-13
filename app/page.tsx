@@ -71,18 +71,20 @@ function LandingPageContent() {
             Validate assumptions, find kill signals, and execute.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/analyze/new"
-              className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
-            >
-              Start Analysis (Decision Engine) <ArrowRight size={20} />
-            </Link>
-            <Link
-              href="/personas"
-              className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium text-lg rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
-            >
-              Chat with Advisors
+          <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up delay-200 uppercase tracking-widest text-xs font-bold w-full sm:w-auto">
+            <SignedIn>
+              <Link href="/dashboard" className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-lg hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2">
+                Dashboard <ArrowRight size={16} />
+              </Link>
+            </SignedIn>
+            <SignedOut>
+              <Link href="/analyze/new" className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-lg hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2">
+                Start Decision <Zap size={16} className="fill-black" />
+              </Link>
+            </SignedOut>
+
+            <Link href="/personas" className="w-full sm:w-auto px-8 py-4 bg-zinc-900 text-white rounded-lg border border-zinc-800 hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
+              Talk to Famous Minds <Brain size={16} />
             </Link>
           </div>
 
@@ -175,14 +177,104 @@ function LandingPageContent() {
         </div>
       </section>
 
+      {/* 2.5 THE OUTPUT VISUAL (PROOF) */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black overflow-hidden">
+        <div className="absolute top-[20%] left-[10%] w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4 tracking-tight">Clarity, not Conversation.</h2>
+            <p className="text-zinc-500 text-lg">See exact outcomes, risks, and kill signals.</p>
+          </div>
+
+          {/* Mockup Container */}
+          <div className="relative mx-auto max-w-4xl glass-panel rounded-2xl p-1 border border-white/10 shadow-2xl">
+            <div className="bg-[#050505] rounded-xl p-6 sm:p-10 font-mono text-sm leading-relaxed overflow-hidden">
+              <div className="flex items-center gap-2 text-zinc-500 mb-6 border-b border-white/5 pb-4">
+                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                <span className="ml-4 text-xs tracking-widest uppercase">Analysis_Report_v2.json</span>
+              </div>
+
+              <div className="space-y-6">
+                <div className="animate-fade-up delay-100">
+                  <span className="text-blue-400">"recommendation"</span>: <span className="text-green-400">"PIVOT TO B2B"</span>,
+                </div>
+                <div className="animate-fade-up delay-200 pl-4 border-l border-white/10">
+                  <span className="text-purple-400">"reasoning"</span>: <span className="text-zinc-300">"Given your burn rate of $15k/mo and 4 months runway, B2C CAC is unsustainable. B2B contracts offer immediate cash flow."</span>,
+                </div>
+                <div className="animate-fade-up delay-300">
+                  <span className="text-red-400">"kill_signals"</span>: [
+                  <div className="pl-4 text-zinc-400">"Contract value  &lt; $2k",</div>
+                  <div className="pl-4 text-zinc-400">"Sales cycle &gt; 3 weeks"</div>
+                  ]
+                </div>
+                <div className="animate-fade-up delay-300">
+                  <span className="text-orange-400">"conviction_score"</span>: <span className="text-white font-bold">92%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3.5 Comparison Section */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">Why not just use ChatGPT?</h2>
+            <p className="text-zinc-500 text-lg">Chatbots give advice. We give engineering-grade analysis.</p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="py-4 px-6 text-zinc-500 font-medium uppercase tracking-wider text-sm">Feature</th>
+                  <th className="py-4 px-6 text-zinc-500 font-medium uppercase tracking-wider text-sm">Standard AI Chat</th>
+                  <th className="py-4 px-6 text-white font-bold uppercase tracking-wider text-sm bg-amber-500/10 border-t border-x border-amber-500/20 rounded-t-xl">Persona AI Engine</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-300">
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Output Format</td>
+                  <td className="py-6 px-6 text-zinc-500">Wall of text</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Structured Decision Report</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Bias</td>
+                  <td className="py-6 px-6 text-zinc-500">Polite, agreeable, "it depends"</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Contrarian, falsifiable, "Kill Signals"</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Reasoning Depth</td>
+                  <td className="py-6 px-6 text-zinc-500">Surface level</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Second-order consequences (6mo view)</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Context Limit</td>
+                  <td className="py-6 px-6 text-zinc-500">Forgets previous details</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Persists constraints across decisions</td>
+                </tr>
+                <tr>
+                  <td className="py-6 px-6 font-medium">Outcome</td>
+                  <td className="py-6 px-6 text-zinc-500">More ideas (Overwhelm)</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-b border-amber-500/10 rounded-b-xl font-bold">Binary Decision (Clarity)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* 4. Pricing */}
-      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
+      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black border-t border-white/5">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Founding Membership</h2>
 
-          <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden">
+          <div className="glass-panel rounded-3xl p-8 relative overflow-hidden">
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/5 pb-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/10 pb-8">
               <div className="text-left">
                 <div className="text-sm text-zinc-500 uppercase tracking-widest font-bold mb-1">Monthly Pass</div>
                 <div className="text-5xl font-bold text-white">₹99<span className="text-lg text-zinc-500 font-normal">/mo</span></div>
@@ -217,9 +309,17 @@ function LandingPageContent() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm">
+      <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm mb-20 sm:mb-0">
         <p>&copy; 2025 Persona AI. Stop Chatting. Start Deciding.</p>
       </footer>
+
+      {/* STICKY MOBILE CTA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50 sm:hidden animate-slide-up-delay-2">
+        <Link href="/analyze/new" className="block w-full text-center py-3 bg-white text-black font-bold rounded-full shadow-lg shadow-white/10">
+          Start Decision Analysis
+        </Link>
+      </div>
+
     </div>
   );
 }
