@@ -16,14 +16,23 @@ export async function getUserPlan() {
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-        // Query by email as that's what the webhook uses
+        // Query by email
         const { data: existingUser, error: fetchError } = await supabase
             .from('users')
-            .select('plan')
+            .select('plan, subscription_end_date')
             .eq('email', email)
             .single();
 
         if (existingUser) {
+            // Check Expiration
+            if (existingUser.plan === 'pro' && existingUser.subscription_end_date) {
+                const endDate = new Date(existingUser.subscription_end_date);
+                if (endDate < new Date()) {
+                    console.log(`[getUserPlan] Subscription expired for ${email} on ${endDate.toISOString()}`);
+                    return { plan: 'free' };
+                }
+            }
+
             console.log(`[getUserPlan] Found user ${email}: ${existingUser.plan}`);
             return { plan: existingUser.plan || 'free' };
         } else {

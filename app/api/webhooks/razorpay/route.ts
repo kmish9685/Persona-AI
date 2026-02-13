@@ -38,24 +38,46 @@ export async function POST(req: NextRequest) {
                 // We don't have UUID here if they are new, but we can rely on email matching or create a placeholder.
                 // ideally we should query by email first.
 
-                const { data: existingUser } = await supabase.from('users').select('id').eq('email', userEmail).single();
+                const { data: existingUser } = await supabase.from('users').select('id, plan').eq('email', userEmail).single();
+
+                // 2. Decode Plan Duration from Notes
+                // Note: 'notes' might be on payment.notes or need to be fetched from order.
+                // Assuming payment.notes has it because create-order put it in the order, and Razorpay copies to payment usually.
+                // If not, we default to 'monthly' to be safe, or 'annual' if that is the business default. 
+                // Let's assume annual is default since variable was 'plan = annual' in create-order.
+                const planType = notes?.plan_type || 'annual';
+
+                // 3. Calculate End Date
+                const now = new Date();
+                let endDate = new Date(now); // Clone date
+
+                if (planType === 'monthly') {
+                    // Add 1 month (handles overflow e.g. Jan 31 -> Feb 28/29 auto-magically in JS)
+                    endDate.setMonth(endDate.getMonth() + 1);
+                } else {
+                    // Add 1 year
+                    endDate.setFullYear(endDate.getFullYear() + 1);
+                }
+                const isoEndDate = endDate.toISOString();
 
                 if (existingUser) {
                     const { error } = await supabase
                         .from('users')
-                        .update({ plan: 'pro' })
+                        .update({
+                            plan: 'pro',
+                            subscription_end_date: isoEndDate
+                        })
                         .eq('email', userEmail);
 
                     if (error) console.error("Failed to upgrade user:", error);
                 } else {
                     // Create new user record if missing (Safety Net)
-                    // We generate a placeholder ID or let DB handle it if auto-gen
                     const { error } = await supabase
                         .from('users')
                         .insert({
                             email: userEmail,
                             plan: 'pro',
-                            // Add other required fields if any, checking schema might be good but this is a safe blind bet for now
+                            subscription_end_date: isoEndDate
                         });
 
                     if (error) console.error("Failed to create & upgrade user:", error);
