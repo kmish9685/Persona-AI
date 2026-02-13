@@ -2,53 +2,16 @@
 
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { Disclosure, Transition } from '@headlessui/react';
-import { ChevronDown, Check, X, ArrowRight, Target, Rocket, Briefcase } from 'lucide-react';
+import { ArrowRight, Check, X, Target, Brain, ShieldAlert, TrendingUp, Clock, Zap } from 'lucide-react';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
 
 function LandingPageContent() {
-  const faqs = [
-    {
-      question: "Is this really unlimited?",
-      answer: "Yes. If you upgrade to the Founding Membership (₹99/mo), you get unlimited messages. Free users get 10 messages/day."
-    },
-    {
-      question: "Can I cancel anytime?",
-      answer: "No. The Founding Membership is a lifetime price lock, but it is non-refundable. We prioritize committed users."
-    },
-    {
-      question: "Why not just use GPTs?",
-      answer: "GPTs are trained to be safe and give you options. Persona AI is fine-tuned to be brutal, opinionated, and first-principles driven. It doesn't hedge."
-    },
-    {
-      question: "Will you add more personas?",
-      answer: "Yes. We are training 'Sam Product', 'Naval Angel', and others. Founding Members get instant access to all future personas."
-    }
-  ];
-
-  const features = [
-    {
-      icon: <Target className="w-5 h-5 text-orange-500" />,
-      title: "First Principles Logic",
-      desc: "No analogies. Just physics and economics."
-    },
-    {
-      icon: <Rocket className="w-5 h-5 text-blue-500" />,
-      title: "Leverage Optimization",
-      desc: "Identify high-leverage activities instantly."
-    },
-    {
-      icon: <Briefcase className="w-5 h-5 text-purple-500" />,
-      title: "Founder Psychology",
-      desc: "Y-Combinator style brutal feedback."
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-white/30 overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-amber-500/30 overflow-x-hidden">
       {/* Background Decor */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-b from-white/5 to-transparent rounded-full blur-[120px]" />
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-b from-amber-500/5 to-transparent rounded-full blur-[120px]" />
       </div>
 
       {/* Header */}
@@ -62,109 +25,112 @@ function LandingPageContent() {
 
             <div className="flex items-center gap-6">
               <Link href="/about" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                Mission
+                Manifesto
+              </Link>
+              <Link href="/login" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+                Login
               </Link>
               <Link
-                href="/personas"
-                className="px-5 py-2 text-sm font-medium bg-white text-black hover:bg-gray-200 rounded-full transition-all"
+                href="/analyze/new"
+                className="px-5 py-2 text-sm font-bold bg-white text-black hover:bg-amber-500 hover:text-black rounded-full transition-all flex items-center gap-2"
               >
-                Start Deciding
+                Start Deciding <ArrowRight size={14} />
               </Link>
             </div>
           </div>
         </div>
       </header>
 
-      {/* 1. Hero Section: Answers > Options */}
+      {/* 1. Hero Section */}
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 sm:py-32 text-center animate-slide-up">
-        <div className="max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">Reasoning Engine v2.0 Live</span>
+        <div className="max-w-5xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 mb-8 backdrop-blur-sm">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            <span className="text-xs font-bold text-amber-500 tracking-wide uppercase">The Decision Engine is Live</span>
           </div>
 
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold leading-tight mb-8 tracking-tighter text-white">
-            Stop Chatting.<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-white to-blue-400">
-              Start Deciding.
-            </span>
+            Stop Spending <br />
+            2 Weeks on Decisions.
           </h1>
 
-          <p className="text-xl sm:text-2xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            GPTs give you options. Persona AI gives you answers.
+          <p className="text-xl sm:text-2xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            Compress your decision cycle to <span className="text-white font-medium">5 minutes</span>.
             <br className="hidden sm:block" />
-            Simulate the minds of Musk, Naval, and Graham.
+            Validate assumptions, find kill signals, and execute.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/personas"
-              className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
+              href="/analyze/new"
+              className="px-8 py-4 bg-amber-500 text-black font-bold text-lg rounded-full hover:scale-105 active:scale-95 transition-all w-full sm:w-auto flex items-center justify-center gap-2"
             >
-              Get Decisions (Free)
+              Start Analysis (Free) <ArrowRight size={20} />
             </Link>
             <Link
-              href="#proof"
+              href="#how-it-works"
               className="px-8 py-4 bg-white/5 border border-white/10 text-white font-medium text-lg rounded-full hover:bg-white/10 transition-all w-full sm:w-auto"
             >
-              See the Difference
+              How it Works
             </Link>
           </div>
+
+          <p className="mt-6 text-sm text-zinc-600">No credit card required • 1 Free Analysis</p>
         </div>
       </section>
 
-      {/* 2. Proof Section: The Comparison */}
+      {/* 2. Problem/Solution (The "Waffle" vs The Engine) */}
       <section id="proof" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-bold mb-4">The "Waffle" vs. The Answer</h2>
-            <p className="text-zinc-500">Why top founders stopped using standard ChatGPT.</p>
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">Chatbots Waffle. Engines Decide.</h2>
+            <p className="text-zinc-500 text-lg">Why founders are switching from standard ChatGPT.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Standard AI */}
-            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+            <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-8 opacity-60 hover:opacity-80 transition-opacity">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-zinc-900 rounded-lg"><X size={20} className="text-zinc-500" /></div>
-                <h3 className="font-bold text-zinc-500">STANDARD AI</h3>
+                <div className="p-2 bg-zinc-900 rounded-lg"><X size={20} className="text-red-500" /></div>
+                <h3 className="font-bold text-zinc-500 tracking-widest text-sm">STANDARD CHATBOT</h3>
               </div>
               <div className="space-y-4">
                 <div className="bg-zinc-900 p-4 rounded-xl rounded-tr-none border border-white/5 text-sm text-zinc-400">
-                  Should I raise VC funding?
+                  Should I pivot to B2B?
                 </div>
-                <div className="bg-zinc-900/50 p-6 rounded-xl rounded-tl-none border border-white/5 text-sm leading-relaxed text-zinc-500">
-                  "Raising venture capital is a complex decision. There are pros and cons. On one hand, you get capital. On the other, you lose equity. Consider your market size, growth trajectory..."
+                <div className="bg-zinc-800/50 p-6 rounded-xl rounded-tl-none border border-white/5 text-sm leading-relaxed text-zinc-500">
+                  "Pivoting to B2B has pros and cons. B2B often has higher LTV but longer sales cycles. Use a framework like SWOT analysis. Consider your team's strengths..."
+                </div>
+                <div className="text-xs text-red-500/50 italic font-mono mt-2">
+                  → Verdict: "It depends" (Useless)
                 </div>
               </div>
             </div>
 
             {/* Persona AI */}
-            <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-orange-500/10">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-purple-600"></div>
+            <div className="bg-[#0A0A0A] border border-amber-500/20 rounded-3xl p-8 relative overflow-hidden shadow-2xl shadow-amber-900/10">
+              <div className="absolute top-0 right-0 p-6 opacity-10 text-amber-500"><Zap size={80} /></div>
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-white rounded-lg"><Check size={20} className="text-black" /></div>
-                <h3 className="font-bold text-white">PERSONA AI (Naval Mode)</h3>
+                <div className="p-2 bg-amber-500 rounded-lg"><Check size={20} className="text-black" /></div>
+                <h3 className="font-bold text-white tracking-widest text-sm">DECISION ENGINE</h3>
               </div>
               <div className="space-y-4">
                 <div className="bg-zinc-800 p-4 rounded-xl rounded-tr-none text-sm text-white inline-block">
-                  Should I raise VC funding?
+                  Should I pivot to B2B?
                 </div>
-                <div className="bg-[#111] p-6 rounded-xl rounded-tl-none border-l-2 border-blue-500 text-sm leading-relaxed text-gray-200">
-                  "If you can grow without it, do not raise. Capital is not the scarce resource; specific knowledge is. Raising money is selling future freedom. Only raise if you are pouring fuel on a fire that is already burning."
+                <div className="bg-[#111] p-6 rounded-xl rounded-tl-none border-l-2 border-amber-500 text-sm leading-relaxed text-gray-200">
+                  <strong className="block text-white mb-2 text-lg">Verdict: PIVOT IMMEDIATELY.</strong>
+                  "Your runway is 4 months. B2C CAC is invalidating your unit economics. You have 2 warm B2B pilots. Pure survival logic dictates you chase the pilots."
                 </div>
 
-                {/* Reasoning Component Showcase */}
-                <div className="mt-4 border border-white/10 rounded-lg overflow-hidden">
-                  <div className="bg-zinc-900/80 px-4 py-2 flex items-center justify-between border-b border-white/5">
-                    <div className="flex items-center gap-2 text-xs font-medium text-orange-400">
-                      <Target size={12} />
-                      <span>Reasoning Analysis</span>
-                    </div>
+                {/* Kill Signals Showcase */}
+                <div className="mt-4 border border-red-500/20 rounded-lg overflow-hidden bg-red-900/5">
+                  <div className="px-4 py-2 flex items-center gap-2 border-b border-red-500/10">
+                    <ShieldAlert size={14} className="text-red-500" />
+                    <span className="text-xs font-bold text-red-400 uppercase">Kill Signal Identified</span>
                   </div>
-                  <div className="p-4 bg-black/50 text-xs font-mono text-zinc-400 space-y-2">
-                    <p><span className="text-zinc-500">Framework:</span> Leverage Optimization</p>
-                    <p><span className="text-zinc-500">Logic:</span> Capital = permissionless leverage, but Equity = expensive cost.</p>
-                    <p><span className="text-zinc-500">Conclusion:</span> Bootstrapping provides higher long-term agency.</p>
+                  <div className="p-3 text-xs text-zinc-400">
+                    If Pilot A doesn't close by <span className="text-white">Day 14</span>, kill the company.
                   </div>
                 </div>
               </div>
@@ -173,102 +139,90 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* 3. Multi-Persona Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
+
+      {/* 3. Steps Visualization */}
+      <section id="how-it-works" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
-            <div className="max-w-xl">
-              <h2 className="text-3xl sm:text-5xl font-bold mb-6">One Question.<br />Six Perspectives.</h2>
-              <p className="text-xl text-zinc-400 leading-relaxed mb-8">
-                Why settle for one generic answer? In <strong>Multi-Persona Mode</strong>, you get a war room of advisors instantly. Compare First Principles (Elon) against YC Logic (Paul Graham) in real-time.
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">How It Works</h2>
+            <p className="text-zinc-500 text-lg">Garbage in, garbage out. We force clarity first.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Step 1 */}
+            <div className="bg-zinc-900/30 border border-white/5 p-8 rounded-2xl relative">
+              <div className="absolute -top-5 left-8 w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center font-bold border border-white/10 text-zinc-400">1</div>
+              <h3 className="text-xl font-bold text-white mb-2 mt-2">Structure Context</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                You input messy thoughts. The engine forces you to define <strong>Constraints</strong> (Burn, Runway) and <strong>Options</strong>.
               </p>
-              <div className="flex gap-4">
-                <div className="flex -space-x-3">
-                  {['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'].map((id) => (
-                    <div key={id} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 overflow-hidden">
-                      <img src={`/personas/${id}.jpg`} alt={id} className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
-                <span className="text-sm font-medium text-zinc-500 flex items-center">6 Minds working for you</span>
-              </div>
             </div>
 
-            {/* Grid Visual Representation */}
-            <div className="w-full max-w-lg aspect-[4/3] bg-zinc-900/50 rounded-2xl border border-white/10 p-4 grid grid-cols-2 gap-3 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
-              {/* Fake Cards */}
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="bg-black border border-white/5 rounded-lg p-3 opacity-50">
-                  <div className="w-8 h-8 rounded-full bg-zinc-800 mb-2"></div>
-                  <div className="h-2 w-3/4 bg-zinc-800 rounded mb-2"></div>
-                  <div className="h-2 w-1/2 bg-zinc-800 rounded"></div>
-                </div>
-              ))}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
-                <Link href="/personas" className="px-6 py-3 bg-white text-black font-bold rounded-full shadow-lg hover:scale-105 transition-transform whitespace-nowrap">
-                  Try Multi-Persona Mode
-                </Link>
-              </div>
+            {/* Step 2 */}
+            <div className="bg-zinc-900/30 border border-white/5 p-8 rounded-2xl relative">
+              <div className="absolute -top-5 left-8 w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center font-bold text-black shadow-lg shadow-amber-500/20">2</div>
+              <h3 className="text-xl font-bold text-white mb-2 mt-2">Simulate Futures</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                The AI synthesizes 6 top founder personas (Musk, Naval, Thiel) to simulate the <strong>Second-Order Consequences</strong> of each option.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="bg-zinc-900/30 border border-white/5 p-8 rounded-2xl relative">
+              <div className="absolute -top-5 left-8 w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center font-bold border border-white/10 text-zinc-400">3</div>
+              <h3 className="text-xl font-bold text-white mb-2 mt-2">Get Verdict</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                Receive a comprehensive report with a clear <span className="text-green-500">Recommendation</span> and <span className="text-red-500">Kill Signals</span>.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 4. Pricing / Features */}
+      {/* 4. Pricing */}
       <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Founding Membership</h2>
-          <div className="inline-block bg-orange-500/10 text-orange-400 px-4 py-1.5 rounded-full text-sm font-medium mb-10 border border-orange-500/20">
-            Limited Time Price Lock
-          </div>
 
           <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Rocket size={100} />
-            </div>
 
             <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/5 pb-8">
               <div className="text-left">
-                <div className="text-sm text-zinc-500 uppercase tracking-widest font-bold mb-1">Lifetime Deal</div>
+                <div className="text-sm text-zinc-500 uppercase tracking-widest font-bold mb-1">Monthly Pass</div>
                 <div className="text-5xl font-bold text-white">₹99<span className="text-lg text-zinc-500 font-normal">/mo</span></div>
               </div>
               <div className="text-left md:text-right">
-                <p className="text-zinc-400 text-sm">Usually ₹999/mo.</p>
-                <p className="text-emerald-400 text-sm font-medium">Early Adopters Only.</p>
+                <p className="text-zinc-400 text-sm">Less than a coffee.</p>
+                <p className="text-amber-500 text-sm font-medium">Save weeks of indecision.</p>
               </div>
             </div>
 
             <ul className="space-y-4 text-left mb-10">
               <li className="flex items-center gap-3">
-                <Check className="text-white shrink-0" size={18} />
-                <span className="text-zinc-300"><strong>Unlimited Messages</strong> (vs 10/day)</span>
+                <Check className="text-amber-500 shrink-0" size={18} />
+                <span className="text-white"><strong>Unlimited Decision Analysis</strong></span>
               </li>
               <li className="flex items-center gap-3">
-                <Check className="text-orange-400 shrink-0" size={18} />
-                <span className="text-white">Access <strong>Multi-Persona Mode</strong></span>
+                <Check className="text-amber-500 shrink-0" size={18} />
+                <span className="text-white">Access to <strong>Deep Reasoning Model</strong></span>
               </li>
               <li className="flex items-center gap-3">
-                <Check className="text-orange-400 shrink-0" size={18} />
-                <span className="text-white">Unlock <strong>Reasoning Breakdown</strong></span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="text-white shrink-0" size={18} />
-                <span className="text-zinc-300">Access to all future personas (Sam, Trump)</span>
+                <Check className="text-zinc-500 shrink-0" size={18} />
+                <span className="text-zinc-300">Kill Signal Dashboard (Coming Soon)</span>
               </li>
             </ul>
 
-            <Link href="/personas?upgrade=true" className="block w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-gray-200 transition-colors">
-              Lock In ₹99/mo Price
+            <Link href="/analyze/new" className="block w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-zinc-200 transition-colors">
+              Start Your First Analysis
             </Link>
-            <p className="mt-4 text-xs text-zinc-600">Cancel anytime. Non-refundable.</p>
+            <p className="mt-4 text-xs text-zinc-600">Cancel anytime.</p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm">
-        <p>&copy; 2025 Persona AI. Built for the reckless ones.</p>
+        <p>&copy; 2025 Persona AI. Stop Chatting. Start Deciding.</p>
       </footer>
     </div>
   );
