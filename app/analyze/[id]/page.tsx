@@ -4,14 +4,71 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, AlertTriangle, TrendingUp, Skull, CheckCircle } from 'lucide-react';
 
-export default async function AnalysisResultPage({ params }: { params: { id: string } }) {
+export default async function AnalysisResultPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
+    const { id } = params;
     const user = await currentUser();
     if (!user) return redirect('/login');
 
-    // Bypass RLS using Service Role Key (since we use Clerk for Auth, not Supabase Auth)
+    // Check for Service Role Key
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) {
+        console.error("CRITICAL: SUPABASE_SERVICE_ROLE_KEY is missing in environment variables!");
+        return (
+            <div className="text-white p-10 max-w-2xl mx-auto">
+                <h1 className="text-2xl font-bold text-red-500 mb-4">Configuration Error</h1>
+                <p className="text-zinc-300 mb-4">The server is missing the Database Secret Key.</p>
+                <div className="bg-red-500/10 border border-red-500/30 p-4 rounded text-red-200 text-sm font-mono">
+                    SUPABASE_SERVICE_ROLE_KEY is undefined.
+                </div>
+            </div>
+        );
+    }
+
+    // Verify it is actually a SERVICE key (not anon)
+    const parts = serviceRoleKey.split('.');
+    let keyRole = 'unknown';
+    if (parts.length === 3) {
+        try {
+            const payload = parts[1];
+            // Simple base64 decode for debug
+            const decodedStr = Buffer.from(payload, 'base64').toString();
+            const decoded = JSON.parse(decodedStr);
+            keyRole = decoded.role;
+        } catch (e) {
+            keyRole = 'parse_error';
+        }
+    }
+
+    if (keyRole !== 'service_role') {
+        return (
+            <div className="text-white p-10 max-w-2xl mx-auto">
+                <h1 className="text-2xl font-bold text-red-500 mb-4">Key Configuration Error</h1>
+                <p className="text-zinc-300 mb-4">You put the WRONG key in Vercel.</p>
+                <div className="bg-zinc-900 border border-red-500/30 p-6 rounded text-sm space-y-4">
+                    <div>
+                        <p className="text-zinc-500 uppercase text-xs font-bold">Expected Role</p>
+                        <p className="text-green-500 font-mono">service_role</p>
+                    </div>
+                    <div>
+                        <p className="text-zinc-500 uppercase text-xs font-bold">Your Key's Role</p>
+                        <p className="text-red-500 font-mono text-xl">{keyRole}</p>
+                    </div>
+                    <p className="text-zinc-400">
+                        You likely pasted the <strong>anon key</strong> into the <code>SUPABASE_SERVICE_ROLE_KEY</code> variable in Vercel.
+                        <br />
+                        <br />
+                        <strong>Fix:</strong> Go to Supabase &rarr; Settings &rarr; API &rarr; Copy the <strong>service_role (secret)</strong> key &rarr; Paste it in Vercel.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // Bypass RLS using Service Role Key
     const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
+        serviceRoleKey
     );
 
     const { data: decision, error } = await supabase
@@ -28,6 +85,7 @@ export default async function AnalysisResultPage({ params }: { params: { id: str
                 <div className="bg-zinc-900 p-6 rounded-lg border border-red-500/20 font-mono text-sm space-y-2">
                     <p><span className="text-zinc-500">Decision ID:</span> <span className="text-amber-500">{params.id}</span></p>
                     <p><span className="text-zinc-500">User ID:</span> <span className="text-blue-400">{user.id}</span></p>
+                    <p><span className="text-zinc-500">Service Key:</span> <span className={serviceRoleKey ? "text-green-500" : "text-red-500"}>{serviceRoleKey ? "Present (Starts with " + serviceRoleKey.substring(0, 5) + "...)" : "MISSING"}</span></p>
                     {error && (
                         <div className="mt-4 pt-4 border-t border-white/10">
                             <p className="text-red-400 font-bold">Supabase Error:</p>
