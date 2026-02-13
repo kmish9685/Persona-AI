@@ -49,6 +49,7 @@ body {
   /* Amber 400 to 600 */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Custom Scrollbar */
