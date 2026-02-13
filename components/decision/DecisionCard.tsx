@@ -35,51 +35,48 @@ export default function DecisionCard({ decision }: { decision: any }) {
     return (
         <div
             onClick={() => setIsExpanded(!isExpanded)}
-            className={`group relative block glass-panel rounded-xl transition-all duration-300 ${isExpanded ? 'bg-zinc-900 border-white/10' : 'hover:-translate-y-1'}`}
+            className={`group relative block glass-panel rounded-2xl transition-all duration-500 cursor-pointer ${isExpanded ? 'bg-zinc-900 border-white/20' : 'hover:border-white/20'}`}
         >
             {/* Delete Button */}
             <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="absolute top-4 right-4 p-2 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-colors z-20 opacity-0 group-hover:opacity-100" // Hidden by default on mobile unless tapped? No, keep accessible.
+                className="absolute top-4 right-4 p-2 text-zinc-600 hover:text-red-400 hover:bg-white/5 rounded-full transition-colors z-20 opacity-0 group-hover:opacity-100"
                 style={{ opacity: 1 }} // Force visible for accessibility on touch
                 title="Delete Decision"
             >
-                {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} strokeWidth={1.5} />}
             </button>
 
-            {/* Clickable Area for Navigation on Desktop, Expansion on Mobile */}
-            <div className="p-6 cursor-pointer" onClick={(e) => {
-                // On mobile, tap expands. On desktop, we might want to navigate immediately?
-                // Let's keep it simple: detailed view requires a specific link click or "View Analysis" click.
-                // Or we make the Title a link.
-            }}>
-                <div className="flex justify-between items-start mb-2 pr-10">
-                    <h3 className="text-lg font-bold text-white group-hover:text-amber-500 transition-colors line-clamp-2 leading-tight">
+            <div className="p-8">
+                <div className="flex flex-col gap-4 mb-6">
+                    {/* Status Badge */}
+                    <div className="flex items-center justify-between">
+                        <span className={`inline-flex items-center px-2 py-1 rounded-md text-[10px] uppercase tracking-widest font-bold border ${isHighScore ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                            {score}% Conviction
+                        </span>
+                        <span className="text-[10px] text-zinc-600 font-mono uppercase tracking-widest">
+                            {new Date(decision.created_at).toLocaleDateString()}
+                        </span>
+                    </div>
+
+                    <h3 className="text-xl font-medium text-white group-hover:text-amber-500 transition-colors leading-tight">
                         {decision.title}
                     </h3>
                 </div>
 
-                {/* Always Visible: Score & Date */}
-                <div className="flex items-center gap-3 mb-4 text-xs font-mono text-zinc-500">
-                    <span className={`px-2 py-0.5 rounded ${isHighScore ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-500'}`}>
-                        {score}% Conviction
-                    </span>
-                    <span>{new Date(decision.created_at).toLocaleDateString()}</span>
-                </div>
-
-                {/* Verdict: Truncated default, full expanded */}
-                <div className={`mb-6 text-sm text-zinc-300 leading-relaxed ${isExpanded ? '' : 'line-clamp-2'}`}>
+                {/* Verdict */}
+                <div className={`text-sm text-zinc-400 leading-relaxed font-light ${isExpanded ? '' : 'line-clamp-3'}`}>
                     {verdict}
                 </div>
 
-                {/* Action Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                    <span className="text-xs text-zinc-600">
-                        {isExpanded ? "Tap title to close" : "Tap to see more"}
+                {/* Footer Action */}
+                <div className={`mt-8 pt-6 border-t border-white/5 flex items-center justify-between transition-opacity duration-300 ${isExpanded ? 'opacity-100' : 'opacity-60 group-hover:opacity-100'}`}>
+                    <span className="text-[10px] text-zinc-600 uppercase tracking-widest font-bold">
+                        {isExpanded ? "Close" : "Details"}
                     </span>
-                    <Link href={`/analyze/${decision.id}`} className="flex items-center gap-2 text-sm font-bold text-white hover:text-amber-500 transition-colors z-10 p-2 -m-2">
-                        View Full Report <ArrowRight size={14} />
+                    <Link href={`/analyze/${decision.id}`} className="flex items-center gap-2 text-xs font-bold text-white hover:text-amber-500 transition-colors uppercase tracking-widest">
+                        View Report <ArrowRight size={14} />
                     </Link>
                 </div>
             </div>

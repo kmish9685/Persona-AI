@@ -3,19 +3,166 @@
 :root {
   --foreground-rgb: 255, 255, 255;
   --background-start-rgb: 0, 0, 0;
-  /* Pure Black */
-  --background-end-rgb: 0, 0, 0;
-  /* Pure Black */
+  /* Pure Black for OLED depth */
+  --background-end-rgb: 5, 5, 5;
+  /* Very subtle gradient */
   --accent-color: #F59E0B;
-  /* Amber 500 */
+
+  /* Premium System Tokens */
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --premium-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Apple-like easing */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
+  background: black;
   font-family: var(--font-geist-sans), "Inter", -apple-system, sans-serif;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.015em;
+  /* Tight but readable */
+  line-height: 1.6;
+  /* Relaxed reading experience */
   -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================
+   PREMIUM UTILITIES (Quiet & Human)
+   ============================================ */
+
+/* The "Apple" Glass - Subtle, Blurred, No Heavy Stroke */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s var(--premium-ease);
+}
+
+.glass-panel:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  /* Very subtle lift */
+  box-shadow: 0 12px 32px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Premium Text Styles */
+.text-hero {
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.text-subtle {
+  color: #a1a1aa;
+  /* Zinc 400 */
+  font-weight: 450;
+  /* Slightly lighter than normal */
+}
+
+/* Button Reset & Base */
+.btn-premium {
+  transition: all 0.3s var(--premium-ease);
+}
+
+.btn-premium:active {
+  transform: scale(0.98);
+}
+
+/* Custom Scrollbar - Minimal */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   ANIMATIONS (Slow & Cinematic)
+   ============================================ */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+    /* Reduced movement */
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 1s var(--premium-ease) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+}
+
+.delay-100 {
+  animation-delay: 0.15s;
+}
+
+.delay-200 {
+  animation-delay: 0.3s;
+}
+
+.delay-300 {
+  animation-delay: 0.45s;
+}
+
+/* ============================================
+   MOBILE OPTIMIZATIONS
+   ============================================ */
+
+@media screen and (max-width: 767px) {
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    /* Prevent iOS zoom */
+  }
+}
+
+.min-h-screen-mobile {
+  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* ============================================

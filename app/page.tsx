@@ -95,190 +95,162 @@ function LandingPageContent() {
       </header>
 
       {/* 1. Hero Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 pt-32 pb-24 text-center">
         <div className="max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">Decision Engine for Real Choices — Not Chatbot Noise</span>
+          {/* Subtle Tag */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+            <span className="text-[10px] font-medium tracking-[0.2em] text-zinc-400 uppercase">Decision Engine v2.0</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.9] mb-8 tracking-tighter animate-fade-up">
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-medium tracking-tight mb-8 leading-[1.1] animate-fade-up text-white">
             Stop Chatting.<br />
-            <span className="text-gradient">
-              Start Deciding.
-            </span>
+            <span className="text-zinc-500">Start Deciding.</span>
           </h1>
 
           {/* 3-Frame Carousel */}
-          <div className="relative max-w-4xl mx-auto mb-12">
-            <div className="glass-panel border border-white/10 rounded-3xl p-8 sm:p-12 min-h-[320px] sm:min-h-[280px] flex flex-col justify-center relative overflow-hidden group">
-              {/* Progress Bars */}
-              <div className="absolute top-0 left-0 right-0 flex gap-2 p-4">
+          <div className="relative max-w-3xl mx-auto mb-16 animate-fade-up delay-100">
+            <div className="glass-panel rounded-3xl p-8 sm:p-12 min-h-[300px] flex flex-col justify-center relative overflow-hidden group hover:border-white/10 transition-all duration-500">
+              {/* Progress Bars - Ultra Minimal */}
+              <div className="absolute top-0 left-0 right-0 flex gap-4 p-6 opacity-30 group-hover:opacity-60 transition-opacity">
                 {frames.map((_, i) => (
-                  <div key={i} className="h-0.5 flex-1 bg-white/10 rounded-full overflow-hidden">
+                  <div key={i} className="h-[2px] flex-1 bg-white/10 rounded-full overflow-hidden">
                     <div
-                      className={`h-full bg-amber-500/80 transition-all duration-500 ${currentFrame === i ? 'w-full' : 'w-0'}`}
+                      className={`h-full bg-white transition-all duration-500 ${currentFrame === i ? 'w-full' : 'w-0'}`}
                       style={{ transitionDuration: currentFrame === i ? '5000ms' : '0ms' }}
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="flex flex-col items-center animate-fade-in" key={currentFrame}>
-                <div className="mb-4 p-3 bg-white/5 rounded-2xl border border-white/10">
+              <div className="flex flex-col items-center" key={currentFrame}>
+                <div className="mb-6 opacity-80">
                   {frames[currentFrame].icon}
                 </div>
-                <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">
+                <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.25em] mb-4">
                   {frames[currentFrame].tag}
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4">{frames[currentFrame].title}</h2>
-                <p className="text-zinc-400 text-lg max-w-2xl leading-relaxed">
+                <h2 className="text-2xl font-medium mb-4 text-white tracking-tight">{frames[currentFrame].title}</h2>
+                <p className="text-zinc-400 text-lg max-w-xl leading-relaxed font-light">
                   {frames[currentFrame].content}
                 </p>
               </div>
 
-              {/* Navigation Arrows */}
+              {/* Navigation Arrows - Minimal */}
               <button
                 onClick={() => setCurrentFrame((prev) => (prev - 1 + frames.length) % frames.length)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/5 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-white transition-colors"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={24} strokeWidth={1.5} />
               </button>
               <button
                 onClick={() => setCurrentFrame((prev) => (prev + 1) % frames.length)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/5 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-white transition-colors"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={24} strokeWidth={1.5} />
               </button>
             </div>
           </div>
 
-          <div className="hidden sm:flex flex-col sm:flex-row items-center justify-center gap-4 uppercase tracking-widest text-xs font-black">
-            <Link href="/analyze/new" className="w-full sm:w-auto px-10 py-5 bg-white text-black rounded-full hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-up delay-200">
+            <Link href="/analyze/new" className="btn-premium px-8 py-4 bg-white text-black rounded-full font-medium text-sm hover:bg-zinc-200 flex items-center gap-2">
               Start Decision Analysis <ArrowRight size={16} />
             </Link>
-            <Link href="/personas" className="w-full sm:w-auto px-10 py-5 bg-zinc-900 text-zinc-400 rounded-full border border-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2">
-              Try Advisor Chat <Brain size={16} />
+            <Link href="/personas" className="btn-premium px-8 py-4 bg-white/5 text-zinc-300 rounded-full border border-white/10 hover:bg-white/10 hover:text-white flex items-center gap-2">
+              Advisor Chat <Brain size={16} />
             </Link>
           </div>
 
-          {/* Micro-Stats / Usage Proof */}
-          <div className="mt-16 flex flex-wrap justify-center gap-8 border-y border-white/5 py-8">
-            <div className="flex flex-col items-center">
-              <span className="text-lg font-bold">~30s</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Process Time</span>
+          {/* Micro-Stats / Usage Proof - Cleaned */}
+          <div className="mt-20 flex flex-wrap justify-center gap-12 border-t border-white/5 pt-12 animate-fade-in delay-300">
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-base font-medium text-white">~30s</span>
+              <span className="text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-medium">Process Time</span>
             </div>
-            <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
-            <div className="flex flex-col items-center">
-              <span className="text-lg font-bold">6+</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Personas Simulated</span>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-base font-medium text-white">6+</span>
+              <span className="text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-medium">Expert Models</span>
             </div>
-            <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
-            <div className="flex flex-col items-center">
-              <span className="text-lg font-bold text-amber-500">4.8/5</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Clarity Rating</span>
-            </div>
-            <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
-            <div className="flex flex-col items-center">
-              <div className="flex gap-1 mb-1">
-                {[1, 2, 3, 4, 5].map(i => <Check key={i} size={10} className="text-emerald-500 fill-emerald-500" />)}
-              </div>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Beta Feedback</span>
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-base font-medium text-white">4.8/5</span>
+              <span className="text-[10px] text-zinc-600 uppercase tracking-[0.2em] font-medium">Clarity Score</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Differentiator Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Why Persona AI?</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">Standard AI is for chatting. Persona AI is for deciding.</p>
+      {/* 2. Differentiator Grid - Cleaned */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-32 bg-zinc-950/50">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-3xl sm:text-4xl font-medium mb-6 tracking-tight text-white">Why this is different.</h2>
+            <p className="text-zinc-400 max-w-2xl mx-auto text-lg leading-relaxed font-light">
+              Most AI tools generate noise. We generate conviction.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Standard AI */}
-            <div className="p-8 rounded-3xl bg-zinc-900/20 border border-white/5 opacity-60">
-              <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 mb-6">Standard AI</h3>
-              <ul className="space-y-4 text-zinc-500 text-sm">
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Hedged "It depends" answers</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> No clear tradeoffs</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Wall of conversational text</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> No accountability</li>
+            <div className="p-8 rounded-3xl border border-white/5 bg-transparent hover:bg-white/[0.02] transition-colors">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-8">Standard AI</h3>
+              <ul className="space-y-6 text-zinc-400 text-sm font-medium">
+                <li className="flex gap-3"><span className="text-zinc-600">—</span> "It depends" answers</li>
+                <li className="flex gap-3"><span className="text-zinc-600">—</span> Endless clarification</li>
+                <li className="flex gap-3"><span className="text-zinc-600">—</span> Zero accountability</li>
               </ul>
             </div>
 
             {/* Specialized Personas */}
-            <div className="p-8 rounded-3xl bg-zinc-900/20 border border-white/5 opacity-80">
-              <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-6">Persona Chatbots</h3>
-              <ul className="space-y-4 text-zinc-400 text-sm">
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> Stylized language mimicry</li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> One perspective at a time</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Still conversational/wordy</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> No structured verdict</li>
+            <div className="p-8 rounded-3xl border border-white/5 bg-transparent hover:bg-white/[0.02] transition-colors">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 mb-8">Role-Play Bots</h3>
+              <ul className="space-y-6 text-zinc-400 text-sm font-medium">
+                <li className="flex gap-3"><span className="text-zinc-600">—</span> Simulated empathy</li>
+                <li className="flex gap-3"><span className="text-zinc-600">—</span> verbose backstories</li>
+                <li className="flex gap-3"><span className="text-zinc-600">—</span> No synthesis</li>
               </ul>
             </div>
 
             {/* Persona AI Engine */}
-            <div className="p-8 rounded-3xl bg-white/5 border border-amber-500/30 relative overflow-hidden shadow-2xl shadow-amber-500/5">
-              <div className="absolute top-0 right-0 p-4 opacity-10 text-amber-500"><Zap size={40} /></div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-amber-500 mb-6">Decision Engine</h3>
-              <ul className="space-y-4 text-white text-sm">
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Binary Verdict (YES/NO)</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Conviction Score (0-100%)</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Kill Signals (When to quit)</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> 2nd Order Effects Analysis</li>
+            <div className="glass-panel p-8 rounded-3xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-50">
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+              </div>
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-amber-500 mb-8">Decision Engine</h3>
+              <ul className="space-y-6 text-white text-sm font-medium">
+                <li className="flex gap-3"><Check size={14} className="text-amber-500 mt-0.5" /> Binary Verdict (Yes/No)</li>
+                <li className="flex gap-3"><Check size={14} className="text-amber-500 mt-0.5" /> Confidence Score</li>
+                <li className="flex gap-3"><Check size={14} className="text-amber-500 mt-0.5" /> Kill Signals</li>
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. SHOW VS TELL (THE PROOF) */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Show, Don't Tell.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">The difference between a chat and a verdict.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+      {/* 3. Output Comparison - Minimal */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-32 border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
             {/* Generic Output */}
-            <div className="flex flex-col">
-              <div className="mb-4 text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-zinc-800"></div> Generic AI Output
-              </div>
-              <div className="flex-1 bg-zinc-900/30 border border-white/5 rounded-2xl p-6 text-zinc-500 font-serif leading-relaxed italic">
-                "Deciding whether to pivot is a complex choice that depends on many factors. You should consider your market fit, runway, and team morale. On one hand, staying the course shows grit. On the other hand, pivoting might reveal new opportunities. Perhaps you could try a hybrid approach for a few weeks and reassess..."
+            <div className="flex flex-col opacity-40 hover:opacity-100 transition-opacity duration-500">
+              <div className="mb-6 text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Generic Output</div>
+              <div className="text-zinc-400 font-serif leading-loose italic text-lg">
+                "Deciding whether to pivot is a complex choice. On one hand, you have market feedback... on the other hand, you have sunk costs..."
               </div>
             </div>
 
             {/* Persona AI Output */}
             <div className="flex flex-col">
-              <div className="mb-4 text-xs font-bold text-amber-500 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div> Persona AI Engine Output
-              </div>
-              <div className="flex-1 glass-panel border border-amber-500/20 rounded-2xl p-6 font-mono text-sm shadow-xl shadow-amber-500/5">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-zinc-400">VERDICT:</span>
-                    <span className="text-green-500 font-black">PIVOT NOW</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-zinc-400">CONVICTION:</span>
-                    <span className="text-white font-black">84%</span>
-                  </div>
-                  <div>
-                    <span className="text-zinc-400 block mb-1 uppercase text-[10px] tracking-widest">Kill Signals:</span>
-                    <ul className="space-y-2">
-                      <li className="text-red-400/80 pl-2 border-l-2 border-red-500/30">If CAC &gt; $50 in first 48h</li>
-                      <li className="text-red-400/80 pl-2 border-l-2 border-red-500/30">If Retention &lt; 20% by week 2</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <span className="text-zinc-400 block mb-1 uppercase text-[10px] tracking-widest">Next Action:</span>
-                    <p className="text-zinc-200">Kill Option A immediately. Launch MVP-B by Friday.</p>
+              <div className="mb-6 text-[10px] font-bold text-amber-500 uppercase tracking-[0.2em]">Engine Verdict</div>
+              <div className="glass-panel rounded-2xl p-8 font-mono text-sm shadow-2xl">
+                <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                  <span className="text-zinc-400 uppercase tracking-widest text-[10px]">Pivot Decision</span>
+                  <span className="text-emerald-400 font-bold">VERDICT: YES (85%)</span>
+                </div>
+                <div className="space-y-4 text-zinc-300">
+                  <p><span className="text-zinc-500 uppercase text-[10px] tracking-widest block mb-1">Reasoning</span>User growth has flatlined (3% MoM) while CAC doubled. Market signal is negative.</p>
+                  <p><span className="text-zinc-500 uppercase text-[10px] tracking-widest block mb-1">Kill Signal Met</span>CAC &gt; LTV for 3 consecutive months.</p>
+                  <div className="pt-4 mt-4 border-t border-white/5 text-xs text-zinc-500">
+                    Confidence: High • Consensus: 5/6 Personas
                   </div>
                 </div>
               </div>
@@ -287,42 +259,25 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* 4. USE CASE SCENARIOS */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Real Outcomes.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">From "Maybe" to "Move".</p>
+      {/* 4. Use Case Scenarios - Premium Layout */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-32 bg-zinc-950/30">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-3xl sm:text-4xl font-medium mb-6 tracking-tight text-white">Engineered for high-stakes choices.</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5">
-              <h3 className="font-bold text-lg mb-4">"Should I quit my job to build this MVP?"</h3>
-              <div className="space-y-4">
-                <div className="text-sm">
-                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Before:</span>
-                  <p className="text-zinc-400">Spent 3 months agonizing over 'what-ifs' and asking friend's opinions.</p>
-                </div>
-                <div className="text-sm">
-                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">After:</span>
-                  <p className="text-white">Structured verdict: <strong>NO (Wait)</strong>. Conviction: 82%. Found 3 kill signals related to runway that weren't considered.</p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
+            {[
+              { title: "Founder Dilemmas", desc: "Pivot vs. Persevere, Hiring Execs, Fundraising terms.", icon: <Target className="text-zinc-400" size={20} /> },
+              { title: "Product Strategy", desc: "Feature prioritization, Sunset decisions, Pricing models.", icon: <Zap className="text-zinc-400" size={20} /> },
+              { title: "Investment Memos", desc: "Go/No-Go on deals, Portfolio allocation, Risk assessment.", icon: <BarChart3 className="text-zinc-400" size={20} /> },
+            ].map((item, i) => (
+              <div key={i} className="bg-black p-10 hover:bg-zinc-900/50 transition-colors group">
+                <div className="mb-6 opacity-50 group-hover:opacity-100 transition-opacity">{item.icon}</div>
+                <h3 className="text-base font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-zinc-500 text-sm leading-relaxed">{item.desc}</p>
               </div>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5">
-              <h3 className="font-bold text-lg mb-4">"Which target market should we focus on?"</h3>
-              <div className="space-y-4">
-                <div className="text-sm">
-                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Before:</span>
-                  <p className="text-zinc-400">Team debated for 2 weeks. Everyone had a different 'favorite' niche.</p>
-                </div>
-                <div className="text-sm">
-                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">After:</span>
-                  <p className="text-white">Structured verdict: <strong>Enterprise B2B</strong>. Conviction: 75%. Logic: Highest leverage for current skillsets.</p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -366,7 +321,6 @@ function LandingPageContent() {
         </div>
       </section>
 
-      {/* 6. PRICING SECTION */}
       <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
@@ -482,73 +436,76 @@ function LandingPageContent() {
       </section>
 
       {/* 7. FAQ Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">FAQ</h2>
+      {/* 6. Precision FAQ */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-32 bg-black border-t border-white/5">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="text-3xl font-medium mb-4 tracking-tight text-white">Common Questions.</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
+          <div className="grid grid-cols-1 gap-12">
             <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> Is this just another AI chatbot?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">No. This is a structured decision engine. We prioritize clarity, binary tradeoffs, and kill signals over generic conversational responses.</p>
+              <h3 className="text-lg font-medium text-white mb-3">Is this just a wrapper around ChatGPT?</h3>
+              <p className="text-zinc-400 text-base leading-relaxed font-light">
+                No. We use a multi-agent "Council" architecture. Your prompt is debated by 6 distinct personas (The Skeptic, The Visionary, The CFO, etc.) before a synthesis engine acts as the "Judge" to deliver a final verdict.
+              </p>
             </div>
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> Why not just use ChatGPT?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">ChatGPT is reactive. Our engine enforces reasoning constraints and re-evaluation protocols that generic prompts often miss.</p>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> Who is this for?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">Founders, builders, and strategic thinkers who need high-conviction decisions, not just stylized opinions.</p>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> What are "Kill Signals"?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">These are specific, falsifiable conditions (e.g. CAC/Runway targets) that, if met, mean you should stop or pivot immediately.</p>
-            </div>
-          </div>
 
-          {/* Micro-Testimonial */}
-          <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-zinc-900/40 border border-white/5 relative">
-            <Quote className="absolute -top-4 -left-4 text-amber-500/20" size={60} />
-            <p className="text-zinc-400 italic text-lg text-center mb-6">
-              "Helped me cut through 3 weeks of indecision in under 2 minutes. The binary verdict is brutal but exactly what I needed."
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-zinc-800"></div>
-              <div className="text-left">
-                <div className="text-xs font-black uppercase tracking-widest">Early Beta User</div>
-                <div className="text-[10px] text-zinc-600">SaaS Founder</div>
-              </div>
+            <div className="w-full h-px bg-white/5"></div>
+
+            <div>
+              <h3 className="text-lg font-medium text-white mb-3">What are "Kill Signals"?</h3>
+              <p className="text-zinc-400 text-base leading-relaxed font-light">
+                Most advice is open-ended. Kill Signals are specific, falsifiable conditions (e.g., "If CAC &gt; $50 for 3 days") that trigger an immediate stop. We force you to define failure states upfront.
+              </p>
+            </div>
+
+            <div className="w-full h-px bg-white/5"></div>
+
+            <div>
+              <h3 className="text-lg font-medium text-white mb-3">Can I export the reports?</h3>
+              <p className="text-zinc-400 text-base leading-relaxed font-light">
+                Yes. All decisions are saved in your dashboard and can be exported as structured PDFs or Notion pages to share with stakeholders or investors.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-20 bg-black border-t border-white/5 text-center px-4">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-8">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-lg grayscale" />
-            <span className="font-black text-lg tracking-widest text-zinc-400 uppercase">Persona AI</span>
+      {/* Micro-Testimonial */}
+      <div className="max-w-2xl mx-auto p-8 rounded-3xl bg-zinc-900/40 border border-white/5 relative">
+        <Quote className="absolute -top-4 -left-4 text-amber-500/20" size={60} />
+        <p className="text-zinc-400 italic text-lg text-center mb-6">
+          "Helped me cut through 3 weeks of indecision in under 2 minutes. The binary verdict is brutal but exactly what I needed."
+        </p>
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-zinc-800"></div>
+          <div className="text-left">
+            <div className="text-xs font-black uppercase tracking-widest">Early Beta User</div>
+            <div className="text-[10px] text-zinc-600">SaaS Founder</div>
           </div>
-          <div className="flex gap-8 text-zinc-500 text-xs font-bold tracking-widest uppercase">
-            <Link href="/analyze/new" className="hover:text-white">Start</Link>
-            <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-            <Link href="/personas" className="hover:text-white">Advisors</Link>
+        </div>
+      </div>
+
+      {/* Footer - Minimal */}
+      <footer className="py-24 bg-black border-t border-white/5 text-center px-4">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-10">
+          <div className="flex items-center gap-3 opacity-50 hover:opacity-100 transition-opacity">
+            <div className="w-6 h-6 rounded-lg bg-zinc-800"></div>
+            <span className="font-medium text-sm tracking-wide text-zinc-400 uppercase">Persona AI</span>
           </div>
+
+          <div className="flex gap-10 text-zinc-500 text-[11px] font-bold tracking-[0.2em] uppercase">
+            <Link href="/analyze/new" className="hover:text-white transition-colors">Start</Link>
+            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/personas" className="hover:text-white transition-colors">Methodology</Link>
+          </div>
+
           <p className="text-zinc-700 text-[10px] uppercase tracking-[0.2em]">
-            &copy; 2025 Persona AI. DECISION COMPRESSION FOR BUILDERS.
+            &copy; 2025 Persona AI. Engineered for Clarity.
           </p>
         </div>
       </footer>
-
-      {/* STICKY MOBILE CTA */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50 sm:hidden">
-        <Link href="/analyze/new" className="block w-full text-center py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full shadow-2xl shadow-white/10">
-          Start Decision Analysis
-        </Link>
-      </div>
-
     </div>
   );
 }
