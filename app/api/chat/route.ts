@@ -290,6 +290,7 @@ async function checkCanChat(identifier: string) {
                 last_reset_at: now.toISOString(),
                 [queryColumn]: identifier
             };
+            // Only try to insert if we have a valid key. If identifying by IP, fine.
             const { data: createdUser, error } = await supabase.from('users').insert(newUser).select().single();
             if (error) throw error;
             user = createdUser;
@@ -310,9 +311,20 @@ async function checkCanChat(identifier: string) {
             user.msg_count = 0;
         }
 
+        // Check if PRO and VALID (not expired)
         if (user.plan === 'pro') {
-            await incrementGlobalStats();
-            return { allowed: true, plan: 'pro', remaining: 9999 };
+            let isExpired = false;
+            if (user.subscription_end_date) {
+                const endDate = new Date(user.subscription_end_date);
+                if (endDate < now) {
+                    isExpired = true;
+                }
+            }
+
+            if (!isExpired) {
+                await incrementGlobalStats();
+                return { allowed: true, plan: 'pro', remaining: 9999 };
+            }
         }
 
         if (user.msg_count >= 10) {
@@ -344,6 +356,8 @@ async function checkCanChat(identifier: string) {
         return { allowed: true, plan: 'error_fallback', remaining: 5 };
     }
 }
+// ... existing helpers ...
+
 
 async function incrementGlobalStats() {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return;
@@ -445,10 +459,10 @@ export async function POST(req: NextRequest) {
         let identifier = "guest@example.com";
 
         if (user) {
-            identifier = user.id; // Use Clerk ID for logged-in users
+            // Use Email if available to match Razorpay/Supabase records
+            identifier = user.emailAddresses?.[0]?.emailAddress || user.id;
         } else {
-            // Fallback to IP for guests (handled inside checkCanChat via 'ip_address' logic if needed, 
-            // but here we just pass a string. Better to use header IP if we want strict guest limits).
+            // Fallback to IP for guests
             const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
             identifier = ip;
         }
