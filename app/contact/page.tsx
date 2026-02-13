@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
-export default function ContactPage() {
+import { Suspense } from 'react';
+
+function ContactContent() {
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-white/30">
             {/* Background Decor */}
@@ -77,5 +79,13 @@ export default function ContactPage() {
                 © 2025 Persona AI. All rights reserved.
             </footer>
         </div>
+    );
+}
+
+export default function ContactPage() {
+    return (
+        <Suspense fallback={null}>
+            <ContactContent />
+        </Suspense>
     );
 }

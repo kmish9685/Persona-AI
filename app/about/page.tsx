@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Github, Linkedin, Phone, Mail, ArrowLeft, Send } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function AboutPage() {
+function AboutContent() {
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [status, setStatus] = useState('');
 
@@ -196,5 +197,13 @@ export default function AboutPage() {
                 </div>
             </footer>
         </div>
+    );
+}
+
+export default function AboutPage() {
+    return (
+        <Suspense fallback={null}>
+            <AboutContent />
+        </Suspense>
     );
 }
