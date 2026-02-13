@@ -84,7 +84,7 @@ function LandingPageContent() {
             </SignedOut>
 
             <Link href="/personas" className="w-full sm:w-auto px-8 py-4 bg-zinc-900 text-white rounded-lg border border-zinc-800 hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
-              Chat with AI <Brain size={16} />
+              Talk to Famous Minds <Brain size={16} />
             </Link>
           </div>
 
