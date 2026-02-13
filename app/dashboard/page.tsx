@@ -39,11 +39,11 @@ export default async function DashboardPage() {
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
                     <div>
-                        <h1 className="text-3xl font-light text-white mb-2">Decision Tracker</h1>
-                        <p className="text-zinc-500">Track and manage your critical pivots.</p>
+                        <h1 className="text-3xl font-light text-white mb-2">My Decisions</h1>
+                        <p className="text-zinc-500">History of your tough choices.</p>
                     </div>
                     <Link href="/analyze/new" className="bg-white text-black hover:bg-zinc-200 px-6 py-3 rounded-lg font-bold flex items-center gap-2 transition-colors">
-                        <Plus size={18} /> New Decision
+                        <Plus size={18} /> Make New Decision
                     </Link>
                 </div>
 
