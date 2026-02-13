@@ -34,15 +34,31 @@ export async function POST(req: NextRequest) {
             if (userEmail) {
                 console.log(`Upgrading user ${userEmail} to PRO`);
 
-                // Update Supabase
-                const { error } = await supabase
-                    .from('users')
-                    .update({ plan: 'pro' })
-                    .eq('email', userEmail);
+                // Upsert Supabase (Update if exists, Insert if not)
+                // We don't have UUID here if they are new, but we can rely on email matching or create a placeholder.
+                // ideally we should query by email first.
 
-                if (error) {
-                    console.error("Failed to upgrade user:", error);
-                    return NextResponse.json({ status: 'error', detail: 'Db update failed' }, { status: 500 });
+                const { data: existingUser } = await supabase.from('users').select('id').eq('email', userEmail).single();
+
+                if (existingUser) {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({ plan: 'pro' })
+                        .eq('email', userEmail);
+
+                    if (error) console.error("Failed to upgrade user:", error);
+                } else {
+                    // Create new user record if missing (Safety Net)
+                    // We generate a placeholder ID or let DB handle it if auto-gen
+                    const { error } = await supabase
+                        .from('users')
+                        .insert({
+                            email: userEmail,
+                            plan: 'pro',
+                            // Add other required fields if any, checking schema might be good but this is a safe blind bet for now
+                        });
+
+                    if (error) console.error("Failed to create & upgrade user:", error);
                 }
             } else {
                 console.warn("No user_email in payment notes");

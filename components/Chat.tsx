@@ -18,6 +18,7 @@ import { getPersonaById } from '@/lib/personas';
 import { MultiPersonaView } from './MultiPersonaView';
 import { ReasoningAccordion } from './ReasoningAccordion';
 import { PersonaResponse } from '@/types/chat';
+import { getUserPlan } from '@/app/actions/getUserPlan';
 
 // Simple Toast Component
 function Toast({ message, onClose }: { message: string, onClose: () => void }) {
@@ -55,18 +56,27 @@ export function Chat() {
     const [showPaywall, setShowPaywall] = useState(false);
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [remaining, setRemaining] = useState<number>(10);
-    const [plan, setPlan] = useState<string>(() => {
-        if (typeof window !== 'undefined' && user?.publicMetadata?.plan) {
-            return user.publicMetadata.plan as string;
-        }
-        return 'free';
-    });
+    const [plan, setPlan] = useState<string>('free');
 
-    // Update plan when user metadata loads/changes
+    // Fetch plan from Supabase on mount
     useEffect(() => {
-        if (user?.publicMetadata?.plan) {
-            setPlan(user.publicMetadata.plan as string);
+        async function fetchPlan() {
+            if (user) {
+                // Optimistic check from metadata
+                if (user.publicMetadata?.plan === 'pro') {
+                    setPlan('pro');
+                }
+
+                // Authoritative check from Supabase
+                try {
+                    const { plan } = await getUserPlan();
+                    if (plan === 'pro') setPlan('pro');
+                } catch (error) {
+                    console.error("Failed to fetch plan:", error);
+                }
+            }
         }
+        fetchPlan();
     }, [user]);
 
     const [dismissedFreshThinking, setDismissedFreshThinking] = useState(false);
