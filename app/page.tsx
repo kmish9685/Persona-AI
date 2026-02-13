@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap } from 'lucide-react';
+import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 
 function LandingPageContent() {
   return (
@@ -25,15 +26,25 @@ function LandingPageContent() {
               <Link href="/about" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
                 Manifesto
               </Link>
-              <Link href="/login" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
-                Login
-              </Link>
-              <Link
-                href="/analyze/new"
-                className="px-5 py-2 text-sm font-bold bg-white text-black hover:bg-zinc-200 rounded-full transition-all flex items-center gap-2"
-              >
-                Start Deciding <ArrowRight size={14} />
-              </Link>
+
+              <SignedIn>
+                <Link href="/dashboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+                  Dashboard
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
+
+              <SignedOut>
+                <Link href="/login" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+                  Login
+                </Link>
+                <Link
+                  href="/analyze/new"
+                  className="px-5 py-2 text-sm font-bold bg-white text-black hover:bg-zinc-200 rounded-full transition-all flex items-center gap-2"
+                >
+                  Start Deciding <ArrowRight size={14} />
+                </Link>
+              </SignedOut>
             </div>
           </div>
         </div>
@@ -124,7 +135,6 @@ function LandingPageContent() {
           </div>
         </div>
       </section>
-
 
       {/* 3. Steps Visualization */}
       <section id="how-it-works" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">

@@ -265,7 +265,11 @@ async function checkCanChat(identifier: string) {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return { allowed: true, plan: 'dev', remaining: 999 };
 
     const isEmail = identifier.includes('@');
-    const queryColumn = isEmail ? 'email' : 'ip_address';
+    const isClerkId = identifier.startsWith('user_');
+    let queryColumn = 'ip_address';
+    if (isEmail) queryColumn = 'email';
+    if (isClerkId) queryColumn = 'user_id';
+
     const now = new Date();
 
     try {
@@ -441,7 +445,12 @@ export async function POST(req: NextRequest) {
         let identifier = "guest@example.com";
 
         if (user) {
-            identifier = user.emailAddresses[0]?.emailAddress || user.id;
+            identifier = user.id; // Use Clerk ID for logged-in users
+        } else {
+            // Fallback to IP for guests (handled inside checkCanChat via 'ip_address' logic if needed, 
+            // but here we just pass a string. Better to use header IP if we want strict guest limits).
+            const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+            identifier = ip;
         }
 
         // 2. Check limits based on mode
