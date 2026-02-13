@@ -4,7 +4,9 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, AlertTriangle, TrendingUp, Skull, CheckCircle } from 'lucide-react';
 
-export default async function AnalysisResultPage({ params }: { params: { id: string } }) {
+export default async function AnalysisResultPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params;
+    const { id } = params;
     const user = await currentUser();
     if (!user) return redirect('/login');
 
@@ -56,7 +58,7 @@ export default async function AnalysisResultPage({ params }: { params: { id: str
                         You likely pasted the <strong>anon key</strong> into the <code>SUPABASE_SERVICE_ROLE_KEY</code> variable in Vercel.
                         <br />
                         <br />
-                        <strong>Fix:</strong> Go to Supabase -> Settings -> API -> Copy the <strong>service_role (secret)</strong> key -> Paste it in Vercel.
+                        <strong>Fix:</strong> Go to Supabase &rarr; Settings &rarr; API &rarr; Copy the <strong>service_role (secret)</strong> key &rarr; Paste it in Vercel.
                     </p>
                 </div>
             </div>
