@@ -56,15 +56,62 @@ RULES:
 `;
 
 export async function POST(req: NextRequest) {
-    try {
-        const user = await currentUser();
-        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const user = await currentUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const body = await req.json();
-        const { decisionType, constraints, options, blindspots, context } = body;
+    const body = await req.json();
+    const { decisionType, constraints, options, blindspots, context } = body;
 
-        // Construct the prompt
-        const prompt = `
+    // --- ROLLING HISTORY LOGIC (Free Tier Limit: 3) ---
+    // 1. Check User Plan
+    const userPlan = (user.publicMetadata?.plan as string) || 'free';
+
+    if (userPlan !== 'pro') {
+      // 2. Count Existing Decisions
+      const { count, error: countError } = await supabase
+        .from('decisions')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+
+      if (countError) {
+        console.error("Error checking decision count:", countError);
+        // Fail safe: Allow creation or block? Let's log and allow for now to avoid blocking user.
+      } else if (count !== null && count >= 3) {
+        console.log(`[Rolling History] User ${user.id} has ${count} decisions. Auto-deleting oldest.`);
+
+        // 3. Find Oldest Decision
+        const { data: oldestDecision, error: fetchError } = await supabase
+          .from('decisions')
+          .select('id')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (oldestDecision && !fetchError) {
+          // 4. Delete Oldest (Checkpoints first ideally, but decision cascade might handle it if set up. 
+          // To be safe based on previous delete logic, we delete checkpoints manually first as per manual delete flow)
+
+          // Delete Checkpoints
+          await supabase.from('checkpoints').delete().eq('decision_id', oldestDecision.id);
+
+          // Delete Decision
+          const { error: deleteError } = await supabase.from('decisions').delete().eq('id', oldestDecision.id);
+
+          if (deleteError) {
+            console.error("Failed to auto-delete oldest decision:", deleteError);
+            // We could return error, but better to proceed (worst case they have 4 decisions temporarily)
+          } else {
+            console.log(`[Rolling History] Successfully deleted oldest decision: ${oldestDecision.id}`);
+          }
+        }
+      }
+    }
+    // --- END ROLLING HISTORY LOGIC ---
+
+    // Construct the prompt
+    const prompt = `
         DECISION TYPE: ${decisionType}
         
         CONSTRAINTS:
@@ -85,65 +132,65 @@ export async function POST(req: NextRequest) {
         Analyze this now. Return ONLY JSON.
         `;
 
-        // Call Groq
-        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [
-                    { role: "system", content: SYSTEM_PROMPT },
-                    { role: "user", content: prompt }
-                ],
-                temperature: 0.7,
-                response_format: { type: "json_object" }
-            })
-        });
+    // Call Groq
+    const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7,
+        response_format: { type: "json_object" }
+      })
+    });
 
-        if (!groqRes.ok) throw new Error("AI Engine Failure");
+    if (!groqRes.ok) throw new Error("AI Engine Failure");
 
-        const groqData = await groqRes.json();
-        const analysisResult = JSON.parse(groqData.choices[0].message.content);
+    const groqData = await groqRes.json();
+    const analysisResult = JSON.parse(groqData.choices[0].message.content);
 
-        // Generate ID on server to guarantee return
-        const decisionId = crypto.randomUUID();
+    // Generate ID on server to guarantee return
+    const decisionId = crypto.randomUUID();
 
-        // Save to Database
-        const { error } = await supabase.from('decisions').insert({
-            id: decisionId,
-            user_id: user.id,
-            title: decisionType === 'custom' ? options[0].title + ' vs...' : decisionType,
-            decision_type: decisionType,
-            input_data: body,
-            analysis_result: analysisResult,
-            conviction_score: analysisResult.recommendation.conviction_score,
-            status: 'completed'
-        });
+    // Save to Database
+    const { error } = await supabase.from('decisions').insert({
+      id: decisionId,
+      user_id: user.id,
+      title: decisionType === 'custom' ? options[0].title + ' vs...' : decisionType,
+      decision_type: decisionType,
+      input_data: body,
+      analysis_result: analysisResult,
+      conviction_score: analysisResult.recommendation.conviction_score,
+      status: 'completed'
+    });
 
-        if (error) throw error;
+    if (error) throw error;
 
-        // Auto-create checkpoints from kill signals
-        const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
-            decision_id: decisionId,
-            checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // rough default, logic needs refinement later
-            metric: ks.signal,
-            status: 'pending'
-        }));
+    // Auto-create checkpoints from kill signals
+    const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
+      decision_id: decisionId,
+      checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // rough default, logic needs refinement later
+      metric: ks.signal,
+      status: 'pending'
+    }));
 
-        await supabase.from('checkpoints').insert(checkpoints);
+    await supabase.from('checkpoints').insert(checkpoints);
 
-        // debug log
-        console.log("✅ Checkpoints created. returning Decision ID:", decisionId);
+    // debug log
+    console.log("✅ Checkpoints created. returning Decision ID:", decisionId);
 
-        return NextResponse.json({
-            id: decisionId,
-            debug_decision: { id: decisionId, ...analysisResult }
-        });
+    return NextResponse.json({
+      id: decisionId,
+      debug_decision: { id: decisionId, ...analysisResult }
+    });
 
 
 
-    } catch (e: any) {
-        console.error(e);
-        return NextResponse.json({ error: e.message }, { status: 500 });
-    }
+  } catch (e: any) {
+    console.error(e);
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
 }
