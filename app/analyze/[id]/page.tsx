@@ -14,6 +14,12 @@ export default async function AnalysisResultPage({ params }: { params: { id: str
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
+    const { data: decision, error } = await supabase
+        .from('decisions')
+        .select('*')
+        .eq('id', params.id)
+        .single();
+
     if (error || !decision) {
         console.error("Decision Fetch Error:", error);
         return (
