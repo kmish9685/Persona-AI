@@ -71,7 +71,6 @@ function LandingPageContent() {
             </Link>
 
             <div className="flex items-center gap-6">
-              <Link href="/analyze/new" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Pricing</Link>
               <SignedIn>
                 <Link href="/dashboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
                   My Decisions
