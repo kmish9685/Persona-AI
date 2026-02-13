@@ -1,30 +1,52 @@
 import { createClient } from '@supabase/supabase-js';
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function DELETE(
-    req: NextRequest,
-    { params }: { params: Promise<{ id: string }> } // Await params for Next.js 15
+/**
+ * UUID Validation Helper
+ */
+function isValidUUID(uuid: string) {
+    const s = "" + uuid;
+    const match = s.match(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/);
+    return match !== null;
+}
+
+/**
+ * GET Handler for Diagnostics
+ */
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    console.log("DELETE API called");
+    const { id } = await params;
+    return NextResponse.json({ message: "Route is active", id });
+}
+
+/**
+ * DELETE Handler
+ */
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+    console.log(`[DELETE_API] Request received for ID: ${id}`);
+
     try {
         const { userId } = await auth();
         if (!userId) {
-            console.error("DELETE API: Unauthorized (No userId)");
+            console.error("[DELETE_API] 401: No authenticated user session");
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        const { id } = await params;
-        console.log(`DELETE API: Attempting to delete decision ${id} for user ${userId}`);
-
-        if (!id) {
-            console.error("DELETE API: No ID provided");
-            return new NextResponse("ID required", { status: 400 });
+        if (!id || id === 'undefined' || !isValidUUID(id)) {
+            console.error(`[DELETE_API] 400: Invalid or missing ID: "${id}"`);
+            return new NextResponse(`Invalid ID format: ${id}`, { status: 400 });
         }
 
         // 1. Verify Ownership
@@ -35,34 +57,29 @@ export async function DELETE(
             .single();
 
         if (fetchError) {
-            console.error("DELETE API: Error fetching decision:", fetchError);
-            return new NextResponse(fetchError.message, { status: 500 });
+            console.error(`[DELETE_API] Database error:`, fetchError);
+            return new NextResponse(`Database error: ${fetchError.message}`, { status: 500 });
         }
 
         if (!decision) {
-            console.error("DELETE API: Decision not found");
-            return new NextResponse("Not found", { status: 404 });
+            console.error(`[DELETE_API] 404: Not found: ${id}`);
+            return new NextResponse("Decision not found", { status: 404 });
         }
 
         if (decision.user_id !== userId) {
-            console.error(`DELETE API: Forbidden. Decision owner: ${decision.user_id}, Requesting user: ${userId}`);
-            return new NextResponse("Forbidden", { status: 403 });
+            console.error(`[DELETE_API] 403: Forbidden. Owner: ${decision.user_id}, Requester: ${userId}`);
+            return new NextResponse("Forbidden: You do not own this decision", { status: 403 });
         }
 
-        console.log("DELETE API: Ownership verified. Deleting dependent checkpoints...");
-
-        // 2. Delete Checkpoints (Explicitly)
+        // 2. Delete Checkpoints
         const { error: checkpointError } = await supabase
             .from('checkpoints')
             .delete()
             .eq('decision_id', id);
 
         if (checkpointError) {
-            console.error("DELETE API: Failed to delete checkpoints:", checkpointError);
-            return new NextResponse("Failed to delete checkpoints", { status: 500 });
+            return new NextResponse(`Checkpoint error: ${checkpointError.message}`, { status: 500 });
         }
-
-        console.log("DELETE API: Checkpoints deleted. Deleting decision...");
 
         // 3. Delete Decision
         const { error: deleteError } = await supabase
@@ -71,15 +88,14 @@ export async function DELETE(
             .eq('id', id);
 
         if (deleteError) {
-            console.error("DELETE API: Failed to delete decision:", deleteError);
-            return new NextResponse(deleteError.message, { status: 500 });
+            return new NextResponse(`Delete error: ${deleteError.message}`, { status: 500 });
         }
 
-        console.log("DELETE API: Success.");
-        return new NextResponse("Deleted", { status: 200 });
+        console.log(`[DELETE_API] SUCCESS: Removed ${id}`);
+        return new NextResponse("Deleted Successfully", { status: 200 });
 
     } catch (error: any) {
-        console.error("DELETE API: Unexpected critical error:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        console.error("[DELETE_API] CRITICAL ERROR:", error);
+        return new NextResponse(`Server Error: ${error.message}`, { status: 500 });
     }
 }
