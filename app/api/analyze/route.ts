@@ -105,8 +105,12 @@ export async function POST(req: NextRequest) {
         const groqData = await groqRes.json();
         const analysisResult = JSON.parse(groqData.choices[0].message.content);
 
+        // Generate ID on server to guarantee return
+        const decisionId = crypto.randomUUID();
+
         // Save to Database
-        const { data: decision, error } = await supabase.from('decisions').insert({
+        const { error } = await supabase.from('decisions').insert({
+            id: decisionId,
             user_id: user.id,
             title: decisionType === 'custom' ? options[0].title + ' vs...' : decisionType,
             decision_type: decisionType,
@@ -114,13 +118,13 @@ export async function POST(req: NextRequest) {
             analysis_result: analysisResult,
             conviction_score: analysisResult.recommendation.conviction_score,
             status: 'completed'
-        }).select().single();
+        });
 
         if (error) throw error;
 
         // Auto-create checkpoints from kill signals
         const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
-            decision_id: decision.id,
+            decision_id: decisionId,
             checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // rough default, logic needs refinement later
             metric: ks.signal,
             status: 'pending'
@@ -129,13 +133,14 @@ export async function POST(req: NextRequest) {
         await supabase.from('checkpoints').insert(checkpoints);
 
         // debug log
-        console.log("✅ Checkpoints created. returning Decision ID:", decision.id);
-        console.log("Decision Object:", decision);
+        console.log("✅ Checkpoints created. returning Decision ID:", decisionId);
 
         return NextResponse.json({
-            id: decision?.id,
-            debug_decision: decision
+            id: decisionId,
+            debug_decision: { id: decisionId, ...analysisResult }
         });
+
+
 
     } catch (e: any) {
         console.error(e);
