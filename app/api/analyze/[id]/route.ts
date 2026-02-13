@@ -39,9 +39,18 @@ export async function DELETE(
             return new NextResponse("Forbidden", { status: 403 });
         }
 
-        // 2. Delete Decision (Cascade should handle checkpoints if configured, but let's be safe)
-        // Note: If you have foreign key constraints with ON DELETE CASCADE, checkpoints delete automatically.
-        // If not, delete checkpoints first. Assuming CASCADE is set or we just delete decision.
+        // 2. Explicitly Delete Checkpoints (Safety net if CASCADE is missing)
+        const { error: checkpointError } = await supabase
+            .from('checkpoints')
+            .delete()
+            .eq('decision_id', id);
+
+        if (checkpointError) {
+            console.warn("Checkpoint Delete Error (might be non-fatal or cascade):", checkpointError);
+            // Verify if it's a permission issue or just not found
+        }
+
+        // 3. Delete Decision
         const { error: deleteError } = await supabase
             .from('decisions')
             .delete()
@@ -49,13 +58,13 @@ export async function DELETE(
 
         if (deleteError) {
             console.error("Delete Error:", deleteError);
-            return new NextResponse("Failed to delete", { status: 500 });
+            return NextResponse.json({ error: deleteError.message }, { status: 500 });
         }
 
         return NextResponse.json({ success: true });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("[DECISION_DELETE]", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
