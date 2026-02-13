@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Plus, Clock, CheckCircle, AlertTriangle, ArrowRight, Trash2 } from 'lucide-react';
+import DecisionCard from '@/components/decision/DecisionCard';
 
 export default async function DashboardPage() {
     const user = await currentUser();
@@ -62,36 +63,9 @@ export default async function DashboardPage() {
 
                 {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {decisions?.map((decision: any) => {
-                        const result = decision.analysis_result?.recommendation || {};
-                        const verdict = result.verdict || "Analysis Pending";
-                        const score = result.conviction_score || 0;
-
-                        return (
-                            <Link key={decision.id} href={`/analyze/${decision.id}`} className="group block bg-[#0F0F0F] border border-white/5 hover:border-white/20 rounded-xl p-6 transition-all hover:-translate-y-1">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-lg font-bold text-white group-hover:text-amber-500 transition-colors line-clamp-2 min-h-[3.5rem]">{decision.title}</h3>
-                                    <div className={`px-2 py-1 rounded text-xs font-mono ml-2 shrink-0 ${score >= 90 ? 'bg-green-500/10 text-green-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                                        {score}%
-                                    </div>
-                                </div>
-
-                                <div className="mb-6">
-                                    <p className="text-xs text-zinc-500 uppercase font-bold mb-1">Verdict</p>
-                                    <p className="text-zinc-300 text-sm line-clamp-3">{verdict}</p>
-                                </div>
-
-                                <div className="flex items-center justify-between pt-4 border-t border-white/5 mt-auto">
-                                    <span className="text-xs text-zinc-600 flex items-center gap-1">
-                                        <Clock size={12} /> {new Date(decision.created_at).toLocaleDateString()}
-                                    </span>
-                                    <span className="text-xs text-zinc-500 group-hover:text-white flex items-center gap-1 transition-colors">
-                                        View Analysis <ArrowRight size={12} />
-                                    </span>
-                                </div>
-                            </Link>
-                        );
-                    })}
+                    {decisions?.map((decision: any) => (
+                        <DecisionCard key={decision.id} decision={decision} />
+                    ))}
                 </div>
 
             </div>

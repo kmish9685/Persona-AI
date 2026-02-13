@@ -71,19 +71,20 @@ function LandingPageContent() {
             Validate assumptions, find kill signals, and execute.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up delay-200">
+          <div className="flex flex-col sm:flex-row items-center gap-4 animate-fade-in-up delay-200 uppercase tracking-widest text-xs font-bold w-full sm:w-auto">
             <SignedIn>
-              <Link href="/dashboard" className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                Go to Dashboard
+              <Link href="/dashboard" className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-lg hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2">
+                Dashboard <ArrowRight size={16} />
               </Link>
             </SignedIn>
             <SignedOut>
-              <Link href="/analyze/new" className="px-8 py-4 bg-white text-black font-bold text-lg rounded-full hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                Start Analysis
+              <Link href="/analyze/new" className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-lg hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)] flex items-center justify-center gap-2">
+                Start Decision <Zap size={16} className="fill-black" />
               </Link>
             </SignedOut>
-            <Link href="/how-it-works" className="px-8 py-4 bg-zinc-900 text-white font-medium text-lg rounded-full border border-zinc-800 hover:bg-zinc-800 transition-all">
-              How it works
+
+            <Link href="/personas" className="w-full sm:w-auto px-8 py-4 bg-zinc-900 text-white rounded-lg border border-zinc-800 hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
+              Chat with AI <Brain size={16} />
             </Link>
           </div>
 

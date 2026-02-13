@@ -2,6 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import DecisionStatus from '@/components/decision/DecisionStatus';
+
 import { ArrowLeft, AlertTriangle, TrendingUp, Skull, CheckCircle } from 'lucide-react';
 
 export default async function AnalysisResultPage(props: { params: Promise<{ id: string }> }) {
@@ -71,9 +73,12 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
 
                 {/* Header */}
                 <div className="mb-10">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-3xl font-light text-white mb-2">Decision Analysis</h1>
-                        <div className="bg-zinc-900 border border-white/10 px-4 py-2 rounded-full text-xs font-mono text-zinc-400">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-3xl font-light text-white">Decision Analysis</h1>
+                            <DecisionStatus decisionId={decision.id} initialStatus={decision.status} />
+                        </div>
+                        <div className="bg-zinc-900 border border-white/10 px-4 py-2 rounded-full text-xs font-mono text-zinc-400 self-start md:self-auto">
                             {decision_compression?.time_saved || "Compressed from 2 weeks → 5 mins"}
                         </div>
                     </div>
@@ -147,7 +152,7 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
