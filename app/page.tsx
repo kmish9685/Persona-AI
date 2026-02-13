@@ -113,11 +113,11 @@ function LandingPageContent() {
           <div className="relative max-w-4xl mx-auto mb-12">
             <div className="glass-panel border border-white/10 rounded-3xl p-8 sm:p-12 min-h-[320px] sm:min-h-[280px] flex flex-col justify-center relative overflow-hidden group">
               {/* Progress Bars */}
-              <div className="absolute top-0 left-0 right-0 flex gap-1 p-1">
+              <div className="absolute top-0 left-0 right-0 flex gap-2 p-4">
                 {frames.map((_, i) => (
-                  <div key={i} className="h-1 flex-1 bg-white/5 rounded-full overflow-hidden">
+                  <div key={i} className="h-0.5 flex-1 bg-white/10 rounded-full overflow-hidden">
                     <div
-                      className={`h-full bg-amber-500 transition-all duration-500 ${currentFrame === i ? 'w-full' : 'w-0'}`}
+                      className={`h-full bg-amber-500/80 transition-all duration-500 ${currentFrame === i ? 'w-full' : 'w-0'}`}
                       style={{ transitionDuration: currentFrame === i ? '5000ms' : '0ms' }}
                     />
                   </div>
@@ -153,7 +153,7 @@ function LandingPageContent() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 uppercase tracking-widest text-xs font-black">
+          <div className="hidden sm:flex flex-col sm:flex-row items-center justify-center gap-4 uppercase tracking-widest text-xs font-black">
             <Link href="/analyze/new" className="w-full sm:w-auto px-10 py-5 bg-white text-black rounded-full hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2">
               Start Decision Analysis <ArrowRight size={16} />
             </Link>
