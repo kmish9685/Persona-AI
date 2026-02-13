@@ -58,9 +58,9 @@ function LandingPageContent() {
             <span className="text-xs font-medium text-zinc-400 tracking-wide uppercase">Reasoning Engine v2.0 Live</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold leading-tight mb-8 tracking-tighter text-white">
+          <h1 className="text-6xl sm:text-7xl lg:text-9xl font-extrabold leading-none mb-8 tracking-tighter animate-fade-up">
             Stop Spending <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-white to-blue-400">
+            <span className="text-gradient">
               2 Weeks on Decisions.
             </span>
           </h1>
