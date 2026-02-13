@@ -177,8 +177,49 @@ function LandingPageContent() {
         </div>
       </section>
 
+      {/* 2.5 THE OUTPUT VISUAL (PROOF) */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black overflow-hidden">
+        <div className="absolute top-[20%] left-[10%] w-[300px] h-[300px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4 tracking-tight">Clarity, not Conversation.</h2>
+            <p className="text-zinc-500 text-lg">See exact outcomes, risks, and kill signals.</p>
+          </div>
+
+          {/* Mockup Container */}
+          <div className="relative mx-auto max-w-4xl glass-panel rounded-2xl p-1 border border-white/10 shadow-2xl">
+            <div className="bg-[#050505] rounded-xl p-6 sm:p-10 font-mono text-sm leading-relaxed overflow-hidden">
+              <div className="flex items-center gap-2 text-zinc-500 mb-6 border-b border-white/5 pb-4">
+                <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
+                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                <span className="ml-4 text-xs tracking-widest uppercase">Analysis_Report_v2.json</span>
+              </div>
+
+              <div className="space-y-6">
+                <div className="animate-fade-up delay-100">
+                  <span className="text-blue-400">"recommendation"</span>: <span className="text-green-400">"PIVOT TO B2B"</span>,
+                </div>
+                <div className="animate-fade-up delay-200 pl-4 border-l border-white/10">
+                  <span className="text-purple-400">"reasoning"</span>: <span className="text-zinc-300">"Given your burn rate of $15k/mo and 4 months runway, B2C CAC is unsustainable. B2B contracts offer immediate cash flow."</span>,
+                </div>
+                <div className="animate-fade-up delay-300">
+                  <span className="text-red-400">"kill_signals"</span>: [
+                  <div className="pl-4 text-zinc-400">"Contract value  &lt; $2k",</div>
+                  <div className="pl-4 text-zinc-400">"Sales cycle &gt; 3 weeks"</div>
+                  ]
+                </div>
+                <div className="animate-fade-up delay-300">
+                  <span className="text-orange-400">"conviction_score"</span>: <span className="text-white font-bold">92%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 3.5 Comparison Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#080808] border-t border-white/5">
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-5xl font-bold mb-4">Why not just use ChatGPT?</h2>
@@ -227,13 +268,13 @@ function LandingPageContent() {
       </section>
 
       {/* 4. Pricing */}
-      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
+      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black border-t border-white/5">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Founding Membership</h2>
 
-          <div className="bg-[#0A0A0A] border border-white/10 rounded-3xl p-8 relative overflow-hidden">
+          <div className="glass-panel rounded-3xl p-8 relative overflow-hidden">
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/5 pb-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-8 border-b border-white/10 pb-8">
               <div className="text-left">
                 <div className="text-sm text-zinc-500 uppercase tracking-widest font-bold mb-1">Monthly Pass</div>
                 <div className="text-5xl font-bold text-white">₹99<span className="text-lg text-zinc-500 font-normal">/mo</span></div>
@@ -268,9 +309,17 @@ function LandingPageContent() {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm">
+      <footer className="py-12 bg-black border-t border-white/5 text-center text-zinc-600 text-sm mb-20 sm:mb-0">
         <p>&copy; 2025 Persona AI. Stop Chatting. Start Deciding.</p>
       </footer>
+
+      {/* STICKY MOBILE CTA */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-black/80 backdrop-blur-xl border-t border-white/10 z-50 sm:hidden animate-slide-up-delay-2">
+        <Link href="/analyze/new" className="block w-full text-center py-3 bg-white text-black font-bold rounded-full shadow-lg shadow-white/10">
+          Start Decision Analysis
+        </Link>
+      </div>
+
     </div>
   );
 }
