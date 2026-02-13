@@ -23,6 +23,46 @@ export default async function AnalysisResultPage({ params }: { params: { id: str
         );
     }
 
+    // Verify it is actually a SERVICE key (not anon)
+    const parts = serviceRoleKey.split('.');
+    let keyRole = 'unknown';
+    if (parts.length === 3) {
+        try {
+            const payload = parts[1];
+            // Simple base64 decode for debug
+            const decodedStr = Buffer.from(payload, 'base64').toString();
+            const decoded = JSON.parse(decodedStr);
+            keyRole = decoded.role;
+        } catch (e) {
+            keyRole = 'parse_error';
+        }
+    }
+
+    if (keyRole !== 'service_role') {
+        return (
+            <div className="text-white p-10 max-w-2xl mx-auto">
+                <h1 className="text-2xl font-bold text-red-500 mb-4">Key Configuration Error</h1>
+                <p className="text-zinc-300 mb-4">You put the WRONG key in Vercel.</p>
+                <div className="bg-zinc-900 border border-red-500/30 p-6 rounded text-sm space-y-4">
+                    <div>
+                        <p className="text-zinc-500 uppercase text-xs font-bold">Expected Role</p>
+                        <p className="text-green-500 font-mono">service_role</p>
+                    </div>
+                    <div>
+                        <p className="text-zinc-500 uppercase text-xs font-bold">Your Key's Role</p>
+                        <p className="text-red-500 font-mono text-xl">{keyRole}</p>
+                    </div>
+                    <p className="text-zinc-400">
+                        You likely pasted the <strong>anon key</strong> into the <code>SUPABASE_SERVICE_ROLE_KEY</code> variable in Vercel.
+                        <br />
+                        <br />
+                        <strong>Fix:</strong> Go to Supabase -> Settings -> API -> Copy the <strong>service_role (secret)</strong> key -> Paste it in Vercel.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
     // Bypass RLS using Service Role Key
     const supabase = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
