@@ -177,6 +177,55 @@ function LandingPageContent() {
         </div>
       </section>
 
+      {/* 3.5 Comparison Section */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#080808] border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold mb-4">Why not just use ChatGPT?</h2>
+            <p className="text-zinc-500 text-lg">Chatbots give advice. We give engineering-grade analysis.</p>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="py-4 px-6 text-zinc-500 font-medium uppercase tracking-wider text-sm">Feature</th>
+                  <th className="py-4 px-6 text-zinc-500 font-medium uppercase tracking-wider text-sm">Standard AI Chat</th>
+                  <th className="py-4 px-6 text-white font-bold uppercase tracking-wider text-sm bg-amber-500/10 border-t border-x border-amber-500/20 rounded-t-xl">Persona AI Engine</th>
+                </tr>
+              </thead>
+              <tbody className="text-zinc-300">
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Output Format</td>
+                  <td className="py-6 px-6 text-zinc-500">Wall of text</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Structured Decision Report</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Bias</td>
+                  <td className="py-6 px-6 text-zinc-500">Polite, agreeable, "it depends"</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Contrarian, falsifiable, "Kill Signals"</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Reasoning Depth</td>
+                  <td className="py-6 px-6 text-zinc-500">Surface level</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Second-order consequences (6mo view)</td>
+                </tr>
+                <tr className="border-b border-white/5">
+                  <td className="py-6 px-6 font-medium">Context Limit</td>
+                  <td className="py-6 px-6 text-zinc-500">Forgets previous details</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-amber-500/10 font-bold">Persists constraints across decisions</td>
+                </tr>
+                <tr>
+                  <td className="py-6 px-6 font-medium">Outcome</td>
+                  <td className="py-6 px-6 text-zinc-500">More ideas (Overwhelm)</td>
+                  <td className="py-6 px-6 text-white bg-amber-500/5 border-x border-b border-amber-500/10 rounded-b-xl font-bold">Binary Decision (Clarity)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
       {/* 4. Pricing */}
       <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
         <div className="max-w-3xl mx-auto text-center">
