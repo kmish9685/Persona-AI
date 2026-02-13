@@ -14,14 +14,28 @@ export default async function AnalysisResultPage({ params }: { params: { id: str
         process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    const { data: decision, error } = await supabase
-        .from('decisions')
-        .select('*')
-        .eq('id', params.id)
-        .single();
-
     if (error || !decision) {
-        return <div className="text-white p-10">Decision not found. (ID: {params.id})</div>;
+        console.error("Decision Fetch Error:", error);
+        return (
+            <div className="text-white p-10 max-w-2xl mx-auto">
+                <h1 className="text-2xl font-bold text-red-500 mb-4">Decision Not Found</h1>
+                <div className="bg-zinc-900 p-6 rounded-lg border border-red-500/20 font-mono text-sm space-y-2">
+                    <p><span className="text-zinc-500">Decision ID:</span> <span className="text-amber-500">{params.id}</span></p>
+                    <p><span className="text-zinc-500">User ID:</span> <span className="text-blue-400">{user.id}</span></p>
+                    {error && (
+                        <div className="mt-4 pt-4 border-t border-white/10">
+                            <p className="text-red-400 font-bold">Supabase Error:</p>
+                            <pre className="whitespace-pre-wrap text-xs text-red-300 mt-2">{JSON.stringify(error, null, 2)}</pre>
+                        </div>
+                    )}
+                    {!error && !decision && <p className="text-yellow-500 mt-4">Database query returned no data (null) for this ID.</p>}
+                </div>
+                <div className="mt-6 flex gap-4">
+                    <Link href="/analyze/new" className="px-4 py-2 bg-white text-black rounded hover:bg-zinc-200">Try Again</Link>
+                    <Link href="/" className="px-4 py-2 bg-zinc-800 text-white rounded hover:bg-zinc-700">Home</Link>
+                </div>
+            </div>
+        );
     }
 
     // Manual Security Check
