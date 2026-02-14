@@ -522,9 +522,14 @@ export async function POST(req: NextRequest) {
             console.log(`🚀 Multi-persona mode: Calling all 6 personas`);
 
             const allPersonaIds = ['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'];
-            // For multi-mode, we probably shouldn't pass full history to ALL to avoid chaos, 
-            // OR we pass it. Let's pass it for continuity.
-            const personaPromises = allPersonaIds.map(id => callGroqForPersona(id, currentMessageContent, history));
+
+            // CRITICAL FIX: Do NOT pass history to multi-persona mode.
+            // 1. Prevents "stiffness" or "generic" responses where models try to match the previous assistant's tone.
+            // 2. Ensures they answer the CURRENT question directly, not getting confused by past context.
+            // 3. Solves the atomic "Panel of Experts" requirement - they should judge the CURRENT idea fresh.
+            const multiModeHistory: any[] = [];
+
+            const personaPromises = allPersonaIds.map(id => callGroqForPersona(id, currentMessageContent, multiModeHistory));
 
             const responses = await Promise.all(personaPromises);
 
@@ -541,7 +546,6 @@ export async function POST(req: NextRequest) {
                 remaining_free: limitStatus.remaining,
                 plan: limitStatus.plan
             });
-
         } else {
             // Single persona mode: Use the same helper to get reasoning
             const validPersona = PERSONAS[persona] ? persona : 'elon';
