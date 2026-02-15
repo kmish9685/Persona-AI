@@ -171,7 +171,11 @@ export function Chat() {
                 const aiMsg: Message = {
                     role: 'assistant',
                     content: data.response,
-                    reasoning: data.reasoning // Capture reasoning
+                    reasoning: data.reasoning,
+                    assumptions: data.assumptions,
+                    missingData: data.missingData,
+                    preMortem: data.preMortem,
+                    biasCheck: data.biasCheck
                 };
                 setMessages(prev => [...prev, aiMsg]);
                 setMultiPersonaResponses(null);
