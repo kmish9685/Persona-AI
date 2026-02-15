@@ -36,6 +36,7 @@ export const metadata: Metadata = {
 // import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AuthProvider } from '@/src/contexts/AuthContext';
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from '@vercel/analytics/next';
 
 
 
@@ -67,6 +68,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
           </AuthProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
