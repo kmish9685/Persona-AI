@@ -420,15 +420,26 @@ function parseResponse(text: string): {
 } {
     const output: any = { response: text.trim() };
 
-    // Regex to capture content between tags
+    // Updated Regex: Capture content until the next known tag or end of string.
+    // Handles markdown (e.g., **[TAG]**), whitespace, and nested [] brackets inside content.
     const extract = (tag: string) => {
-        const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)(?=\\[|$)`, 'i');
+        const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)(?=\\[(?:ANSWER|REASONING|ASSUMPTIONS|MISSING_DATA|PRE_MORTEM|BIAS_CHECK)\\]|$)`, 'i');
         const match = text.match(regex);
         return match ? match[1].trim() : undefined;
     };
 
     output.reasoning = extract('REASONING');
-    output.response = extract('ANSWER') || text.trim(); // Fallback to full text if ANSWER missing
+    output.response = extract('ANSWER') || text.trim();
+    // If text starts with ANSWER tag, extract explicitly. If not, use full text as fallback.
+    // However, if the text contains OTHER tags later, we must only take the part BEFORE them.
+    if (!output.response && !text.includes('[ANSWER]')) {
+        // Fallback: take everything until the first known tag
+        const firstTagIndex = text.search(/\[(?:REASONING|ASSUMPTIONS|MISSING_DATA|PRE_MORTEM|BIAS_CHECK)\]/);
+        if (firstTagIndex !== -1) {
+            output.response = text.substring(0, firstTagIndex).trim();
+        }
+    }
+
     output.assumptions = extract('ASSUMPTIONS');
     output.missingData = extract('MISSING_DATA');
     output.preMortem = extract('PRE_MORTEM');
@@ -490,6 +501,7 @@ async function callGroqForPersona(personaId: string, message: string, history: a
 
     // Parse reasoning and answer
     let parsed = parseResponse(rawText);
+
     let { response } = parsed;
 
     // Validate and clean response (only the answer part)
