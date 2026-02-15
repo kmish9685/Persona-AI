@@ -9,6 +9,26 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Persona Configurations
+const STRESS_TEST_APPENDIX = `
+STRESS TEST SECTIONS (MANDATORY):
+In addition to your main [ANSWER], you MUST output these 4 sections to stress-test the user's decision:
+
+[ASSUMPTIONS]
+- List 1-3 hidden assumptions the user is making.
+- Explain why they are risky.
+
+[MISSING_DATA]
+- List 1-3 crucial pieces of data the user ignored.
+
+[PRE_MORTEM]
+- Simulate a future where this decision FAILED. Explain the specific cause.
+
+[BIAS_CHECK]
+- Call out any confirmation bias, sunk cost fallacy, or optimism bias detected.
+
+Your main [ANSWER] should still follow your persona's tone, but these sections must be appended strictly.
+`;
+
 const PERSONAS: Record<string, { name: string; system_prompt: string }> = {
     elon: {
         name: "Elon Musk",
@@ -240,7 +260,7 @@ You MUST output in this exact format:
 4. Conclusion: [Final decision]
 [ANSWER]
 [Your normal response here, max 120 words]
-`
+` + STRESS_TEST_APPENDIX
     }
 };
 
@@ -389,24 +409,50 @@ async function incrementGlobalStats() {
 }
 
 // Helper to parse response into answer and reasoning
-function parseResponse(text: string): { response: string; reasoning?: string } {
-    // Look for [REASONING] and [ANSWER] tags
-    const reasoningMatch = text.match(/\[REASONING\]([\s\S]*?)\[ANSWER\]/);
-    const answerMatch = text.match(/\[ANSWER\]([\s\S]*)/);
+// Updated to handle Stress-Test sections
+function parseResponse(text: string): {
+    response: string;
+    reasoning?: string;
+    assumptions?: string;
+    missingData?: string;
+    preMortem?: string;
+    biasCheck?: string;
+} {
+    const output: any = { response: text.trim() };
 
-    if (reasoningMatch && answerMatch) {
-        return {
-            reasoning: reasoningMatch[1].trim(),
-            response: answerMatch[1].trim()
-        };
+    // Regex to capture content between tags
+    const extract = (tag: string) => {
+        const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)(?=\\[|$)`, 'i');
+        const match = text.match(regex);
+        return match ? match[1].trim() : undefined;
+    };
+
+    output.reasoning = extract('REASONING');
+    output.response = extract('ANSWER') || text.trim(); // Fallback to full text if ANSWER missing
+    output.assumptions = extract('ASSUMPTIONS');
+    output.missingData = extract('MISSING_DATA');
+    output.preMortem = extract('PRE_MORTEM');
+    output.biasCheck = extract('BIAS_CHECK');
+
+    // Clean up response if it contains the raw tags (legacy fallback)
+    if (output.response.includes('[REASONING]')) {
+        output.response = output.response.split('[REASONING]')[0].trim();
     }
 
-    // Fallback: If no tags, return whole text as response
-    return { response: text.trim() };
+    return output;
 }
 
 // Helper function to call Groq API for a single persona
-async function callGroqForPersona(personaId: string, message: string, history: any[] = []): Promise<{ personaId: string; personaName: string; response: string; reasoning?: string }> {
+async function callGroqForPersona(personaId: string, message: string, history: any[] = []): Promise<{
+    personaId: string;
+    personaName: string;
+    response: string;
+    reasoning?: string;
+    assumptions?: string;
+    missingData?: string;
+    preMortem?: string;
+    biasCheck?: string;
+}> {
     const personaConfig = PERSONAS[personaId];
     if (!personaConfig) {
         throw new Error(`Invalid persona: ${personaId}`);
@@ -443,7 +489,8 @@ async function callGroqForPersona(personaId: string, message: string, history: a
     let rawText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
 
     // Parse reasoning and answer
-    let { response, reasoning } = parseResponse(rawText);
+    let parsed = parseResponse(rawText);
+    let { response } = parsed;
 
     // Validate and clean response (only the answer part)
     const words = response.split(/\s+/);
@@ -460,7 +507,11 @@ async function callGroqForPersona(personaId: string, message: string, history: a
         personaId,
         personaName: personaConfig.name,
         response,
-        reasoning
+        reasoning: parsed.reasoning,
+        assumptions: parsed.assumptions,
+        missingData: parsed.missingData,
+        preMortem: parsed.preMortem,
+        biasCheck: parsed.biasCheck
     };
 }
 
@@ -558,6 +609,10 @@ export async function POST(req: NextRequest) {
                 mode: 'single',
                 response: result.response,
                 reasoning: result.reasoning,
+                assumptions: result.assumptions,
+                missingData: result.missingData,
+                preMortem: result.preMortem,
+                biasCheck: result.biasCheck,
                 remaining_free: limitStatus.remaining,
                 plan: limitStatus.plan
             });

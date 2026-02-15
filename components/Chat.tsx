@@ -19,6 +19,7 @@ import { MultiPersonaView } from './MultiPersonaView';
 import { ReasoningAccordion } from './ReasoningAccordion';
 import { PersonaResponse } from '@/types/chat';
 import { getUserPlan } from '@/app/actions/getUserPlan';
+import { StressTestView } from './StressTestView';
 
 // Simple Toast Component
 function Toast({ message, onClose }: { message: string, onClose: () => void }) {
@@ -217,12 +218,12 @@ export function Chat() {
     // Dynamic Empty State based on persona
     const getEmptyStateText = () => {
         const emptyStates: Record<string, string> = {
-            elon: "Production is at zero. Ask me something useful or go back to work.",
-            naval: "A quiet mind is good. But a quiet chat won't build you wealth. Ask.",
-            paul: "The interface is blank because you haven't shipped a prompt yet.",
-            bezos: "Customer obsession starts with asking the right questions. Start.",
-            jobs: "Simplicity is the ultimate sophistication. But first, you need to ask.",
-            thiel: "Secrets are found by asking questions no one else asks. Begin."
+            elon: "Don't ask me for permission. Validate your constraints. State your decision.",
+            naval: "Clear thinking requires removing ego. Tell me your decision, I'll tell you the leverage.",
+            paul: "Most startup ideas are bad. Let's see if yours is one of them. What are you building?",
+            bezos: "Good intentions don't work. Mechanisms do. Show me your plan.",
+            jobs: "Is it good, or is it crap? Don't waste my time. Show me the product decision.",
+            thiel: "Competition is for losers. Tell me your secret plan."
         };
         return emptyStates[personaId] || "Silence is golden, but I'm expensive. Ask me something.";
     };
@@ -430,6 +431,14 @@ export function Chat() {
                                         </p>
                                         <div className="whitespace-pre-wrap">{msg.content}</div>
 
+                                        {/* Stress Test View */}
+                                        <StressTestView
+                                            assumptions={msg.assumptions}
+                                            missingData={msg.missingData}
+                                            preMortem={msg.preMortem}
+                                            biasCheck={msg.biasCheck}
+                                        />
+
                                         {/* Reasoning Display for Single Mode */}
                                         {msg.reasoning && (
                                             <div className="mt-2 pt-2 border-t border-white/10">
@@ -477,7 +486,7 @@ export function Chat() {
                         <input
                             ref={inputRef}
                             type="text"
-                            placeholder="Ask a question..."
+                            placeholder="State a decision (e.g. 'I want to drop out of college'). We will break it..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
