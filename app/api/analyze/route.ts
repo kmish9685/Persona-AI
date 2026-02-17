@@ -158,8 +158,25 @@ Analyze this now. Return ONLY JSON.
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id);
 
+    // Check if user is a paid subscriber
+    const userPlanData = await supabase
+      .from('users')
+      .select('plan, subscription_end_date')
+      .or(`user_id.eq.${user.id},email.eq.${user.emailAddresses[0]?.emailAddress}`)
+      .single();
+
+    let isPaidUser = false;
+    if (userPlanData.data?.plan === 'pro') {
+      // Check if subscription hasn't expired
+      if (userPlanData.data.subscription_end_date) {
+        const endDate = new Date(userPlanData.data.subscription_end_date);
+        isPaidUser = endDate > new Date();
+      } else {
+        isPaidUser = true; // Pro without end date = lifetime/manual
+      }
+    }
+
     const FREE_LIMIT = 2;
-    const isPaidUser = false; // TODO: Check Razorpay/Stripe subscription status
 
     if (!isPaidUser && (analysisCount || 0) >= FREE_LIMIT) {
       return NextResponse.json({
