@@ -11,8 +11,8 @@ export default function Page() {
                         headerTitle: "text-white font-bold",
                         headerSubtitle: "text-zinc-400",
                         socialButtonsBlockButton: "bg-zinc-800 text-white hover:bg-zinc-700 border-zinc-700",
-                        formButtonPrimary: "bg-amber-500 hover:bg-amber-600 text-black font-bold",
-                        footerActionLink: "text-amber-500 hover:text-amber-400",
+                        formButtonPrimary: "bg-[#5e6ad2] hover:bg-[#4f5bc4] text-white font-bold",
+                        footerActionLink: "text-[#5e6ad2] hover:text-[#6b76e0]",
                         formFieldInput: "bg-zinc-800 border-zinc-700 text-white",
                         formFieldLabel: "text-zinc-400"
                     }
