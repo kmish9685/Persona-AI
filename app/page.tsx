@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import ChatDemoSection from '@/components/landing/ChatDemoSection';
 import { Suspense, useState, useEffect } from 'react';
-import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap, BarChart3, HelpCircle, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
+import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap, BarChart3, HelpCircle, ChevronLeft, ChevronRight, Sparkles, Clock, Users, TrendingUp, Eye, Shield } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import BoardSection from '@/components/landing/BoardSection';
 import ComparisonSection from '@/components/landing/ComparisonSection';
@@ -15,39 +15,31 @@ function LandingPageContent() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
   const pricing = {
-    INR: {
-      monthly: 149,
-      annual: 999,
-      symbol: "₹"
-    },
-    USD: {
-      monthly: 3.25,
-      annual: 39,
-      symbol: "$"
-    }
+    INR: { monthly: 149, annual: 999, symbol: "₹" },
+    USD: { monthly: 3.25, annual: 39, symbol: "$" }
   };
 
   const frames = [
     {
       title: "The Problem",
       subtitle: "Endless chat, hedged advice, and zero clarity.",
-      icon: <X className="text-red-500" />,
+      icon: <X className="text-red-400" size={20} />,
       tag: "Traditional AI",
-      content: "Chatbots are designed to keep you talking. They say 'it depends' and give you more options, not fewer. You leave more confused than you started."
+      content: "Chatbots keep you talking. They say \"it depends\" and give you more options, not fewer. You leave more confused than when you started."
     },
     {
       title: "The Solution",
-      subtitle: "Structured analysis + Binary Verdict.",
-      icon: <Check className="text-emerald-500" />,
+      subtitle: "Structured analysis. Binary verdict.",
+      icon: <Check className="text-emerald-400" size={20} />,
       tag: "Persona Engine",
-      content: "We enforce constraints. We synthesize 6 persona perspectives to give you a single verdict, a conviction score, and clear kill signals. Decision compression."
+      content: "We enforce constraints. 6 persona perspectives synthesized into a single verdict, a conviction score, and clear kill signals. Decision compression."
     },
     {
       title: "The Result",
       subtitle: "Execute with absolute confidence.",
-      icon: <Zap className="text-amber-500" />,
+      icon: <Zap className="text-amber-400" size={20} />,
       tag: "The Outcome",
-      content: "Move from indecision to action in 5 minutes. No more tokens. No more noise. Just engineering-grade clarity on your most important choices."
+      content: "Move from indecision to action in under a minute. No tokens, no noise. Engineering-grade clarity on your most important choices."
     }
   ];
 
@@ -59,38 +51,38 @@ function LandingPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-amber-500/30 overflow-x-hidden">
-      {/* Background Decor */}
+    <div className="min-h-screen text-white font-sans selection:bg-amber-500/30 overflow-x-hidden" style={{ background: 'var(--bg-base)' }}>
+      {/* Background gradient — subtle amber glow from top */}
       <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[80%] h-[60%] bg-gradient-to-b from-amber-500/5 to-transparent rounded-full blur-[120px]" />
+        <div className="absolute top-[-20%] left-[50%] -translate-x-1/2 w-[90%] h-[50%] bg-gradient-to-b from-amber-500/[0.04] to-transparent rounded-full blur-[100px]" />
       </div>
 
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-              <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-lg" />
-              <span className="font-bold text-lg tracking-tight text-white uppercase tracking-tighter">Persona AI</span>
+      {/* ─── HEADER ─── */}
+      <header className="sticky top-0 z-50 backdrop-blur-xl border-b" style={{ background: 'rgba(10,10,11,0.8)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14">
+            <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+              <img src="/logo.png" alt="Persona AI" className="w-7 h-7 rounded-md" />
+              <span className="font-semibold text-[15px] tracking-tight" style={{ color: 'var(--text-primary)' }}>Persona AI</span>
             </Link>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <SignedIn>
-                <Link href="/dashboard" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+                <Link href="/dashboard" className="text-[13px] font-medium px-3 py-1.5 rounded-md transition-colors" style={{ color: 'var(--text-secondary)' }}>
                   My Decisions
                 </Link>
                 <UserButton afterSignOutUrl="/" />
               </SignedIn>
 
               <SignedOut>
-                <Link href="/login" className="hidden sm:block text-sm font-medium text-zinc-400 hover:text-white transition-colors">
+                <Link href="/login" className="hidden sm:block text-[13px] font-medium px-3 py-1.5 rounded-md transition-colors hover:text-white" style={{ color: 'var(--text-secondary)' }}>
                   Login
                 </Link>
                 <Link
                   href="/analyze/new"
-                  className="px-5 py-2 text-sm font-bold bg-white text-black hover:bg-zinc-200 rounded-full transition-all flex items-center gap-2"
+                  className="px-4 py-2 text-[13px] font-medium bg-amber-500 text-black hover:bg-amber-400 rounded-lg transition-all flex items-center gap-2"
                 >
-                  Start <ArrowRight size={14} />
+                  Get started <ArrowRight size={13} />
                 </Link>
               </SignedOut>
             </div>
@@ -98,121 +90,123 @@ function LandingPageContent() {
         </div>
       </header>
 
-      {/* 1. Hero Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
-        <div className="max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
-            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">The "Just Tell Me What To Do" Engine</span>
+      {/* ─── 1. HERO SECTION ─── */}
+      <section className="relative z-10 px-6 lg:px-8 pt-24 sm:pt-32 pb-20 text-center">
+        <div className="max-w-4xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-8 animate-fade-up" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-[11px] font-medium tracking-wide" style={{ color: 'var(--text-secondary)' }}>The decision engine for builders</span>
           </div>
 
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.9] mb-8 tracking-tighter animate-fade-up">
+          {/* Headline */}
+          <h1 className="text-[clamp(40px,6vw,72px)] font-semibold leading-[1.05] mb-6 tracking-[-0.04em] animate-fade-up" style={{ animationDelay: '0.1s' }}>
             Clarify what you<br />
-            <span className="text-gradient">
-              already know.
-            </span>
+            <span className="text-gradient">already know.</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-zinc-500 text-lg sm:text-xl mb-10 leading-relaxed">
-            You don't need another generic chatbot. You need a <strong>Kill Signal</strong>, a <strong>Binary Verdict</strong>, and a <strong>Values Reality Check</strong>.
+          {/* Subtitle */}
+          <p className="max-w-lg mx-auto text-[16px] leading-relaxed mb-10 animate-fade-up" style={{ color: 'var(--text-secondary)', animationDelay: '0.2s' }}>
+            You don't need another chatbot. You need a <strong className="text-white font-medium">Kill Signal</strong>, a <strong className="text-white font-medium">Binary Verdict</strong>, and a <strong className="text-white font-medium">Values Reality Check</strong>.
           </p>
 
           {/* 3-Frame Carousel */}
-          <div className="relative max-w-4xl mx-auto mb-12">
-            <div className="glass-panel border border-white/10 rounded-3xl p-8 sm:p-12 min-h-[320px] sm:min-h-[280px] flex flex-col justify-center relative overflow-hidden group">
+          <div className="relative max-w-3xl mx-auto mb-12 animate-fade-up" style={{ animationDelay: '0.3s' }}>
+            <div className="rounded-xl p-8 sm:p-10 min-h-[260px] flex flex-col justify-center relative overflow-hidden group" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', boxShadow: 'var(--shadow-hero)' }}>
               {/* Progress Bars */}
-              <div className="absolute top-0 left-0 right-0 flex gap-2 p-4">
+              <div className="absolute top-0 left-0 right-0 flex gap-1.5 p-4">
                 {frames.map((_, i) => (
-                  <div key={i} className="h-0.5 flex-1 bg-white/10 rounded-full overflow-hidden">
+                  <div key={i} className="h-[2px] flex-1 rounded-full overflow-hidden" style={{ background: 'var(--border-default)' }}>
                     <div
-                      className={`h-full bg-amber-500/80 transition-all duration-500 ${currentFrame === i ? 'w-full' : 'w-0'}`}
-                      style={{ transitionDuration: currentFrame === i ? '5000ms' : '0ms' }}
+                      className={`h-full bg-amber-500/80 ${currentFrame === i ? 'w-full' : 'w-0'}`}
+                      style={{ transition: currentFrame === i ? 'width 5000ms linear' : 'width 0ms' }}
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="flex flex-col items-center animate-fade-in" key={currentFrame}>
-                <div className="mb-4 p-3 bg-white/5 rounded-2xl border border-white/10">
+              <div className="flex flex-col items-center" key={currentFrame}>
+                <div className="mb-4 p-2.5 rounded-lg" style={{ background: 'var(--bg-active)', border: '1px solid var(--border-subtle)' }}>
                   {frames[currentFrame].icon}
                 </div>
-                <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">
-                  {frames[currentFrame].tag}
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold mb-4">{frames[currentFrame].title}</h2>
-                <p className="text-zinc-400 text-lg max-w-2xl leading-relaxed">
+                <div className="accent-label mb-2">{frames[currentFrame].tag}</div>
+                <h2 className="text-xl sm:text-2xl font-semibold mb-3 tracking-tight">{frames[currentFrame].title}</h2>
+                <p className="text-[15px] max-w-xl leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                   {frames[currentFrame].content}
                 </p>
               </div>
 
-              {/* Navigation Arrows */}
+              {/* Nav Arrows */}
               <button
                 onClick={() => setCurrentFrame((prev) => (prev - 1 + frames.length) % frames.length)}
-                className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/5 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={16} style={{ color: 'var(--text-secondary)' }} />
               </button>
               <button
                 onClick={() => setCurrentFrame((prev) => (prev + 1) % frames.length)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/5 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-all"
+                style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={16} style={{ color: 'var(--text-secondary)' }} />
               </button>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 uppercase tracking-widest text-xs font-black">
-            <Link href="/analyze/new" className="w-full sm:w-auto px-10 py-5 bg-white text-black rounded-full hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2">
-              Start Analysis (Free) <ArrowRight size={16} />
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-up" style={{ animationDelay: '0.4s' }}>
+            <Link href="/analyze/new" className="w-full sm:w-auto px-8 py-3.5 bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-all transform hover:scale-[1.02] font-medium text-[14px] flex items-center justify-center gap-2 shadow-[0_0_30px_rgba(245,158,11,0.15)]">
+              Start Analysis (Free) <ArrowRight size={15} />
             </Link>
-            <Link href="/personas" className="w-full sm:w-auto px-10 py-5 bg-zinc-900 text-zinc-400 rounded-full border border-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2">
-              Try Advisor Chat <Brain size={16} />
+            <Link href="/personas" className="w-full sm:w-auto px-8 py-3.5 rounded-lg font-medium text-[14px] transition-all flex items-center justify-center gap-2 hover:text-white" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
+              Try Advisor Chat <Brain size={15} />
             </Link>
           </div>
 
-          {/* Micro-Stats / Usage Proof */}
-          <div className="mt-16 flex flex-wrap justify-center gap-8 border-y border-white/5 py-8">
+          {/* Social Proof Strip */}
+          <div className="mt-16 flex flex-wrap justify-center gap-8 py-8 border-y" style={{ borderColor: 'var(--border-subtle)' }}>
             <div className="flex flex-col items-center">
-              <span className="text-lg font-bold">~30s</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">To 5-Year Clarity</span>
+              <span className="text-lg font-semibold text-white">~30s</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>To Full Clarity</span>
             </div>
-            <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
+            <div className="w-px h-10 hidden sm:block" style={{ background: 'var(--border-default)' }} />
             <div className="flex flex-col items-center">
-              <span className="text-lg font-bold">5+</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Mental Models</span>
+              <span className="text-lg font-semibold text-white">6</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Mental Models</span>
             </div>
-            <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
+            <div className="w-px h-10 hidden sm:block" style={{ background: 'var(--border-default)' }} />
             <div className="flex flex-col items-center">
-              <span className="text-lg font-bold text-amber-500">4.8/5</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Clarity Score</span>
+              <span className="text-lg font-semibold text-amber-500">4.8/5</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Clarity Score</span>
             </div>
-            <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
+            <div className="w-px h-10 hidden sm:block" style={{ background: 'var(--border-default)' }} />
             <div className="flex flex-col items-center">
-              <div className="flex gap-1 mb-1">
-                {[1, 2, 3, 4, 5].map(i => <Check key={i} size={10} className="text-emerald-500 fill-emerald-500" />)}
+              <div className="flex gap-0.5 mb-1">
+                {[1, 2, 3, 4, 5].map(i => <Check key={i} size={10} className="text-emerald-400" />)}
               </div>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Founders Approve</span>
+              <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Founders Approve</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* NEW: THE BOARDROOM (Personas Showcase) */}
+      {/* ─── BOARDROOM (Personas Showcase) ─── */}
       <BoardSection />
 
-      {/* 2. Differentiator Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Not Another Chatbot.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">We don't chat. We compute decisions.</p>
+      {/* ─── 2. NOT ANOTHER CHATBOT ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-24 border-y" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">Not another chatbot.</h2>
+            <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>We don't chat. We compute decisions.</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px]" style={{ background: 'var(--border-subtle)' }}>
             {/* Standard AI */}
-            <div className="p-8 rounded-3xl bg-zinc-900/20 border border-white/5 opacity-60">
-              <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 mb-6">Standard AI</h3>
-              <ul className="space-y-4 text-zinc-500 text-sm">
+            <div className="p-8 opacity-60" style={{ background: 'var(--bg-base)' }}>
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider mb-6" style={{ color: 'var(--text-tertiary)' }}>Standard AI</h3>
+              <ul className="space-y-3 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>
                 <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> "It depends on your goals..."</li>
                 <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Walls of text</li>
                 <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Zero accountability</li>
@@ -221,9 +215,9 @@ function LandingPageContent() {
             </div>
 
             {/* Persona Chatbots */}
-            <div className="p-8 rounded-3xl bg-zinc-900/20 border border-white/5 opacity-80">
-              <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-6">Persona Chatbots</h3>
-              <ul className="space-y-4 text-zinc-400 text-sm">
+            <div className="p-8 opacity-80" style={{ background: 'var(--bg-base)' }}>
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider mb-6" style={{ color: 'var(--text-secondary)' }}>Persona Chatbots</h3>
+              <ul className="space-y-3 text-[14px]" style={{ color: 'var(--text-secondary)' }}>
                 <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> Fun mimicry</li>
                 <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> Good for brainstorming</li>
                 <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Still indecisive</li>
@@ -232,426 +226,378 @@ function LandingPageContent() {
             </div>
 
             {/* Persona AI Engine */}
-            <div className="p-8 rounded-3xl bg-white/5 border border-amber-500/30 relative overflow-hidden shadow-2xl shadow-amber-500/5">
-              <div className="absolute top-0 right-0 p-4 opacity-10 text-amber-500"><Zap size={40} /></div>
-              <h3 className="text-sm font-black uppercase tracking-widest text-amber-500 mb-6">Decision Engine</h3>
-              <ul className="space-y-4 text-white text-sm">
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Kill Signals (When to quit)</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Values Alignment Check</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>5-Year Visualization</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Binary Verdict (YES/NO)</strong></li>
+            <div className="p-8 relative overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+              <div className="absolute top-0 right-0 p-4 opacity-10 text-amber-500"><Zap size={32} /></div>
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-amber-500 mb-6">Decision Engine</h3>
+              <ul className="space-y-3 text-[14px] text-white">
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong className="font-medium">Kill Signals (When to quit)</strong></li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong className="font-medium">Values Alignment Check</strong></li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong className="font-medium">5-Year Visualization</strong></li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong className="font-medium">Binary Verdict (YES/NO)</strong></li>
               </ul>
             </div>
           </div>
         </div>
       </section>
 
-      {/* NEW: COMPARISON SECTION (Show vs Tell) */}
+      {/* ─── COMPARISON SECTION ─── */}
       <ComparisonSection />
 
-      {/* NEW: CHAT DEMO SECTION (Proves the "Chat" feature) */}
+      {/* ─── CHAT DEMO ─── */}
       <ChatDemoSection />
 
-      {/* 4. USE CASE SCENARIOS */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Real Outcomes.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">From "Maybe" to "Move".</p>
+      {/* ─── 3. REAL OUTCOMES ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-24 border-y" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">Real outcomes.</h2>
+            <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>From "maybe" to "move."</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Kill Signal Detected</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px]" style={{ background: 'var(--border-subtle)' }}>
+            <div className="p-8" style={{ background: 'var(--bg-base)' }}>
+              <div className="mb-4">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium" style={{ background: 'rgba(224,93,93,0.12)', color: '#e05d5d' }}>
+                  <ShieldAlert size={11} /> Kill Signal Detected
+                </span>
               </div>
-              <h3 className="font-bold text-lg mb-4">"Should I quit my job to build this MVP?"</h3>
+              <h3 className="font-semibold text-[17px] mb-4 tracking-tight">"Should I quit my job to build this MVP?"</h3>
               <div className="space-y-4">
-                <div className="text-sm">
-                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">User Values:</span>
-                  <p className="text-zinc-400">Security &gt; Freedom. 3 month runway.</p>
+                <div>
+                  <span className="text-[11px] font-medium uppercase tracking-wider block mb-1" style={{ color: 'var(--text-tertiary)' }}>User Values</span>
+                  <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>Security &gt; Freedom. 3 month runway.</p>
                 </div>
-                <div className="text-sm">
-                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Verdict:</span>
-                  <p className="text-white">Structured verdict: <strong>NO (Wait)</strong>. <br />Reason: Your values prioritize security, but your runway is too short. <strong>Kill Signal:</strong> If you don't have a paying pilot in 2 weeks, you will run out of cash.</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">High Conviction</div>
-              </div>
-              <h3 className="font-bold text-lg mb-4">"Which target market should we focus on?"</h3>
-              <div className="space-y-4">
-                <div className="text-sm">
-                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">User Values:</span>
-                  <p className="text-zinc-400">Speed &gt; Quality. Solo Founder.</p>
-                </div>
-                <div className="text-sm">
-                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Verdict:</span>
-                  <p className="text-white">Structured verdict: <strong>SME/Prosumer</strong>. <br />Reason: Enterprise sales take 6 months. You value speed. Do not go upmarket yet.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS - Visual 3-Step Walkthrough */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">How It Works.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">From brain fog to binary verdict in 3 steps.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            {/* Connecting line (desktop only) */}
-            <div className="hidden md:block absolute top-24 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
-
-            {/* Step 1 */}
-            <div className="relative group">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 font-black text-lg mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all">
-                  1
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Describe Your Decision</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed mb-6">
-                  Type what you're stuck on in plain English. Include your situation, stakes, and constraints. No forms to fill. No jargon needed.
-                </p>
-                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-left">
-                  <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Example Input</div>
-                  <p className="text-xs text-zinc-400 font-mono leading-relaxed">
-                    "Should I quit my $120K job at Google to build my SaaS full-time? I have 50 beta users, 5 paying, wife is pregnant, 3 months savings..."
+                <div>
+                  <span className="accent-label block mb-1">Verdict</span>
+                  <p className="text-[14px] text-white leading-relaxed">
+                    <strong className="font-semibold">NO (Wait)</strong> — Your values prioritize security, but your runway is too short. <span className="text-red-400 font-medium">Kill Signal:</span> If you don't have a paying pilot in 2 weeks, you will run out of cash.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Step 2 */}
-            <div className="relative group">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 font-black text-lg mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all">
-                  2
+            <div className="p-8" style={{ background: 'var(--bg-base)' }}>
+              <div className="mb-4">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium" style={{ background: 'rgba(77,172,104,0.12)', color: '#4dac68' }}>
+                  <TrendingUp size={11} /> High Conviction
+                </span>
+              </div>
+              <h3 className="font-semibold text-[17px] mb-4 tracking-tight">"Which target market should we focus on?"</h3>
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[11px] font-medium uppercase tracking-wider block mb-1" style={{ color: 'var(--text-tertiary)' }}>User Values</span>
+                  <p className="text-[14px]" style={{ color: 'var(--text-secondary)' }}>Speed &gt; Quality. Solo Founder.</p>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">AI Computes Your Decision</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed mb-6">
-                  6 mental models analyze your constraints, extract options, and stress-test every path. Takes ~30 seconds. No back-and-forth chat needed.
-                </p>
-                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-left">
-                  <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">What Happens</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Constraint Analysis
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" style={{ animationDelay: '0.2s' }} /> Option Stress-Testing
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" style={{ animationDelay: '0.4s' }} /> Kill Signal Detection
-                    </div>
-                  </div>
+                <div>
+                  <span className="accent-label block mb-1">Verdict</span>
+                  <p className="text-[14px] text-white leading-relaxed">
+                    <strong className="font-semibold">SME/Prosumer</strong> — Enterprise sales take 6 months. You value speed. Do not go upmarket yet.
+                  </p>
                 </div>
               </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="relative group">
-              <div className="text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 font-black text-lg mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all">
-                  3
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Get Your Verdict</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed mb-6">
-                  A clear YES or NO with conviction score, kill signals, and conditional factors. No hedging. No "it depends." Just clarity.
-                </p>
-                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-left">
-                  <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Example Output</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-500">Verdict:</span>
-                      <span className="text-xs font-bold text-red-400">NO (Wait)</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-500">Conviction:</span>
-                      <span className="text-xs font-bold text-amber-500">87%</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-zinc-500">Kill Signal:</span>
-                      <span className="text-xs font-bold text-red-500">🔴 Active</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-16">
-            <Link href="/analyze/new" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black rounded-full font-black text-sm uppercase tracking-widest hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.15)]">
-              Try It Free <ArrowRight size={16} />
-            </Link>
-            <p className="text-zinc-600 text-xs mt-4 uppercase tracking-widest">2 free analyses · No credit card</p>
-          </div>
-        </div>
-      </section>
-
-      {/* WHO THIS IS FOR - ICP Self-Identification */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Built For Builders.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">If you recognize yourself here, this tool was made for you.</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
-              <div className="text-2xl mb-4">🔥</div>
-              <h3 className="font-bold text-white mb-2 text-sm">Solo Founders</h3>
-              <p className="text-zinc-500 text-xs leading-relaxed">No co-founder to debate with. No board to validate ideas. You need an unbiased second brain.</p>
-            </div>
-            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
-              <div className="text-2xl mb-4">⚡</div>
-              <h3 className="font-bold text-white mb-2 text-sm">Startup CEOs</h3>
-              <p className="text-zinc-500 text-xs leading-relaxed">Pivot or double down? Hire or outsource? Fire or coach? High-stakes decisions that keep you up at night.</p>
-            </div>
-            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
-              <div className="text-2xl mb-4">🎯</div>
-              <h3 className="font-bold text-white mb-2 text-sm">Career Switchers</h3>
-              <p className="text-zinc-500 text-xs leading-relaxed">Quit the corporate job? Take the offer? Start freelancing? Life-changing decisions need structure, not opinions.</p>
-            </div>
-            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
-              <div className="text-2xl mb-4">💡</div>
-              <h3 className="font-bold text-white mb-2 text-sm">Indie Hackers</h3>
-              <p className="text-zinc-500 text-xs leading-relaxed">Which feature to build next? When to launch? How to price? Stop guessing, start computing.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* TRUST BAR - Enhanced Social Proof */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 bg-black border-b border-white/5">
+      {/* ─── 4. HOW IT WORKS ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-24" style={{ background: 'var(--bg-base)' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-black text-white mb-1">500+</div>
-              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Decisions Analyzed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-black text-amber-500 mb-1">4.8/5</div>
-              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Clarity Score</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-black text-white mb-1">30s</div>
-              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Avg. Analysis Time</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-black text-emerald-500 mb-1">92%</div>
-              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Said "Worth It"</div>
-            </div>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">How it works.</h2>
+            <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>From brain fog to binary verdict in 3 steps.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connecting line */}
+            <div className="hidden md:block absolute top-[72px] left-[20%] right-[20%] h-px" style={{ background: 'linear-gradient(to right, transparent, var(--accent-subtle), transparent)' }} />
+
+            {[
+              {
+                num: "01",
+                title: "Describe your decision",
+                desc: "Type what you're stuck on in plain English. Include your situation, stakes, and constraints.",
+                label: "Example Input",
+                detail: '"Should I quit my $120K job to build my SaaS full-time? 50 beta users, 5 paying, wife is pregnant, 3 months savings..."'
+              },
+              {
+                num: "02",
+                title: "AI computes your decision",
+                desc: "6 mental models analyze constraints, extract options, and stress-test every path. ~30 seconds.",
+                label: "What happens",
+                items: [
+                  { color: '#4dac68', text: 'Constraint analysis' },
+                  { color: '#f2b84b', text: 'Option stress-testing' },
+                  { color: '#e05d5d', text: 'Kill signal detection' },
+                ]
+              },
+              {
+                num: "03",
+                title: "Get your verdict",
+                desc: "A clear YES or NO with conviction score, kill signals, and conditional factors. No hedging.",
+                label: "Example Output",
+                output: [
+                  { key: 'Verdict', value: 'NO (Wait)', color: '#e05d5d' },
+                  { key: 'Conviction', value: '87%', color: '#f2b84b' },
+                  { key: 'Kill Signal', value: '🔴 Active', color: '#e05d5d' }
+                ]
+              }
+            ].map((step, i) => (
+              <div key={i} className="relative group">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg mb-5 text-[13px] font-semibold text-amber-500 transition-all group-hover:bg-amber-500 group-hover:text-black" style={{ background: 'var(--accent-subtle)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                    {step.num}
+                  </div>
+                  <h3 className="text-[17px] font-semibold text-white mb-2 tracking-tight">{step.title}</h3>
+                  <p className="text-[14px] leading-relaxed mb-5" style={{ color: 'var(--text-secondary)' }}>{step.desc}</p>
+                  <div className="rounded-lg p-4 text-left" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
+                    <div className="accent-label mb-2">{step.label}</div>
+                    {step.detail && (
+                      <p className="text-[12px] font-mono leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{step.detail}</p>
+                    )}
+                    {step.items && (
+                      <div className="space-y-2">
+                        {step.items.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-[12px]" style={{ color: 'var(--text-secondary)' }}>
+                            <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: item.color, animationDelay: `${idx * 0.2}s` }} />
+                            {item.text}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {step.output && (
+                      <div className="space-y-2">
+                        {step.output.map((row, idx) => (
+                          <div key={idx} className="flex items-center justify-between">
+                            <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>{row.key}</span>
+                            <span className="text-[12px] font-semibold" style={{ color: row.color }}>{row.value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-14">
+            <Link href="/analyze/new" className="inline-flex items-center gap-2 px-8 py-3.5 bg-amber-500 text-black rounded-lg font-medium text-[14px] hover:bg-amber-400 transition-all transform hover:scale-[1.02] shadow-[0_0_30px_rgba(245,158,11,0.15)]">
+              Try it free <ArrowRight size={15} />
+            </Link>
+            <p className="text-[12px] mt-3" style={{ color: 'var(--text-tertiary)' }}>2 free analyses · No credit card required</p>
           </div>
         </div>
       </section>
 
-      {/* NEW: TESTIMONIALS */}
+      {/* ─── 5. BUILT FOR BUILDERS ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-24 border-y" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">Built for builders.</h2>
+            <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>If you recognize yourself here, this tool was made for you.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1px]" style={{ background: 'var(--border-subtle)' }}>
+            {[
+              { icon: '🔥', title: 'Solo Founders', desc: 'No co-founder to debate with. No board to validate ideas. You need an unbiased second brain.' },
+              { icon: '⚡', title: 'Startup CEOs', desc: 'Pivot or double down? Hire or outsource? Fire or coach? High-stakes decisions that keep you up at night.' },
+              { icon: '🎯', title: 'Career Switchers', desc: 'Quit the corporate job? Take the offer? Start freelancing? Life-changing decisions need structure, not opinions.' },
+              { icon: '💡', title: 'Indie Hackers', desc: 'Which feature to build next? When to launch? How to price? Stop guessing, start computing.' }
+            ].map((card, i) => (
+              <div key={i} className="p-6 transition-all group hover:bg-[var(--bg-hover)]" style={{ background: 'var(--bg-base)' }}>
+                <div className="text-xl mb-3">{card.icon}</div>
+                <h3 className="font-semibold text-[14px] text-white mb-2">{card.title}</h3>
+                <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TRUST BAR ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-14 border-b" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {[
+              { value: '500+', label: 'Decisions Analyzed', color: 'white' },
+              { value: '4.8/5', label: 'Clarity Score', color: '#f2b84b' },
+              { value: '30s', label: 'Avg. Analysis Time', color: 'white' },
+              { value: '92%', label: 'Said "Worth It"', color: '#4dac68' }
+            ].map((stat, i) => (
+              <div key={i} className="text-center">
+                <div className="text-2xl font-semibold mb-1" style={{ color: stat.color }}>{stat.value}</div>
+                <div className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── TESTIMONIALS ─── */}
       <TestimonialSection />
 
-      {/* 5. USER JOURNEY FLOW */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">The Clarity Loop.</h2>
+      {/* ─── THE CLARITY LOOP ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-24" style={{ background: 'var(--bg-base)' }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">The clarity loop.</h2>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-amber-500/50 transition-all">
-                <Target size={24} />
+            {[
+              { icon: <Target size={22} />, label: '1. Values & Viz', color: '' },
+              { icon: <Brain size={22} />, label: '2. Engine', color: 'text-amber-500' },
+              { icon: <ShieldAlert size={22} />, label: '3. Kill Signals', color: 'text-emerald-400' },
+              { icon: <Zap size={22} />, label: '4. Gut Check', color: 'text-red-400' }
+            ].map((step, i) => (
+              <div key={i} className="flex flex-col items-center gap-2 group">
+                {i > 0 && <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0 mb-2 md:mb-0 md:hidden" />}
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all group-hover:border-amber-500/30 ${step.color}`} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
+                  {step.icon}
+                </div>
+                <span className="text-[10px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{step.label}</span>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">1. Values & Viz</span>
-            </div>
-            <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0" />
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-amber-500/50 transition-all text-amber-500 shadow-2xl shadow-amber-500/10">
-                <Brain size={24} />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">2. Engine</span>
-            </div>
-            <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0" />
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-emerald-500/50 transition-all text-emerald-500">
-                <ShieldAlert size={24} />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">3. Kill Signals</span>
-            </div>
-            <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0" />
-            <div className="flex flex-col items-center gap-2 group">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-red-500/50 transition-all text-red-500">
-                <Zap size={24} />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">4. Gut Check</span>
-            </div>
+            ))}
+          </div>
+
+          {/* Desktop arrows */}
+          <div className="hidden md:flex justify-between px-24 -mt-10">
+            <ArrowRight size={16} style={{ color: 'var(--border-default)' }} />
+            <ArrowRight size={16} style={{ color: 'var(--border-default)' }} />
+            <ArrowRight size={16} style={{ color: 'var(--border-default)' }} />
           </div>
         </div>
       </section>
 
-      {/* 6. PRICING SECTION */}
-      <section id="pricing" className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-t border-white/5">
-        <div className="max-w-6xl mx-auto">
+      {/* ─── 6. PRICING ─── */}
+      <section id="pricing" className="relative z-10 px-6 lg:px-8 py-24 border-t" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">No Tokens. No Noise.</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">Clear pricing for clear decisions.</p>
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">Simple pricing.</h2>
+            <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>No tokens. No noise. Clear pricing for clear decisions.</p>
           </div>
 
           {/* Toggles */}
-          <div className="flex flex-col items-center gap-6 mb-16">
-            {/* Billing Cycle Toggle */}
-            <div className="flex items-center p-1 bg-zinc-900 border border-white/5 rounded-full">
+          <div className="flex flex-col items-center gap-5 mb-14">
+            <div className="flex items-center p-1 rounded-lg" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-default)' }}>
               <button
                 onClick={() => setBillingCycle('monthly')}
-                className={`px-6 py-2 rounded-full text-xs font-bold transition-all ${billingCycle === 'monthly' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
+                className={`px-5 py-2 rounded-md text-[13px] font-medium transition-all ${billingCycle === 'monthly' ? 'bg-white text-black' : 'hover:text-white'}`}
+                style={billingCycle !== 'monthly' ? { color: 'var(--text-secondary)' } : {}}
               >
                 Monthly
               </button>
               <button
                 onClick={() => setBillingCycle('annual')}
-                className={`px-6 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${billingCycle === 'annual' ? 'bg-amber-500 text-black' : 'text-zinc-500 hover:text-white'}`}
+                className={`px-5 py-2 rounded-md text-[13px] font-medium transition-all flex items-center gap-2 ${billingCycle === 'annual' ? 'bg-amber-500 text-black' : 'hover:text-white'}`}
+                style={billingCycle !== 'annual' ? { color: 'var(--text-secondary)' } : {}}
               >
-                Annual <span className="text-[10px] px-2 py-0.5 bg-black/20 rounded-full font-black">Save ~45%</span>
+                Annual <span className="text-[10px] px-1.5 py-0.5 bg-black/20 rounded text-[11px] font-semibold">−45%</span>
               </button>
             </div>
 
-            {/* Currency Toggle */}
-            <div className="flex items-center gap-4 text-xs font-bold tracking-widest uppercase text-zinc-600">
-              <button
-                onClick={() => setCurrency('INR')}
-                className={`transition-all ${currency === 'INR' ? 'text-white' : 'hover:text-zinc-400'}`}
-              >
-                India (INR)
-              </button>
-              <div className="w-1 h-1 rounded-full bg-zinc-800"></div>
-              <button
-                onClick={() => setCurrency('USD')}
-                className={`transition-all ${currency === 'USD' ? 'text-white' : 'hover:text-zinc-400'}`}
-              >
-                International (USD)
-              </button>
+            <div className="flex items-center gap-4 text-[12px] font-medium tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+              <button onClick={() => setCurrency('INR')} className={`transition-all uppercase ${currency === 'INR' ? 'text-white' : 'hover:text-zinc-400'}`}>India (INR)</button>
+              <div className="w-1 h-1 rounded-full" style={{ background: 'var(--border-default)' }} />
+              <button onClick={() => setCurrency('USD')} className={`transition-all uppercase ${currency === 'USD' ? 'text-white' : 'hover:text-zinc-400'}`}>International (USD)</button>
             </div>
           </div>
 
-          {/* Single High-Value Card */}
-          <div className="max-w-2xl mx-auto">
-            <div className="glass-panel border border-amber-500/30 rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-2xl shadow-amber-500/5 animate-fade-in">
-              <div className="absolute top-6 right-8 text-[10px] font-black uppercase tracking-widest text-amber-500 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">Founding Member</div>
+          {/* Pricing Card */}
+          <div className="max-w-lg mx-auto">
+            <div className="rounded-xl p-8 sm:p-10 relative overflow-hidden" style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(245,158,11,0.2)', boxShadow: '0 0 40px rgba(245,158,11,0.05)' }}>
+              <div className="absolute top-5 right-6 accent-label px-2.5 py-1 rounded-md" style={{ background: 'var(--accent-subtle)' }}>Founding Member</div>
 
-              <div className="mb-10 text-center sm:text-left">
-                <h3 className="text-2xl font-black uppercase tracking-widest text-white mb-4">Unlimited Access</h3>
-                <div className="flex items-baseline justify-center sm:justify-start gap-2">
-                  <span className="text-2xl text-zinc-500">{pricing[currency].symbol}</span>
-                  <span className="text-7xl font-black text-white">{pricing[currency][billingCycle]}</span>
-                  <span className="text-sm text-zinc-500 font-bold uppercase tracking-widest">/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-white mb-4 tracking-tight">Unlimited Access</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl" style={{ color: 'var(--text-tertiary)' }}>{pricing[currency].symbol}</span>
+                  <span className="text-[56px] font-semibold text-white leading-none tracking-tight">{pricing[currency][billingCycle]}</span>
+                  <span className="text-[13px] font-medium ml-1" style={{ color: 'var(--text-tertiary)' }}>/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
                 </div>
                 {billingCycle === 'annual' && currency === 'INR' && (
-                  <p className="mt-2 text-sm text-amber-500 font-bold italic">Special Annual Launch Price: ₹83/mo equivalent</p>
+                  <p className="mt-2 text-[13px] text-amber-500 font-medium">₹83/mo equivalent — annual launch price</p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3 text-sm text-zinc-300">
-                    <Check size={16} className="text-amber-500" />
-                    <span>Unlimited Decision Analysis</span>
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-zinc-300">
-                    <Check size={16} className="text-amber-500" />
-                    <span>All Founder Personas (6+)</span>
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-zinc-300">
-                    <Check size={16} className="text-amber-500" />
-                    <span>Binary Verdicts & Kill Signals</span>
-                  </li>
-                </ul>
-                <ul className="space-y-4">
-                  <li className="flex items-center gap-3 text-sm text-zinc-300">
-                    <Check size={16} className="text-amber-500" />
-                    <span>Advisor Chat Mode</span>
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-zinc-300">
-                    <Check size={16} className="text-amber-500" />
-                    <span>Decision History Retention</span>
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-zinc-300">
-                    <Check size={16} className="text-amber-500" />
-                    <span>Priority Inference Logic</span>
-                  </li>
-                </ul>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                {[
+                  'Unlimited Decision Analysis',
+                  'All Founder Personas (6+)',
+                  'Binary Verdicts & Kill Signals',
+                  'Advisor Chat Mode',
+                  'Decision History',
+                  'Priority Inference'
+                ].map((feature, i) => (
+                  <div key={i} className="flex items-center gap-2.5 text-[14px]" style={{ color: 'var(--text-secondary)' }}>
+                    <Check size={14} className="text-amber-500 shrink-0" />
+                    <span>{feature}</span>
+                  </div>
+                ))}
               </div>
 
-              <Link href="/analyze/new" className="block w-full py-5 rounded-2xl bg-white text-black text-center font-black text-lg hover:bg-zinc-200 transition-all transform hover:scale-[1.02] shadow-xl shadow-white/10 flex items-center justify-center gap-2">
-                Gain Absolute Clarity <Zap size={18} className="fill-black" />
+              <Link href="/analyze/new" className="block w-full py-3.5 rounded-lg bg-amber-500 text-black text-center font-medium text-[14px] hover:bg-amber-400 transition-all transform hover:scale-[1.01]">
+                Gain Absolute Clarity
               </Link>
 
-              <div className="mt-6 flex items-center justify-center gap-6 grayscale opacity-40">
-                <div className="text-[10px] font-bold uppercase tracking-widest">Visa</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest">Mastercard</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest">Stripe</div>
-                <div className="text-[10px] font-bold uppercase tracking-widest">Razorpay</div>
+              <div className="mt-5 flex items-center justify-center gap-5 opacity-30">
+                {['Visa', 'Mastercard', 'Razorpay'].map(p => (
+                  <div key={p} className="text-[10px] font-semibold uppercase tracking-wider">{p}</div>
+                ))}
               </div>
             </div>
           </div>
 
-          <p className="mt-16 text-center text-zinc-700 text-[10px] font-black uppercase tracking-[0.3em] flex flex-wrap items-center justify-center gap-6">
-            <span>NO TOKEN LIMITS</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900 border border-zinc-800"></span>
-            <span>NO CONVERSATIONAL FLUFF</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900 border border-zinc-800"></span>
-            <span>PURE DECISION ENGINEERING</span>
+          <p className="mt-14 text-center text-[10px] font-medium uppercase tracking-[0.15em] flex flex-wrap items-center justify-center gap-4" style={{ color: 'var(--text-tertiary)' }}>
+            <span>No token limits</span>
+            <span className="w-1 h-1 rounded-full" style={{ background: 'var(--border-default)' }} />
+            <span>No conversational fluff</span>
+            <span className="w-1 h-1 rounded-full" style={{ background: 'var(--border-default)' }} />
+            <span>Pure decision engineering</span>
           </p>
         </div>
       </section>
 
-      {/* 7. FAQ Section */}
-      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">FAQ</h2>
+      {/* ─── 7. FAQ ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-24 border-t" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl sm:text-[44px] font-semibold mb-3 tracking-[-0.03em]">FAQ</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-24">
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> Is this just another AI chatbot?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">No. This is a structured decision engine. We prioritize clarity, binary tradeoffs, and kill signals over generic conversational responses.</p>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> Why not just use ChatGPT?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">ChatGPT is reactive. Our engine enforces reasoning constraints and re-evaluation protocols that generic prompts often miss.</p>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> Who is this for?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">Founders, builders, and strategic thinkers who need high-conviction decisions, not just stylized opinions.</p>
-            </div>
-            <div>
-              <h3 className="font-bold mb-2 flex items-center gap-2"><HelpCircle size={16} className="text-amber-500" /> What are "Kill Signals"?</h3>
-              <p className="text-sm text-zinc-500 leading-relaxed">These are specific, falsifiable conditions (e.g. CAC/Runway targets) that, if met, mean you should stop or pivot immediately.</p>
-            </div>
+          <div className="space-y-0 divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
+            {[
+              { q: 'Is this just another AI chatbot?', a: 'No. This is a structured decision engine. We prioritize clarity, binary tradeoffs, and kill signals over generic conversational responses.' },
+              { q: 'Why not just use ChatGPT?', a: 'ChatGPT is reactive. Our engine enforces reasoning constraints and re-evaluation protocols that generic prompts often miss.' },
+              { q: 'Who is this for?', a: 'Founders, builders, and strategic thinkers who need high-conviction decisions — not just stylized opinions.' },
+              { q: 'What are "Kill Signals"?', a: 'Specific, falsifiable conditions (e.g. CAC/Runway targets) that, if met, mean you should stop or pivot immediately.' }
+            ].map((faq, i) => (
+              <div key={i} className="py-6" style={{ borderColor: 'var(--border-subtle)' }}>
+                <h3 className="font-semibold text-[15px] mb-2 flex items-center gap-2 text-white">
+                  <HelpCircle size={14} className="text-amber-500 shrink-0" /> {faq.q}
+                </h3>
+                <p className="text-[14px] leading-relaxed pl-6" style={{ color: 'var(--text-secondary)' }}>{faq.a}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-20 bg-black border-t border-white/5 text-center px-4">
-        <div className="max-w-7xl mx-auto flex flex-col items-center gap-8">
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Persona AI" className="w-8 h-8 rounded-lg grayscale" />
-            <span className="font-black text-lg tracking-widest text-zinc-400 uppercase">Persona AI</span>
+      {/* ─── FOOTER ─── */}
+      <footer className="py-16 border-t text-center px-6" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-6">
+          <div className="flex items-center gap-2.5">
+            <img src="/logo.png" alt="Persona AI" className="w-7 h-7 rounded-md grayscale" />
+            <span className="font-semibold text-[15px] tracking-tight" style={{ color: 'var(--text-secondary)' }}>Persona AI</span>
           </div>
-          <div className="flex gap-8 text-zinc-500 text-xs font-bold tracking-widest uppercase">
-            <Link href="/analyze/new" className="hover:text-white">Start</Link>
-            <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
-            <Link href="/personas" className="hover:text-white">Advisors</Link>
+          <div className="flex gap-6 text-[13px] font-medium" style={{ color: 'var(--text-tertiary)' }}>
+            <Link href="/analyze/new" className="hover:text-white transition-colors">Start</Link>
+            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
+            <Link href="/personas" className="hover:text-white transition-colors">Advisors</Link>
           </div>
-          <p className="text-zinc-700 text-[10px] uppercase tracking-[0.2em]">
-            &copy; 2025 Persona AI. DECISION COMPRESSION FOR BUILDERS.
+          <p className="text-[11px] tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+            © 2025 Persona AI. Decision compression for builders.
           </p>
         </div>
       </footer>
