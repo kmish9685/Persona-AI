@@ -75,17 +75,45 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                 <div className="mb-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
                         <div className="flex items-center gap-4">
-                            <h1 className="text-3xl font-light text-white">Decision Analysis</h1>
+                            <h1 className="text-3xl font-light text-white">Decision Clarity</h1>
                             <DecisionStatus decisionId={decision.id} initialStatus={decision.status} />
-                        </div>
-                        <div className="bg-zinc-900 border border-white/10 px-4 py-2 rounded-full text-xs font-mono text-zinc-400 self-start md:self-auto">
-                            {decision_compression?.time_saved || "Compressed from 2 weeks → 5 mins"}
                         </div>
                     </div>
                     <p className="text-zinc-500">Analysis for: <span className="text-white">{decision.title}</span></p>
                 </div>
 
-                {/* Recommendation Card */}
+                {/* Kill Signals - PROMOTED TO TOP */}
+                <div className="bg-gradient-to-br from-red-500/10 to-black border-2 border-red-500/40 rounded-2xl p-8 mb-10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <Skull size={24} className="text-red-500" />
+                        </div>
+                        <div>
+                            <h2 className="text-red-500 font-bold tracking-widest uppercase text-sm">Abort Signals</h2>
+                            <p className="text-zinc-400 text-sm">Watch for these — they'll tell you when to quit</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 mb-6">
+                        {kill_signals.map((ks: any, i: number) => (
+                            <div key={i} className="bg-black/40 border border-red-500/30 p-5 rounded-xl hover:border-red-500/50 transition-colors">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="text-sm font-bold text-red-400">{ks.timeframe}</div>
+                                    <div className="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full">
+                                        {ks.action}
+                                    </div>
+                                </div>
+                                <div className="text-base text-white font-medium leading-relaxed">{ks.signal}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="text-center pt-4 border-t border-red-500/20">
+                        <p className="text-zinc-500 text-sm">💡 Kill signals are often MORE valuable than the verdict — they give you objective exit criteria</p>
+                    </div>
+                </div>
+
+                {/* Recommendation Card - Now BELOW kill signals */}
                 <div className="bg-gradient-to-br from-amber-500/10 to-black border border-amber-500/30 rounded-2xl p-8 mb-10 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-20"><TrendingUp size={100} /></div>
 
@@ -99,60 +127,41 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     </div>
                 </div>
 
-                {/* Kill Signals */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                    <div className="lg:col-span-1">
-                        <h3 className="text-xl font-light mb-4 flex items-center gap-2">
-                            <Skull size={20} className="text-red-500" /> Kill Signals
-                        </h3>
-                        <p className="text-sm text-zinc-500 mb-4">Abort if these happen.</p>
-                        <div className="space-y-4">
-                            {kill_signals.map((ks: any, i: number) => (
-                                <div key={i} className="bg-[#111] border border-red-500/20 p-4 rounded-xl">
-                                    <div className="text-xs font-bold text-red-500 mb-1">{ks.timeframe}</div>
-                                    <div className="text-sm text-zinc-300 mb-2">{ks.signal}</div>
-                                    <div className="text-xs bg-red-500/10 text-red-400 inline-block px-2 py-1 rounded">Action: {ks.action}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                {/* Options Analysis */}
+                <div className="mb-12">
+                    <h3 className="text-2xl font-light mb-6 text-white">Detailed Analysis</h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {options_analysis.map((opt: any, i: number) => (
+                            <div key={i} className="bg-[#0F0F0F] border border-white/5 p-6 rounded-2xl">
+                                <h4 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">{opt.title}</h4>
 
-                    {/* Options Analysis */}
-                    <div className="lg:col-span-2">
-                        <h3 className="text-xl font-light mb-4 text-white">Option Analysis</h3>
-                        <div className="space-y-6">
-                            {options_analysis.map((opt: any, i: number) => (
-                                <div key={i} className="bg-[#0F0F0F] border border-white/5 p-6 rounded-2xl">
-                                    <h4 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">{opt.title}</h4>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <p className="text-xs font-bold text-zinc-500 uppercase mb-2">Second-Order Consequences</p>
-                                            <ul className="space-y-1">
-                                                {opt.consequences.map((c: string, idx: number) => (
-                                                    <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
-                                                        <span className="text-zinc-600 mt-1">→</span> {c}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-bold text-zinc-500 uppercase mb-2">What must be true</p>
-                                            <ul className="space-y-1">
-                                                {opt.requirements.map((r: string, idx: number) => (
-                                                    <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
-                                                        <CheckCircle size={14} className="text-emerald-500/50 mt-1 shrink-0" /> {r}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div>
+                                        <p className="text-xs font-bold text-zinc-500 uppercase mb-2">Second-Order Consequences</p>
+                                        <ul className="space-y-1">
+                                            {opt.consequences.map((c: string, idx: number) => (
+                                                <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
+                                                    <span className="text-zinc-600 mt-1">→</span> {c}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-zinc-500 uppercase mb-2">What must be true</p>
+                                        <ul className="space-y-1">
+                                            {opt.requirements.map((r: string, idx: number) => (
+                                                <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
+                                                    <CheckCircle size={14} className="text-emerald-500/50 mt-1 shrink-0" /> {r}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }
