@@ -421,37 +421,45 @@ export function Chat() {
                                 >
                                     <div
                                         className={clsx(
-                                            "max-w-[85%] rounded-2xl px-5 py-3.5 text-[15px] leading-relaxed relative shadow-sm",
+                                            "relative max-w-[85%] text-[15px] leading-relaxed",
                                             msg.role === 'user'
-                                                ? "bg-[#0A84FF] text-white rounded-br-none"
-                                                : "bg-[#1A1A1A] text-gray-100 rounded-bl-none border border-white/5"
+                                                ? "bg-[#0A84FF] text-white rounded-2xl rounded-br-none px-5 py-3.5 shadow-sm ml-auto"
+                                                : "w-full pl-0 sm:pl-4" // No background for AI, just spacing
                                         )}
                                     >
-                                        <p className={clsx(
-                                            "text-[10px] font-bold uppercase mb-1 opacity-70 tracking-wider",
-                                            msg.role === 'user' ? "text-blue-100 text-right" : "text-[#5e6ad2]"
-                                        )}>
-                                            {msg.role === 'user' ? 'You' : 'Persona AI'}
-                                        </p>
-                                        <div className="whitespace-pre-wrap">{msg.content}</div>
+                                        {/* User Label (Only for user) */}
+                                        {msg.role === 'user' && (
+                                            <p className="text-[10px] font-bold uppercase mb-1 opacity-70 tracking-wider text-blue-100 text-right">
+                                                You
+                                            </p>
+                                        )}
 
-                                        {/* Stress Test View */}
-                                        <StressTestView
-                                            assumptions={msg.assumptions}
-                                            missingData={msg.missingData}
-                                            preMortem={msg.preMortem}
-                                            biasCheck={msg.biasCheck}
-                                        />
-
-                                        {/* Thinking Card / Reasoning Display */}
-                                        {msg.reasoning && (
-                                            <div className="mt-3 relative group">
-                                                {/* Connecting line */}
-                                                <div className="absolute -left-5 top-0 bottom-0 w-[1px] bg-gradient-to-b from-white/10 to-transparent hidden sm:block" />
-
+                                        {/* AI: Thinking Card (Rendered OUTSIDE the answer text flow) */}
+                                        {msg.role === 'assistant' && msg.reasoning && (
+                                            <div className="mb-4">
                                                 <ThinkingCard
                                                     content={msg.reasoning}
-                                                    personaId={personaId} // We can derive color/style if needed
+                                                    personaId={personaId}
+                                                />
+                                            </div>
+                                        )}
+
+                                        {/* Message Content / Answer */}
+                                        <div className={clsx(
+                                            "whitespace-pre-wrap",
+                                            msg.role === 'assistant' ? "text-gray-200 font-sans text-lg" : ""
+                                        )}>
+                                            {msg.content}
+                                        </div>
+
+                                        {/* AI: Stress Test & Other Metadata */}
+                                        {msg.role === 'assistant' && (
+                                            <div className="mt-4">
+                                                <StressTestView
+                                                    assumptions={msg.assumptions}
+                                                    missingData={msg.missingData}
+                                                    preMortem={msg.preMortem}
+                                                    biasCheck={msg.biasCheck}
                                                 />
                                             </div>
                                         )}

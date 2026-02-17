@@ -30,7 +30,7 @@ export function ThinkingCard({ content, personaId, isExpanded = true }: Thinking
     const accentColor = "#5e6ad2"; // Default Indigo/Purple for "Intelligence"
 
     return (
-        <div className="w-full max-w-2xl my-2">
+        <div className="w-full my-2">
             <div
                 className={clsx(
                     "rounded-xl overflow-hidden border transition-all duration-300",
