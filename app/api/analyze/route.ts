@@ -28,7 +28,9 @@ JSON OUTPUT STRUCTURE:
     "option_id": "Option A/B/C match",
     "verdict": "Clear concise verdict",
     "reasoning": "Why this wins based on constraints",
-    "conviction_score": 0-100
+    "conviction_score": 0-100,
+    "certainty_score": 0-100,
+    "conditional_factors": ["If X happens, then verdict changes to Y", "Only proceed if Z is true"]
   },
   "options_analysis": [
     {

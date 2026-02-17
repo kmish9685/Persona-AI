@@ -103,15 +103,19 @@ function LandingPageContent() {
         <div className="max-w-5xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">Decision Engine for Real Choices — Not Chatbot Noise</span>
+            <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">The "Just Tell Me What To Do" Engine</span>
           </div>
 
           <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.9] mb-8 tracking-tighter animate-fade-up">
-            Stop Chatting.<br />
+            Clarify what you<br />
             <span className="text-gradient">
-              Start Deciding.
+              already know.
             </span>
           </h1>
+
+          <p className="max-w-2xl mx-auto text-zinc-500 text-lg sm:text-xl mb-10 leading-relaxed">
+            You don't need another generic chatbot. You need a <strong>Kill Signal</strong>, a <strong>Binary Verdict</strong>, and a <strong>Values Reality Check</strong>.
+          </p>
 
           {/* 3-Frame Carousel */}
           <div className="relative max-w-4xl mx-auto mb-12">
@@ -159,7 +163,7 @@ function LandingPageContent() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 uppercase tracking-widest text-xs font-black">
             <Link href="/analyze/new" className="w-full sm:w-auto px-10 py-5 bg-white text-black rounded-full hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-2">
-              Start Decision Analysis <ArrowRight size={16} />
+              Start Analysis (Free) <ArrowRight size={16} />
             </Link>
             <Link href="/personas" className="w-full sm:w-auto px-10 py-5 bg-zinc-900 text-zinc-400 rounded-full border border-zinc-800 hover:text-white transition-all flex items-center justify-center gap-2">
               Try Advisor Chat <Brain size={16} />
@@ -170,24 +174,24 @@ function LandingPageContent() {
           <div className="mt-16 flex flex-wrap justify-center gap-8 border-y border-white/5 py-8">
             <div className="flex flex-col items-center">
               <span className="text-lg font-bold">~30s</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Process Time</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">To 5-Year Clarity</span>
             </div>
             <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
             <div className="flex flex-col items-center">
-              <span className="text-lg font-bold">6+</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Personas Simulated</span>
+              <span className="text-lg font-bold">5+</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Mental Models</span>
             </div>
             <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
             <div className="flex flex-col items-center">
               <span className="text-lg font-bold text-amber-500">4.8/5</span>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Clarity Rating</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Clarity Score</span>
             </div>
             <div className="w-px h-10 bg-white/10 hidden sm:block"></div>
             <div className="flex flex-col items-center">
               <div className="flex gap-1 mb-1">
                 {[1, 2, 3, 4, 5].map(i => <Check key={i} size={10} className="text-emerald-500 fill-emerald-500" />)}
               </div>
-              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Beta Feedback</span>
+              <span className="text-[10px] text-zinc-500 uppercase tracking-widest">Founders Approve</span>
             </div>
           </div>
         </div>
@@ -200,8 +204,8 @@ function LandingPageContent() {
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Why Persona AI?</h2>
-            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">Standard AI is for chatting. Persona AI is for deciding.</p>
+            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Not Another Chatbot.</h2>
+            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">We don't chat. We compute decisions.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -209,21 +213,21 @@ function LandingPageContent() {
             <div className="p-8 rounded-3xl bg-zinc-900/20 border border-white/5 opacity-60">
               <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 mb-6">Standard AI</h3>
               <ul className="space-y-4 text-zinc-500 text-sm">
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Hedged "It depends" answers</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> No clear tradeoffs</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Wall of conversational text</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> No accountability</li>
+                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> "It depends on your goals..."</li>
+                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Walls of text</li>
+                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Zero accountability</li>
+                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Hallucinates facts</li>
               </ul>
             </div>
 
-            {/* Specialized Personas */}
+            {/* Persona Chatbots */}
             <div className="p-8 rounded-3xl bg-zinc-900/20 border border-white/5 opacity-80">
               <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-6">Persona Chatbots</h3>
               <ul className="space-y-4 text-zinc-400 text-sm">
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> Stylized language mimicry</li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> One perspective at a time</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Still conversational/wordy</li>
-                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> No structured verdict</li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> Fun mimicry</li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0" /> Good for brainstorming</li>
+                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Still indecisive</li>
+                <li className="flex items-start gap-2"><X size={14} className="mt-1 shrink-0" /> Entertainment focused</li>
               </ul>
             </div>
 
@@ -232,10 +236,10 @@ function LandingPageContent() {
               <div className="absolute top-0 right-0 p-4 opacity-10 text-amber-500"><Zap size={40} /></div>
               <h3 className="text-sm font-black uppercase tracking-widest text-amber-500 mb-6">Decision Engine</h3>
               <ul className="space-y-4 text-white text-sm">
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Binary Verdict (YES/NO)</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Conviction Score (0-100%)</strong></li>
                 <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Kill Signals (When to quit)</strong></li>
-                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> 2nd Order Effects Analysis</li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Values Alignment Check</strong></li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>5-Year Visualization</strong></li>
+                <li className="flex items-start gap-2"><Check size={14} className="mt-1 shrink-0 text-amber-500" /> <strong>Binary Verdict (YES/NO)</strong></li>
               </ul>
             </div>
           </div>
@@ -258,29 +262,35 @@ function LandingPageContent() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5">
+              <div className="mb-4 flex items-center gap-2">
+                <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Kill Signal Detected</div>
+              </div>
               <h3 className="font-bold text-lg mb-4">"Should I quit my job to build this MVP?"</h3>
               <div className="space-y-4">
                 <div className="text-sm">
-                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Before:</span>
-                  <p className="text-zinc-400">Spent 3 months agonizing over 'what-ifs' and asking friend's opinions.</p>
+                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">User Values:</span>
+                  <p className="text-zinc-400">Security &gt; Freedom. 3 month runway.</p>
                 </div>
                 <div className="text-sm">
-                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">After:</span>
-                  <p className="text-white">Structured verdict: <strong>NO (Wait)</strong>. Conviction: 82%. Found 3 kill signals related to runway that weren't considered.</p>
+                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Verdict:</span>
+                  <p className="text-white">Structured verdict: <strong>NO (Wait)</strong>. <br />Reason: Your values prioritize security, but your runway is too short. <strong>Kill Signal:</strong> If you don't have a paying pilot in 2 weeks, you will run out of cash.</p>
                 </div>
               </div>
             </div>
 
             <div className="p-8 rounded-3xl bg-zinc-900/30 border border-white/5">
+              <div className="mb-4 flex items-center gap-2">
+                <div className="bg-emerald-500/10 text-emerald-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">High Conviction</div>
+              </div>
               <h3 className="font-bold text-lg mb-4">"Which target market should we focus on?"</h3>
               <div className="space-y-4">
                 <div className="text-sm">
-                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Before:</span>
-                  <p className="text-zinc-400">Team debated for 2 weeks. Everyone had a different 'favorite' niche.</p>
+                  <span className="text-zinc-500 uppercase font-bold tracking-widest text-[10px] block mb-1">User Values:</span>
+                  <p className="text-zinc-400">Speed &gt; Quality. Solo Founder.</p>
                 </div>
                 <div className="text-sm">
-                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">After:</span>
-                  <p className="text-white">Structured verdict: <strong>Enterprise B2B</strong>. Conviction: 75%. Logic: Highest leverage for current skillsets.</p>
+                  <span className="text-amber-500 uppercase font-bold tracking-widest text-[10px] block mb-1">Verdict:</span>
+                  <p className="text-white">Structured verdict: <strong>SME/Prosumer</strong>. <br />Reason: Enterprise sales take 6 months. You value speed. Do not go upmarket yet.</p>
                 </div>
               </div>
             </div>
@@ -295,15 +305,15 @@ function LandingPageContent() {
       <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">The System.</h2>
+            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">The Clarity Loop.</h2>
           </div>
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-col items-center gap-2 group">
               <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-amber-500/50 transition-all">
-                <BarChart3 size={24} />
+                <Target size={24} />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">1. Context</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">1. Values & Viz</span>
             </div>
             <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0" />
             <div className="flex flex-col items-center gap-2 group">
@@ -315,16 +325,16 @@ function LandingPageContent() {
             <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0" />
             <div className="flex flex-col items-center gap-2 group">
               <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-emerald-500/50 transition-all text-emerald-500">
-                <Target size={24} />
+                <ShieldAlert size={24} />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">3. Verdict</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">3. Kill Signals</span>
             </div>
             <ArrowRight className="text-zinc-800 rotate-90 md:rotate-0" />
             <div className="flex flex-col items-center gap-2 group">
               <div className="w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center text-zinc-400 group-hover:border-red-500/50 transition-all text-red-500">
-                <ShieldAlert size={24} />
+                <Zap size={24} />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">4. Signals</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">4. Gut Check</span>
             </div>
           </div>
         </div>

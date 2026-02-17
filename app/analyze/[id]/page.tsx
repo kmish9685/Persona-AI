@@ -128,10 +128,33 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     <h3 className="text-3xl font-bold text-white mb-4">{recommendation.verdict}</h3>
                     <p className="text-lg text-zinc-300 leading-relaxed mb-6 max-w-3xl">{recommendation.reasoning}</p>
 
-                    <div className="inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-2 rounded-lg border border-white/5">
-                        <span className="text-zinc-400 text-sm">Conviction Score:</span>
-                        <span className="text-amber-500 font-bold">{recommendation.conviction_score}%</span>
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        <div className="flex-1 inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-3 rounded-lg border border-white/5">
+                            <span className="text-zinc-400 text-sm">Conviction Score:</span>
+                            <span className="text-amber-500 font-bold text-lg">{recommendation.conviction_score}%</span>
+                        </div>
+                        {recommendation.certainty_score && (
+                            <div className="flex-1 inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-3 rounded-lg border border-white/5">
+                                <span className="text-zinc-400 text-sm">Certainty Score:</span>
+                                <span className="text-blue-400 font-bold text-lg">{recommendation.certainty_score}%</span>
+                            </div>
+                        )}
                     </div>
+
+                    {recommendation.conditional_factors && recommendation.conditional_factors.length > 0 && (
+                        <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl mb-4">
+                            <h4 className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <AlertTriangle size={12} /> Conditional Factors
+                            </h4>
+                            <ul className="space-y-2">
+                                {recommendation.conditional_factors.map((factor: string, i: number) => (
+                                    <li key={i} className="text-sm text-zinc-300 flex items-start gap-2">
+                                        <span className="text-amber-500 mt-1">•</span> {factor}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
 
                 {/* Detailed Analysis */}
