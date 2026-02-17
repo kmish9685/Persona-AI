@@ -2,7 +2,7 @@
 
 import { PersonaResponse } from '@/types/chat';
 import { PERSONAS } from '@/lib/personas';
-import { ReasoningAccordion } from './ReasoningAccordion';
+import { ThinkingCard } from './ThinkingCard';
 import { StressTestView } from './StressTestView';
 
 interface MultiPersonaViewProps {
@@ -71,7 +71,11 @@ export function MultiPersonaView({ responses }: MultiPersonaViewProps) {
 
                             {/* Reasoning */}
                             {response.reasoning && (
-                                <ReasoningAccordion reasoning={response.reasoning} compact={true} />
+                                <ThinkingCard
+                                    content={response.reasoning}
+                                    personaId={response.personaId}
+                                    isExpanded={false} // Default collapsed for multi-view
+                                />
                             )}
                         </div>
                     );

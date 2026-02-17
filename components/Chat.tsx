@@ -16,7 +16,7 @@ import Link from 'next/link';
 import posthog from 'posthog-js';
 import { getPersonaById } from '@/lib/personas';
 import { MultiPersonaView } from './MultiPersonaView';
-import { ReasoningAccordion } from './ReasoningAccordion';
+import { ThinkingCard } from './ThinkingCard';
 import { PersonaResponse } from '@/types/chat';
 import { getUserPlan } from '@/app/actions/getUserPlan';
 import { StressTestView } from './StressTestView';
@@ -443,13 +443,15 @@ export function Chat() {
                                             biasCheck={msg.biasCheck}
                                         />
 
-                                        {/* Reasoning Display for Single Mode */}
+                                        {/* Thinking Card / Reasoning Display */}
                                         {msg.reasoning && (
-                                            <div className="mt-2 pt-2 border-t border-white/10">
-                                                <ReasoningAccordion
-                                                    reasoning={msg.reasoning}
-                                                    isPremium={plan === 'pro' || remaining > 20} // Simple check
-                                                    onUnlock={() => setShowPaywall(true)}
+                                            <div className="mt-3 relative group">
+                                                {/* Connecting line */}
+                                                <div className="absolute -left-5 top-0 bottom-0 w-[1px] bg-gradient-to-b from-white/10 to-transparent hidden sm:block" />
+
+                                                <ThinkingCard
+                                                    content={msg.reasoning}
+                                                    personaId={personaId} // We can derive color/style if needed
                                                 />
                                             </div>
                                         )}
