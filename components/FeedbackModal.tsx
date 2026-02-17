@@ -64,7 +64,7 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             </div>
 
                             <textarea
-                                className="w-full h-24 bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/50 resize-none mb-4"
+                                className="w-full h-24 bg-zinc-900 border border-zinc-700 rounded-xl p-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#5e6ad2]/50 resize-none mb-4"
                                 placeholder="Too expensive? Not useful? Just browsing?"
                                 value={feedback}
                                 onChange={(e) => setFeedback(e.target.value)}
@@ -105,3 +105,4 @@ export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
         </Dialog>
     );
 }
+

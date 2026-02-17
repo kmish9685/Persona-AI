@@ -106,7 +106,7 @@ export function DecisionForm({ initialValues, vizData }: DecisionFormProps) {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="e.g., Should I quit my job to build my startup full-time?"
-                        className="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 text-white text-lg placeholder:text-zinc-600 focus:border-amber-500/50 focus:outline-none transition-colors"
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 text-white text-lg placeholder:text-zinc-600 focus:border-[#5e6ad2]/50 focus:outline-none transition-colors"
                         required
                     />
                 </div>
@@ -127,7 +127,7 @@ Example:
 - Side project: 50 beta users, 5 paying ($150/mo total MRR)
 - Timeline: Stock vests in 4 months ($80K)
 - Risk: Wife is pregnant, need health insurance"
-                        className="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-600 focus:border-amber-500/50 focus:outline-none transition-colors min-h-[200px] font-mono text-sm"
+                        className="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 text-white placeholder:text-zinc-600 focus:border-[#5e6ad2]/50 focus:outline-none transition-colors min-h-[200px] font-mono text-sm"
                         required
                     />
                 </div>
@@ -143,7 +143,7 @@ Example:
                         placeholder="Quit now
 Stay at Google, build on weekends
 Take 6-month sabbatical"
-                        className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-white placeholder:text-zinc-600 focus:border-amber-500/30 focus:outline-none transition-colors min-h-[100px] font-mono text-sm"
+                        className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-white placeholder:text-zinc-600 focus:border-[#5e6ad2]/30 focus:outline-none transition-colors min-h-[100px] font-mono text-sm"
                     />
                     <p className="text-xs text-zinc-600 mt-2">If blank, AI will extract options from your context.</p>
                 </div>
@@ -158,7 +158,7 @@ Take 6-month sabbatical"
                         value={constraints}
                         onChange={(e) => setConstraints(e.target.value)}
                         placeholder="e.g., Must have health insurance, Can't relocate, 3-month max runway"
-                        className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-white placeholder:text-zinc-600 focus:border-amber-500/30 focus:outline-none transition-colors"
+                        className="w-full bg-zinc-900/50 border border-white/5 rounded-xl p-4 text-white placeholder:text-zinc-600 focus:border-[#5e6ad2]/30 focus:outline-none transition-colors"
                     />
                 </div>
 
@@ -167,7 +167,7 @@ Take 6-month sabbatical"
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full py-5 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-500/50 text-black font-bold text-lg rounded-xl transition-all transform hover:scale-[1.02] disabled:hover:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                        className="w-full py-5 bg-[#5e6ad2] hover:bg-[#4f5bc4] disabled:bg-[#5e6ad2]/50 text-black font-bold text-lg rounded-xl transition-all transform hover:scale-[1.02] disabled:hover:scale-100 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                     >
                         {isSubmitting ? (
                             <>
@@ -182,7 +182,7 @@ Take 6-month sabbatical"
                         ⚡ Analysis completes in ~30 seconds
                     </p>
                     {remainingFree !== null && (
-                        <p className="text-center text-amber-500/60 text-xs mt-2">
+                        <p className="text-center text-[#5e6ad2]/60 text-xs mt-2">
                             {remainingFree > 0
                                 ? `${remainingFree} free ${remainingFree === 1 ? 'analysis' : 'analyses'} remaining`
                                 : 'This is your last free analysis'
@@ -207,3 +207,4 @@ Take 6-month sabbatical"
         </div>
     );
 }
+

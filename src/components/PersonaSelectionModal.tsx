@@ -19,9 +19,9 @@ export function PersonaSelectionModal({ isOpen, onClose }: PersonaSelectionModal
             desc: 'First-principles. Brutal clarity.',
             icon: Brain,
             locked: false,
-            color: 'text-amber-500',
-            bg: 'bg-amber-500/10',
-            border: 'border-amber-500/20'
+            color: 'text-[#5e6ad2]',
+            bg: 'bg-[#5e6ad2]/10',
+            border: 'border-[#5e6ad2]/20'
         },
         {
             id: 'zuck',
@@ -100,11 +100,11 @@ export function PersonaSelectionModal({ isOpen, onClose }: PersonaSelectionModal
                                         "relative group rounded-xl p-5 border transition-all duration-300",
                                         persona.locked
                                             ? `${persona.bg} ${persona.border} opacity-70 cursor-not-allowed`
-                                            : "bg-[#18181b] border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.1)] cursor-default ring-1 ring-amber-500/20"
+                                            : "bg-[#18181b] border-[#5e6ad2]/40 shadow-[0_0_15px_rgba(94,106,210,0.1)] cursor-default ring-1 ring-[#5e6ad2]/20"
                                     )}
                                 >
                                     <div className="flex justify-between items-start mb-4">
-                                        <div className={clsx("p-2 rounded-lg", persona.locked ? "bg-zinc-900" : "bg-amber-500/10")}>
+                                        <div className={clsx("p-2 rounded-lg", persona.locked ? "bg-zinc-900" : "bg-[#5e6ad2]/10")}>
                                             <persona.icon size={20} className={clsx(persona.locked ? "text-zinc-600" : persona.color)} />
                                         </div>
                                         {persona.locked ? (
@@ -127,7 +127,7 @@ export function PersonaSelectionModal({ isOpen, onClose }: PersonaSelectionModal
                                     </div>
 
                                     {!persona.locked && (
-                                        <div className="absolute inset-0 border-2 border-amber-500/20 rounded-xl pointer-events-none" />
+                                        <div className="absolute inset-0 border-2 border-[#5e6ad2]/20 rounded-xl pointer-events-none" />
                                     )}
                                 </div>
                             ))}
@@ -135,7 +135,7 @@ export function PersonaSelectionModal({ isOpen, onClose }: PersonaSelectionModal
 
                         {/* Footer Message */}
                         <div className="mt-10 text-center border-t border-white/5 pt-6">
-                            <p className="text-amber-500/80 text-sm font-medium tracking-wide">
+                            <p className="text-[#5e6ad2]/80 text-sm font-medium tracking-wide">
                                 <span className="mr-2">✨</span>
                                 Finish extracting value from Elon first. Wisdom compounds.
                                 <span className="ml-2">✨</span>
@@ -147,3 +147,4 @@ export function PersonaSelectionModal({ isOpen, onClose }: PersonaSelectionModal
         </Dialog>
     );
 }
+

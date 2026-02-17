@@ -100,17 +100,17 @@ export default function GutCheckModal({ verdict, onComplete, onSkip }: GutCheckM
 
         return (
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div className="bg-gradient-to-br from-zinc-900 to-black border border-amber-500/30 rounded-2xl p-8 max-w-lg w-full animate-fade-in">
+                <div className="bg-gradient-to-br from-zinc-900 to-black border border-[#5e6ad2]/30 rounded-2xl p-8 max-w-lg w-full animate-fade-in">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
-                            <Heart className="text-amber-500" size={24} />
+                        <div className="w-12 h-12 rounded-full bg-[#5e6ad2]/20 flex items-center justify-center">
+                            <Heart className="text-[#5e6ad2]" size={24} />
                         </div>
                         <h3 className="text-2xl font-light text-white">Gut Check Result</h3>
                     </div>
 
                     <div className={`p-6 rounded-xl mb-6 ${insight.alignment === 'agrees' ? 'bg-green-500/10 border border-green-500/30' :
                             insight.alignment === 'disagrees' ? 'bg-red-500/10 border border-red-500/30' :
-                                'bg-amber-500/10 border border-amber-500/30'
+                                'bg-[#5e6ad2]/10 border border-[#5e6ad2]/30'
                         }`}>
                         <p className="text-lg text-white leading-relaxed">
                             {insight.message}
@@ -129,8 +129,8 @@ export default function GutCheckModal({ verdict, onComplete, onSkip }: GutCheckM
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl p-8 max-w-lg w-full">
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
-                        <Brain className="text-amber-500" size={24} />
+                    <div className="w-12 h-12 rounded-full bg-[#5e6ad2]/20 flex items-center justify-center">
+                        <Brain className="text-[#5e6ad2]" size={24} />
                     </div>
                     <h3 className="text-2xl font-light text-white">Gut Check</h3>
                 </div>
@@ -147,10 +147,10 @@ export default function GutCheckModal({ verdict, onComplete, onSkip }: GutCheckM
                         <button
                             key={feeling.id}
                             onClick={() => handleSelect(feeling.id)}
-                            className="group p-4 bg-white/5 hover:bg-amber-500/10 border border-white/10 hover:border-amber-500/30 rounded-xl transition-all text-left"
+                            className="group p-4 bg-white/5 hover:bg-[#5e6ad2]/10 border border-white/10 hover:border-[#5e6ad2]/30 rounded-xl transition-all text-left"
                         >
                             <div className="text-3xl mb-2">{feeling.icon}</div>
-                            <div className="text-white font-medium mb-1 group-hover:text-amber-500 transition-colors">
+                            <div className="text-white font-medium mb-1 group-hover:text-[#5e6ad2] transition-colors">
                                 {feeling.label}
                             </div>
                             <div className="text-zinc-500 text-xs">{feeling.description}</div>
@@ -171,3 +171,4 @@ export default function GutCheckModal({ verdict, onComplete, onSkip }: GutCheckM
         </div>
     );
 }
+

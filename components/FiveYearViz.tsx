@@ -149,7 +149,7 @@ export default function FiveYearViz({ onComplete, onSkip }: FiveYearVizProps) {
             </div>
 
             {isComplete && (
-                <div className="mb-6 p-6 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                <div className="mb-6 p-6 bg-[#5e6ad2]/10 border border-[#5e6ad2]/30 rounded-xl">
                     <p className="text-white mb-4">Which future do you want to live?</p>
                     <div className="flex gap-3">
                         <button
@@ -194,7 +194,7 @@ export default function FiveYearViz({ onComplete, onSkip }: FiveYearVizProps) {
             <button
                 onClick={handleComplete}
                 disabled={!isComplete}
-                className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-black font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3 bg-[#5e6ad2] hover:bg-[#4f5bc4] disabled:bg-zinc-800 disabled:text-zinc-600 text-black font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
             >
                 {choice && choice !== 'unsure' ? 'Proceed Anyway' : 'Continue to AI Analysis'}
                 <ArrowRight size={16} />
@@ -202,3 +202,4 @@ export default function FiveYearViz({ onComplete, onSkip }: FiveYearVizProps) {
         </div>
     );
 }
+

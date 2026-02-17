@@ -35,7 +35,7 @@ function Toast({ message, onClose }: { message: string, onClose: () => void }) {
             exit={{ opacity: 0, y: 20 }}
             className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-[#1A1A1A] border border-zinc-700 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 min-w-[300px]"
         >
-            <AlertCircle size={18} className="text-amber-500" />
+            <AlertCircle size={18} className="text-[#5e6ad2]" />
             <p className="text-sm font-medium">{message}</p>
         </motion.div>
     );
@@ -429,7 +429,7 @@ export function Chat() {
                                     >
                                         <p className={clsx(
                                             "text-[10px] font-bold uppercase mb-1 opacity-70 tracking-wider",
-                                            msg.role === 'user' ? "text-blue-100 text-right" : "text-amber-500"
+                                            msg.role === 'user' ? "text-blue-100 text-right" : "text-[#5e6ad2]"
                                         )}>
                                             {msg.role === 'user' ? 'You' : 'Persona AI'}
                                         </p>
@@ -543,3 +543,4 @@ export function Chat() {
         </div>
     );
 }
+

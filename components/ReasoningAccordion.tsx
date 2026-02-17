@@ -28,7 +28,7 @@ export function ReasoningAccordion({ reasoning, compact = false, isPremium = tru
         <div className={`w-full mt-2 ${compact ? 'mb-2' : 'mb-4'}`}>
             <button
                 onClick={handleToggle}
-                className={`flex items-center gap-2 text-xs font-medium transition-colors ${compact ? 'w-full justify-between' : ''} ${!isPremium ? 'text-amber-500 hover:text-amber-400' : 'text-gray-500 hover:text-gray-300'}`}
+                className={`flex items-center gap-2 text-xs font-medium transition-colors ${compact ? 'w-full justify-between' : ''} ${!isPremium ? 'text-[#5e6ad2] hover:text-[#6b76e0]' : 'text-gray-500 hover:text-gray-300'}`}
             >
                 <div className="flex items-center gap-2">
                     {!isPremium ? <Lock size={14} /> : <BrainCircuit size={14} className={isOpen ? "text-orange-500" : ""} />}
@@ -54,3 +54,4 @@ export function ReasoningAccordion({ reasoning, compact = false, isPremium = tru
         </div>
     );
 }
+

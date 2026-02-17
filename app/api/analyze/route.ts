@@ -152,29 +152,52 @@ Analyze this now. Return ONLY JSON.
     // Generate ID on server to guarantee return
     const decisionId = crypto.randomUUID();
 
-    // FREE TIER CHECK: Count user's existing analyses
-    const { count: analysisCount } = await supabase
-      .from('decisions')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id);
+    // ── PRO USER CHECK (runs BEFORE AI call to save API credits) ──
+    const userEmail = user.emailAddresses[0]?.emailAddress;
 
-    // Check if user is a paid subscriber
-    const userPlanData = await supabase
-      .from('users')
-      .select('plan, subscription_end_date')
-      .or(`user_id.eq.${user.id},email.eq.${user.emailAddresses[0]?.emailAddress}`)
-      .single();
+    // Try finding user by email first (most reliable), then by user_id
+    let userPlanData = null;
+    if (userEmail) {
+      const { data } = await supabase
+        .from('users')
+        .select('id, plan, subscription_end_date, user_id')
+        .eq('email', userEmail)
+        .single();
+      userPlanData = data;
+    }
+
+    if (!userPlanData) {
+      const { data } = await supabase
+        .from('users')
+        .select('id, plan, subscription_end_date, user_id')
+        .eq('user_id', user.id)
+        .single();
+      userPlanData = data;
+    }
+
+    // HEAL: If found but user_id is missing, link it for future lookups
+    if (userPlanData && !userPlanData.user_id && user.id) {
+      console.log(`[analyze] Healing user_id: linking ${user.id} to row ${userPlanData.id}`);
+      await supabase.from('users').update({ user_id: user.id }).eq('id', userPlanData.id);
+    }
 
     let isPaidUser = false;
-    if (userPlanData.data?.plan === 'pro') {
-      // Check if subscription hasn't expired
-      if (userPlanData.data.subscription_end_date) {
-        const endDate = new Date(userPlanData.data.subscription_end_date);
+    if (userPlanData?.plan === 'pro') {
+      if (userPlanData.subscription_end_date) {
+        const endDate = new Date(userPlanData.subscription_end_date);
         isPaidUser = endDate > new Date();
       } else {
         isPaidUser = true; // Pro without end date = lifetime/manual
       }
     }
+
+    console.log(`[analyze] User: ${userEmail}, Plan: ${userPlanData?.plan}, isPaid: ${isPaidUser}`);
+
+    // FREE TIER CHECK
+    const { count: analysisCount } = await supabase
+      .from('decisions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
 
     const FREE_LIMIT = 2;
 

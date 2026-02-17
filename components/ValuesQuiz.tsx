@@ -75,8 +75,8 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
         <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl p-8">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center">
-                        <Target className="text-amber-500" size={24} />
+                    <div className="w-12 h-12 rounded-full bg-[#5e6ad2]/20 flex items-center justify-center">
+                        <Target className="text-[#5e6ad2]" size={24} />
                     </div>
                     <div>
                         <h3 className="text-2xl font-light text-white">Values Clarification</h3>
@@ -104,7 +104,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                                 key={option.id}
                                 onClick={() => toggleOptimization(option.id)}
                                 className={`p-4 rounded-xl border-2 transition-all text-left ${values.optimizing_for?.includes(option.id)
-                                        ? 'bg-amber-500/20 border-amber-500/50'
+                                        ? 'bg-[#5e6ad2]/20 border-[#5e6ad2]/50'
                                         : 'bg-white/5 border-white/10 hover:border-white/30'
                                     }`}
                             >
@@ -119,7 +119,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                     <button
                         onClick={() => setStep(2)}
                         disabled={!values.optimizing_for?.length}
-                        className="w-full py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-black font-medium rounded-lg transition-colors"
+                        className="w-full py-3 bg-[#5e6ad2] hover:bg-[#4f5bc4] disabled:bg-zinc-800 disabled:text-zinc-600 text-black font-medium rounded-lg transition-colors"
                     >
                         Continue
                     </button>
@@ -151,7 +151,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                                         certainty_vs_upside: parseInt(e.target.value)
                                     }
                                 })}
-                                className="w-full accent-amber-500"
+                                className="w-full accent-[#5e6ad2]"
                             />
                         </div>
 
@@ -172,7 +172,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                                         speed_vs_quality: parseInt(e.target.value)
                                     }
                                 })}
-                                className="w-full accent-amber-500"
+                                className="w-full accent-[#5e6ad2]"
                             />
                         </div>
 
@@ -193,7 +193,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                                         solo_vs_team: parseInt(e.target.value)
                                     }
                                 })}
-                                className="w-full accent-amber-500"
+                                className="w-full accent-[#5e6ad2]"
                             />
                         </div>
                     </div>
@@ -207,7 +207,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                         </button>
                         <button
                             onClick={() => setStep(3)}
-                            className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-black font-medium rounded-lg transition-colors"
+                            className="flex-1 py-3 bg-[#5e6ad2] hover:bg-[#4f5bc4] text-black font-medium rounded-lg transition-colors"
                         >
                             Continue
                         </button>
@@ -229,11 +229,11 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                             onChange={(e) => setDealBreakerInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && addDealBreaker()}
                             placeholder="e.g., requires >6 months without income"
-                            className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-amber-500/50"
+                            className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-zinc-600 focus:outline-none focus:border-[#5e6ad2]/50"
                         />
                         <button
                             onClick={addDealBreaker}
-                            className="px-6 py-3 bg-amber-500/20 hover:bg-amber-500/30 text-amber-500 rounded-lg transition-colors"
+                            className="px-6 py-3 bg-[#5e6ad2]/20 hover:bg-[#5e6ad2]/30 text-[#5e6ad2] rounded-lg transition-colors"
                         >
                             Add
                         </button>
@@ -268,7 +268,7 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
                         <button
                             onClick={handleComplete}
                             disabled={!values.deal_breakers?.length}
-                            className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 disabled:bg-zinc-800 disabled:text-zinc-600 text-black font-medium rounded-lg transition-colors"
+                            className="flex-1 py-3 bg-[#5e6ad2] hover:bg-[#4f5bc4] disabled:bg-zinc-800 disabled:text-zinc-600 text-black font-medium rounded-lg transition-colors"
                         >
                             Complete
                         </button>
@@ -278,3 +278,4 @@ export default function ValuesQuiz({ onComplete, onSkip }: ValuesQuizProps) {
         </div>
     );
 }
+

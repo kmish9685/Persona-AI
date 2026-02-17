@@ -37,7 +37,7 @@ export default function NewDecisionFlow() {
                 {step === 'form' && (
                     <button
                         onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="flex items-center gap-2 text-xs bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-full hover:bg-amber-500/20 transition-colors text-amber-500"
+                        className="flex items-center gap-2 text-xs bg-[#5e6ad2]/10 border border-[#5e6ad2]/20 px-3 py-1.5 rounded-full hover:bg-[#5e6ad2]/20 transition-colors text-[#5e6ad2]"
                     >
                         {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         ⚡ Boost Accuracy (+15%)
@@ -54,14 +54,14 @@ export default function NewDecisionFlow() {
                             onClick={() => setStep('viz')}
                             className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all"
                         >
-                            <div className="text-amber-500 text-xs font-bold mb-1">5-YEAR VISUALIZATION</div>
+                            <div className="text-[#5e6ad2] text-xs font-bold mb-1">5-YEAR VISUALIZATION</div>
                             <div className="text-zinc-400 text-sm">Often reveals the answer in 10 minutes</div>
                         </button>
                         <button
                             onClick={() => setStep('values')}
                             className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all"
                         >
-                            <div className="text-amber-500 text-xs font-bold mb-1">VALUES CLARIFICATION</div>
+                            <div className="text-[#5e6ad2] text-xs font-bold mb-1">VALUES CLARIFICATION</div>
                             <div className="text-zinc-400 text-sm">+15% decision alignment accuracy</div>
                         </button>
                     </div>
@@ -97,3 +97,4 @@ export default function NewDecisionFlow() {
         </div>
     );
 }
+

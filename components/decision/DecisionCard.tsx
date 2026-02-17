@@ -63,14 +63,14 @@ export default function DecisionCard({ decision }: { decision: any }) {
                 // Or we make the Title a link.
             }}>
                 <div className="flex justify-between items-start mb-2 pr-10">
-                    <h3 className="text-lg font-bold text-white group-hover:text-amber-500 transition-colors line-clamp-2 leading-tight">
+                    <h3 className="text-lg font-bold text-white group-hover:text-[#5e6ad2] transition-colors line-clamp-2 leading-tight">
                         {decision.title}
                     </h3>
                 </div>
 
                 {/* Always Visible: Score & Date */}
                 <div className="flex items-center gap-3 mb-4 text-xs font-mono text-zinc-500">
-                    <span className={`px-2 py-0.5 rounded ${isHighScore ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-500'}`}>
+                    <span className={`px-2 py-0.5 rounded ${isHighScore ? 'bg-green-500/20 text-green-400' : 'bg-[#5e6ad2]/20 text-[#5e6ad2]'}`}>
                         {score}% Conviction
                     </span>
                     <span>{new Date(decision.created_at).toLocaleDateString()}</span>
@@ -86,7 +86,7 @@ export default function DecisionCard({ decision }: { decision: any }) {
                     <span className="text-xs text-zinc-600">
                         {isExpanded ? "Tap title to close" : "Tap to see more"}
                     </span>
-                    <Link href={`/analyze/${decision.id}`} className="flex items-center gap-2 text-sm font-bold text-white hover:text-amber-500 transition-colors z-10 p-2 -m-2">
+                    <Link href={`/analyze/${decision.id}`} className="flex items-center gap-2 text-sm font-bold text-white hover:text-[#5e6ad2] transition-colors z-10 p-2 -m-2">
                         View Full Report <ArrowRight size={14} />
                     </Link>
                 </div>
@@ -94,3 +94,4 @@ export default function DecisionCard({ decision }: { decision: any }) {
         </div>
     );
 }
+

@@ -108,7 +108,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                     name: name || user.primaryEmailAddress?.emailAddress,
                     email: user.primaryEmailAddress?.emailAddress,
                 },
-                theme: { color: "#F59E0B" },
+                theme: { color: "#5e6ad2" },
                 modal: {
                     ondismiss: function () {
                         setLoading(false);
@@ -145,8 +145,8 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
                     <div className="p-6 md:p-8">
                         <div className="text-center mb-6">
-                            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 mb-4 ring-1 ring-amber-500/20 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
-                                <Zap size={28} className="text-amber-500 fill-amber-500" />
+                            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#5e6ad2]/10 border border-[#5e6ad2]/20 mb-4 ring-1 ring-[#5e6ad2]/20 shadow-[0_0_20px_rgba(94,106,210,0.15)]">
+                                <Zap size={28} className="text-[#5e6ad2] fill-[#5e6ad2]" />
                             </div>
                             <h2 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2">
                                 Founding Membership
@@ -165,14 +165,14 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         placeholder="Elon Musk"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all font-medium"
+                                        className="w-full bg-zinc-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#5e6ad2]/50 focus:ring-1 focus:ring-[#5e6ad2]/20 transition-all font-medium"
                                     />
                                 </div>
                                 <div className="relative">
                                     <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Billing Location</label>
                                     <Listbox value={selectedCountry} onChange={setSelectedCountry}>
                                         <div className="relative mt-1">
-                                            <Listbox.Button className="relative w-full w-full cursor-pointer bg-zinc-900 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-left text-white focus:outline-none focus:border-amber-500/50 focus:ring-1 focus:ring-amber-500/20 transition-all sm:text-sm">
+                                            <Listbox.Button className="relative w-full w-full cursor-pointer bg-zinc-900 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-left text-white focus:outline-none focus:border-[#5e6ad2]/50 focus:ring-1 focus:ring-[#5e6ad2]/20 transition-all sm:text-sm">
                                                 <span className="block truncate font-medium flex items-center gap-2">
                                                     <Globe size={16} className="text-zinc-400" />
                                                     {selectedCountry.name}
@@ -192,18 +192,18 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                                         <Listbox.Option
                                                             key={countryIdx}
                                                             className={({ active }) =>
-                                                                `relative cursor-pointer select-none py-3 pl-10 pr-4 ${active ? 'bg-amber-500/10 text-amber-500' : 'text-zinc-300'
+                                                                `relative cursor-pointer select-none py-3 pl-10 pr-4 ${active ? 'bg-[#5e6ad2]/10 text-[#5e6ad2]' : 'text-zinc-300'
                                                                 }`
                                                             }
                                                             value={country}
                                                         >
                                                             {({ selected }) => (
                                                                 <>
-                                                                    <span className={`block truncate ${selected ? 'font-semibold text-amber-500' : 'font-normal'}`}>
+                                                                    <span className={`block truncate ${selected ? 'font-semibold text-[#5e6ad2]' : 'font-normal'}`}>
                                                                         {country.name}
                                                                     </span>
                                                                     {selected ? (
-                                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-500">
+                                                                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[#5e6ad2]">
                                                                             <Check className="h-4 w-4" aria-hidden="true" />
                                                                         </span>
                                                                     ) : null}
@@ -253,13 +253,13 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                 </div>
 
                                 {/* Plan Details Card */}
-                                <div className="bg-[#0F0F0F] border-2 border-amber-500/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_40px_rgba(245,158,11,0.15)] animate-in fade-in zoom-in duration-300">
-                                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-2xl" />
+                                <div className="bg-[#0F0F0F] border-2 border-[#5e6ad2]/50 rounded-2xl p-6 relative overflow-hidden shadow-[0_0_40px_rgba(94,106,210,0.15)] animate-in fade-in zoom-in duration-300">
+                                    <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#5e6ad2]/20 rounded-full blur-2xl" />
 
                                     <div className="flex justify-between items-end mb-6 relative z-10">
                                         <div>
                                             <h3 className="text-sm font-bold text-white mb-2 uppercase tracking-widest">Founding Member</h3>
-                                            <p className="text-xs text-amber-400/90 font-medium">
+                                            <p className="text-xs text-[#5e6ad2]/90 font-medium">
                                                 {billingCycle === 'annual' ? 'Billed annually' : 'Billed monthly'}
                                             </p>
                                         </div>
@@ -291,23 +291,23 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
 
                                     <ul className="space-y-3 mb-6 border-t border-white/5 pt-4 relative z-10">
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <div className="p-1 rounded-full bg-[#5e6ad2]/10 mt-0.5"><Check size={12} className="text-[#5e6ad2]" /></div>
                                             <span className="font-medium">Unlimited Decision Analyses</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <div className="p-1 rounded-full bg-[#5e6ad2]/10 mt-0.5"><Check size={12} className="text-[#5e6ad2]" /></div>
                                             <span className="font-medium">Kill Signals + Binary Verdicts</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <div className="p-1 rounded-full bg-[#5e6ad2]/10 mt-0.5"><Check size={12} className="text-[#5e6ad2]" /></div>
                                             <span className="font-medium">Values Quiz + 5-Year Visualization</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <div className="p-1 rounded-full bg-[#5e6ad2]/10 mt-0.5"><Check size={12} className="text-[#5e6ad2]" /></div>
                                             <span className="font-medium">Unlimited Advisor Chat Messages</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <div className="p-1 rounded-full bg-[#5e6ad2]/10 mt-0.5"><Check size={12} className="text-[#5e6ad2]" /></div>
                                             <span className="font-medium">All 6 Personas (Elon, Naval...)</span>
                                         </li>
                                     </ul>
@@ -320,7 +320,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         <button
                                             onClick={handleRazorpayUpgrade}
                                             disabled={loading}
-                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
+                                            className="w-full py-4 bg-[#5e6ad2] hover:bg-[#6b76e0] text-white font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(94,106,210,0.3)] hover:shadow-[0_0_30px_rgba(94,106,210,0.5)] relative z-10"
                                         >
                                             {loading ? 'Processing...' : (
                                                 <>
@@ -335,7 +335,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     ) : (
                                         <a
                                             href={`/api/checkout?priceId=${(planDetails as any).link.split('/').pop()}`}
-                                            className="w-full py-4 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-center no-underline shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] relative z-10"
+                                            className="w-full py-4 bg-[#5e6ad2] hover:bg-[#6b76e0] text-white font-bold rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 text-center no-underline shadow-[0_0_20px_rgba(94,106,210,0.3)] hover:shadow-[0_0_30px_rgba(94,106,210,0.5)] relative z-10"
                                         >
                                             <Zap size={18} className="fill-black/20" />
                                             {billingCycle === 'annual' ?
@@ -360,3 +360,4 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
         </Dialog>
     );
 }
+

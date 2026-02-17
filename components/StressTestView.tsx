@@ -59,8 +59,8 @@ export function StressTestView({ assumptions, missingData, preMortem, biasCheck 
 
             {/* Bias Check - Amber (Warning) */}
             {biasCheck && (
-                <div className="bg-amber-950/20 border border-amber-500/20 rounded-lg p-3 group hover:border-amber-500/40 transition-colors">
-                    <div className="flex items-center gap-2 mb-2 text-amber-500">
+                <div className="bg-[#1a1b3a]/20 border border-[#5e6ad2]/20 rounded-lg p-3 group hover:border-[#5e6ad2]/40 transition-colors">
+                    <div className="flex items-center gap-2 mb-2 text-[#5e6ad2]">
                         <Eye size={16} />
                         <h4 className="font-semibold text-xs uppercase tracking-wide">Bias Check</h4>
                     </div>
@@ -72,3 +72,4 @@ export function StressTestView({ assumptions, missingData, preMortem, biasCheck 
         </div>
     );
 }
+
