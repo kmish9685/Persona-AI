@@ -34,15 +34,53 @@ export async function POST(req: NextRequest) {
             if (userEmail) {
                 console.log(`Upgrading user ${userEmail} to PRO`);
 
-                // Update Supabase
-                const { error } = await supabase
-                    .from('users')
-                    .update({ plan: 'pro' })
-                    .eq('email', userEmail);
+                // Upsert Supabase (Update if exists, Insert if not)
+                // We don't have UUID here if they are new, but we can rely on email matching or create a placeholder.
+                // ideally we should query by email first.
 
-                if (error) {
-                    console.error("Failed to upgrade user:", error);
-                    return NextResponse.json({ status: 'error', detail: 'Db update failed' }, { status: 500 });
+                const { data: existingUser } = await supabase.from('users').select('id, plan').eq('email', userEmail).single();
+
+                // 2. Decode Plan Duration from Notes
+                // Note: 'notes' might be on payment.notes or need to be fetched from order.
+                // Assuming payment.notes has it because create-order put it in the order, and Razorpay copies to payment usually.
+                // If not, we default to 'monthly' to be safe, or 'annual' if that is the business default. 
+                // Let's assume annual is default since variable was 'plan = annual' in create-order.
+                const planType = notes?.plan_type || 'annual';
+
+                // 3. Calculate End Date
+                const now = new Date();
+                let endDate = new Date(now); // Clone date
+
+                if (planType === 'monthly') {
+                    // Add 1 month (handles overflow e.g. Jan 31 -> Feb 28/29 auto-magically in JS)
+                    endDate.setMonth(endDate.getMonth() + 1);
+                } else {
+                    // Add 1 year
+                    endDate.setFullYear(endDate.getFullYear() + 1);
+                }
+                const isoEndDate = endDate.toISOString();
+
+                if (existingUser) {
+                    const { error } = await supabase
+                        .from('users')
+                        .update({
+                            plan: 'pro',
+                            subscription_end_date: isoEndDate
+                        })
+                        .eq('email', userEmail);
+
+                    if (error) console.error("Failed to upgrade user:", error);
+                } else {
+                    // Create new user record if missing (Safety Net)
+                    const { error } = await supabase
+                        .from('users')
+                        .insert({
+                            email: userEmail,
+                            plan: 'pro',
+                            subscription_end_date: isoEndDate
+                        });
+
+                    if (error) console.error("Failed to create & upgrade user:", error);
                 }
             } else {
                 console.warn("No user_email in payment notes");

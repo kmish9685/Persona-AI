@@ -1,4 +1,8 @@
-export default function RefundPage() {
+export const dynamic = 'force-dynamic';
+
+import { Suspense } from 'react';
+
+function RefundContent() {
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white p-6">
             <div className="max-w-3xl mx-auto py-16">
@@ -41,5 +45,13 @@ export default function RefundPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function RefundPage() {
+    return (
+        <Suspense fallback={null}>
+            <RefundContent />
+        </Suspense>
     );
 }

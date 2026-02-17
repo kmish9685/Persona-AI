@@ -1,4 +1,8 @@
-export default function TermsPage() {
+export const dynamic = 'force-dynamic';
+
+import { Suspense } from 'react';
+
+function TermsContent() {
     return (
         <div className="min-h-screen bg-[#0A0A0A] text-white p-6">
             <div className="max-w-3xl mx-auto py-16">
@@ -28,5 +32,13 @@ export default function TermsPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function TermsPage() {
+    return (
+        <Suspense fallback={null}>
+            <TermsContent />
+        </Suspense>
     );
 }

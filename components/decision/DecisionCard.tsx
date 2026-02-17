@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Clock, ArrowRight, Trash2, Loader2, TrendingUp, AlertTriangle } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { deleteDecision } from '@/app/actions/deleteDecision';
 
 export default function DecisionCard({ decision }: { decision: any }) {
     const router = useRouter();
@@ -23,10 +24,17 @@ export default function DecisionCard({ decision }: { decision: any }) {
 
         setIsDeleting(true);
         try {
-            const res = await fetch(`/api/analyze/${decision.id}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error("Failed to delete");
+            // New Method: Server Action (Direct DB Access, no API route)
+            const result = await deleteDecision(decision.id);
+
+            if (result.error) {
+                throw new Error(result.error);
+            }
+
+            // Success
             router.refresh();
         } catch (error) {
+            console.error("Delete failed:", error);
             alert("Failed to delete. Please try again.");
             setIsDeleting(false);
         }

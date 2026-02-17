@@ -3,6 +3,7 @@
 import { PersonaResponse } from '@/types/chat';
 import { PERSONAS } from '@/lib/personas';
 import { ReasoningAccordion } from './ReasoningAccordion';
+import { StressTestView } from './StressTestView';
 
 interface MultiPersonaViewProps {
     responses: PersonaResponse[];
@@ -59,6 +60,14 @@ export function MultiPersonaView({ responses }: MultiPersonaViewProps) {
                             <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
                                 {response.response}
                             </div>
+
+                            {/* Stress Test View */}
+                            <StressTestView
+                                assumptions={response.assumptions}
+                                missingData={response.missingData}
+                                preMortem={response.preMortem}
+                                biasCheck={response.biasCheck}
+                            />
 
                             {/* Reasoning */}
                             {response.reasoning && (

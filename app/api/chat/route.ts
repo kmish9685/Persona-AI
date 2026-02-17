@@ -9,6 +9,26 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Persona Configurations
+const STRESS_TEST_APPENDIX = `
+STRESS TEST SECTIONS (MANDATORY):
+In addition to your main [ANSWER], you MUST output these 4 sections to stress-test the user's decision:
+
+[ASSUMPTIONS]
+- List 1-3 hidden assumptions the user is making.
+- Explain why they are risky.
+
+[MISSING_DATA]
+- List 1-3 crucial pieces of data the user ignored.
+
+[PRE_MORTEM]
+- Simulate a future where this decision FAILED. Explain the specific cause.
+
+[BIAS_CHECK]
+- Call out any confirmation bias, sunk cost fallacy, or optimism bias detected.
+
+Your main [ANSWER] should still follow your persona's tone, but these sections must be appended strictly.
+`;
+
 const PERSONAS: Record<string, { name: string; system_prompt: string }> = {
     elon: {
         name: "Elon Musk",
@@ -240,7 +260,7 @@ You MUST output in this exact format:
 4. Conclusion: [Final decision]
 [ANSWER]
 [Your normal response here, max 120 words]
-`
+` + STRESS_TEST_APPENDIX
     }
 };
 
@@ -261,34 +281,57 @@ const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!, {
     auth: { autoRefreshToken: false, persistSession: false }
 });
 
-async function checkCanChat(identifier: string) {
+async function checkCanChat(identifiers: { email?: string | null, userId?: string | null, ip?: string | null }) {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return { allowed: true, plan: 'dev', remaining: 999 };
 
-    const isEmail = identifier.includes('@');
-    const isClerkId = identifier.startsWith('user_');
-    let queryColumn = 'ip_address';
-    if (isEmail) queryColumn = 'email';
-    if (isClerkId) queryColumn = 'user_id';
-
+    const { email, userId, ip } = identifiers;
     const now = new Date();
+    const today = now.toISOString().split('T')[0];
 
     try {
-        // Global Stats (Keep existing daily logic for global stats or update if needed, but safe to keep daily for admin tracking)
-        const today = now.toISOString().split('T')[0];
+        // Global Stats
         const { data: globalStats } = await supabase.from('global_stats').select('total_requests').eq('date', today).single();
         if (globalStats && globalStats.total_requests >= 1000) return { allowed: false, reason: 'global_cap_reached', plan: 'free' };
         if (!globalStats) await supabase.from('global_stats').insert({ date: today, total_requests: 0 });
 
-        let { data: user } = await supabase.from('users').select('*').eq(queryColumn, identifier).single();
+        let user = null;
 
+        // 1. Try finding by Email (Priority)
+        if (email) {
+            const { data } = await supabase.from('users').select('*').eq('email', email).single();
+            user = data;
+        }
+
+        // 2. If not found, try finding by User ID (Legacy/Clerk)
+        if (!user && userId) {
+            const { data } = await supabase.from('users').select('*').eq('user_id', userId).single();
+            user = data;
+
+            // HEALING: If found by ID but had no email (or different), update it now to match.
+            // This ensures future lookups by email (e.g. from Webhooks) work on this same record.
+            if (user && email && user.email !== email) {
+                console.log(`[Identity Merge] Linking email ${email} to user_id ${userId}`);
+                await supabase.from('users').update({ email: email }).eq('id', user.id);
+                user.email = email; // Update local obj
+            }
+        }
+
+        // 3. Fallback: IP for guests
+        if (!user && !email && !userId && ip) {
+            const { data } = await supabase.from('users').select('*').eq('ip_address', ip).single();
+            user = data;
+        }
+
+        // 4. Create New if absolutely nothing found
         if (!user) {
-            // New user: Start their 24h cycle NOW
             const newUser = {
                 plan: 'free',
                 msg_count: 0,
                 last_active_date: today,
                 last_reset_at: now.toISOString(),
-                [queryColumn]: identifier
+                email: email || null,
+                user_id: userId || null,
+                ip_address: ip || null
             };
             const { data: createdUser, error } = await supabase.from('users').insert(newUser).select().single();
             if (error) throw error;
@@ -306,17 +349,28 @@ async function checkCanChat(identifier: string) {
                 msg_count: 0,
                 last_reset_at: now.toISOString(),
                 last_active_date: today
-            }).eq(queryColumn, identifier);
+            }).eq('id', user.id); // Use internal UUID for safety
             user.msg_count = 0;
         }
 
+        // Check if PRO and VALID (not expired)
         if (user.plan === 'pro') {
-            await incrementGlobalStats();
-            return { allowed: true, plan: 'pro', remaining: 9999 };
+            let isExpired = false;
+            // Graceful handling of missing column (undefined) -> Not Expired
+            if (user.subscription_end_date) {
+                const endDate = new Date(user.subscription_end_date);
+                if (endDate < now) {
+                    isExpired = true;
+                }
+            }
+
+            if (!isExpired) {
+                await incrementGlobalStats();
+                return { allowed: true, plan: 'pro', remaining: 9999 };
+            }
         }
 
         if (user.msg_count >= 10) {
-            // Calculate wait time
             const resetTime = new Date(lastReset.getTime() + 24 * 60 * 60 * 1000);
             const waitMs = resetTime.getTime() - now.getTime();
             const waitHours = Math.ceil(waitMs / (1000 * 60 * 60));
@@ -326,7 +380,7 @@ async function checkCanChat(identifier: string) {
                 reason: 'daily_limit_reached',
                 plan: 'free',
                 remaining: 0,
-                waitTime: waitHours // Send back hours to wait
+                waitTime: waitHours
             };
         }
 
@@ -334,7 +388,7 @@ async function checkCanChat(identifier: string) {
         await supabase.from('users').update({
             msg_count: user.msg_count + 1,
             last_active_date: today
-        }).eq(queryColumn, identifier);
+        }).eq('id', user.id);
 
         await incrementGlobalStats();
 
@@ -344,6 +398,8 @@ async function checkCanChat(identifier: string) {
         return { allowed: true, plan: 'error_fallback', remaining: 5 };
     }
 }
+// ... existing helpers ...
+
 
 async function incrementGlobalStats() {
     if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return;
@@ -353,24 +409,61 @@ async function incrementGlobalStats() {
 }
 
 // Helper to parse response into answer and reasoning
-function parseResponse(text: string): { response: string; reasoning?: string } {
-    // Look for [REASONING] and [ANSWER] tags
-    const reasoningMatch = text.match(/\[REASONING\]([\s\S]*?)\[ANSWER\]/);
-    const answerMatch = text.match(/\[ANSWER\]([\s\S]*)/);
+// Updated to handle Stress-Test sections
+function parseResponse(text: string): {
+    response: string;
+    reasoning?: string;
+    assumptions?: string;
+    missingData?: string;
+    preMortem?: string;
+    biasCheck?: string;
+} {
+    const output: any = { response: text.trim() };
 
-    if (reasoningMatch && answerMatch) {
-        return {
-            reasoning: reasoningMatch[1].trim(),
-            response: answerMatch[1].trim()
-        };
+    // Updated Regex: Capture content until the next known tag or end of string.
+    // Handles markdown (e.g., **[TAG]**), whitespace, and nested [] brackets inside content.
+    const extract = (tag: string) => {
+        const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)(?=\\[(?:ANSWER|REASONING|ASSUMPTIONS|MISSING_DATA|PRE_MORTEM|BIAS_CHECK)\\]|$)`, 'i');
+        const match = text.match(regex);
+        return match ? match[1].trim() : undefined;
+    };
+
+    output.reasoning = extract('REASONING');
+    output.response = extract('ANSWER') || text.trim();
+    // If text starts with ANSWER tag, extract explicitly. If not, use full text as fallback.
+    // However, if the text contains OTHER tags later, we must only take the part BEFORE them.
+    if (!output.response && !text.includes('[ANSWER]')) {
+        // Fallback: take everything until the first known tag
+        const firstTagIndex = text.search(/\[(?:REASONING|ASSUMPTIONS|MISSING_DATA|PRE_MORTEM|BIAS_CHECK)\]/);
+        if (firstTagIndex !== -1) {
+            output.response = text.substring(0, firstTagIndex).trim();
+        }
     }
 
-    // Fallback: If no tags, return whole text as response
-    return { response: text.trim() };
+    output.assumptions = extract('ASSUMPTIONS');
+    output.missingData = extract('MISSING_DATA');
+    output.preMortem = extract('PRE_MORTEM');
+    output.biasCheck = extract('BIAS_CHECK');
+
+    // Clean up response if it contains the raw tags (legacy fallback)
+    if (output.response.includes('[REASONING]')) {
+        output.response = output.response.split('[REASONING]')[0].trim();
+    }
+
+    return output;
 }
 
 // Helper function to call Groq API for a single persona
-async function callGroqForPersona(personaId: string, message: string, history: any[] = []): Promise<{ personaId: string; personaName: string; response: string; reasoning?: string }> {
+async function callGroqForPersona(personaId: string, message: string, history: any[] = []): Promise<{
+    personaId: string;
+    personaName: string;
+    response: string;
+    reasoning?: string;
+    assumptions?: string;
+    missingData?: string;
+    preMortem?: string;
+    biasCheck?: string;
+}> {
     const personaConfig = PERSONAS[personaId];
     if (!personaConfig) {
         throw new Error(`Invalid persona: ${personaId}`);
@@ -407,7 +500,9 @@ async function callGroqForPersona(personaId: string, message: string, history: a
     let rawText = groqData.choices?.[0]?.message?.content || "Error: Empty response.";
 
     // Parse reasoning and answer
-    let { response, reasoning } = parseResponse(rawText);
+    let parsed = parseResponse(rawText);
+
+    let { response } = parsed;
 
     // Validate and clean response (only the answer part)
     const words = response.split(/\s+/);
@@ -424,7 +519,11 @@ async function callGroqForPersona(personaId: string, message: string, history: a
         personaId,
         personaName: personaConfig.name,
         response,
-        reasoning
+        reasoning: parsed.reasoning,
+        assumptions: parsed.assumptions,
+        missingData: parsed.missingData,
+        preMortem: parsed.preMortem,
+        biasCheck: parsed.biasCheck
     };
 }
 
@@ -442,20 +541,23 @@ export async function POST(req: NextRequest) {
 
         // 1. Identify User
         const user = await currentUser();
-        let identifier = "guest@example.com";
+        let identifiers;
 
         if (user) {
-            identifier = user.id; // Use Clerk ID for logged-in users
+            // Pass both Email and ID for robust matching/healing
+            identifiers = {
+                email: user.emailAddresses?.[0]?.emailAddress,
+                userId: user.id
+            };
         } else {
-            // Fallback to IP for guests (handled inside checkCanChat via 'ip_address' logic if needed, 
-            // but here we just pass a string. Better to use header IP if we want strict guest limits).
+            // Fallback to IP for guests
             const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
-            identifier = ip;
+            identifiers = { ip };
         }
 
         // 2. Check limits based on mode
         const creditsNeeded = mode === 'multi' ? 6 : 1;
-        const limitStatus = await checkCanChat(identifier);
+        const limitStatus = await checkCanChat(identifiers);
 
         // For multi-persona mode, check if user has premium plan
         if (mode === 'multi' && limitStatus.plan === 'free') {
@@ -483,9 +585,14 @@ export async function POST(req: NextRequest) {
             console.log(`🚀 Multi-persona mode: Calling all 6 personas`);
 
             const allPersonaIds = ['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'];
-            // For multi-mode, we probably shouldn't pass full history to ALL to avoid chaos, 
-            // OR we pass it. Let's pass it for continuity.
-            const personaPromises = allPersonaIds.map(id => callGroqForPersona(id, currentMessageContent, history));
+
+            // CRITICAL FIX: Do NOT pass history to multi-persona mode.
+            // 1. Prevents "stiffness" or "generic" responses where models try to match the previous assistant's tone.
+            // 2. Ensures they answer the CURRENT question directly, not getting confused by past context.
+            // 3. Solves the atomic "Panel of Experts" requirement - they should judge the CURRENT idea fresh.
+            const multiModeHistory: any[] = [];
+
+            const personaPromises = allPersonaIds.map(id => callGroqForPersona(id, currentMessageContent, multiModeHistory));
 
             const responses = await Promise.all(personaPromises);
 
@@ -502,7 +609,6 @@ export async function POST(req: NextRequest) {
                 remaining_free: limitStatus.remaining,
                 plan: limitStatus.plan
             });
-
         } else {
             // Single persona mode: Use the same helper to get reasoning
             const validPersona = PERSONAS[persona] ? persona : 'elon';
@@ -515,6 +621,10 @@ export async function POST(req: NextRequest) {
                 mode: 'single',
                 response: result.response,
                 reasoning: result.reasoning,
+                assumptions: result.assumptions,
+                missingData: result.missingData,
+                preMortem: result.preMortem,
+                biasCheck: result.biasCheck,
                 remaining_free: limitStatus.remaining,
                 plan: limitStatus.plan
             });
