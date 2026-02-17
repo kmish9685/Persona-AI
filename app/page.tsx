@@ -298,6 +298,161 @@ function LandingPageContent() {
         </div>
       </section>
 
+      {/* HOW IT WORKS - Visual 3-Step Walkthrough */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">How It Works.</h2>
+            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">From brain fog to binary verdict in 3 steps.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+            {/* Connecting line (desktop only) */}
+            <div className="hidden md:block absolute top-24 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+
+            {/* Step 1 */}
+            <div className="relative group">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 font-black text-lg mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all">
+                  1
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Describe Your Decision</h3>
+                <p className="text-zinc-500 text-sm leading-relaxed mb-6">
+                  Type what you're stuck on in plain English. Include your situation, stakes, and constraints. No forms to fill. No jargon needed.
+                </p>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-left">
+                  <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Example Input</div>
+                  <p className="text-xs text-zinc-400 font-mono leading-relaxed">
+                    "Should I quit my $120K job at Google to build my SaaS full-time? I have 50 beta users, 5 paying, wife is pregnant, 3 months savings..."
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative group">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 font-black text-lg mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all">
+                  2
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">AI Computes Your Decision</h3>
+                <p className="text-zinc-500 text-sm leading-relaxed mb-6">
+                  6 mental models analyze your constraints, extract options, and stress-test every path. Takes ~30 seconds. No back-and-forth chat needed.
+                </p>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-left">
+                  <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">What Happens</div>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Constraint Analysis
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" style={{ animationDelay: '0.2s' }} /> Option Stress-Testing
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" style={{ animationDelay: '0.4s' }} /> Kill Signal Detection
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative group">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 border-2 border-amber-500/30 text-amber-500 font-black text-lg mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all">
+                  3
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Get Your Verdict</h3>
+                <p className="text-zinc-500 text-sm leading-relaxed mb-6">
+                  A clear YES or NO with conviction score, kill signals, and conditional factors. No hedging. No "it depends." Just clarity.
+                </p>
+                <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-5 text-left">
+                  <div className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-2">Example Output</div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-500">Verdict:</span>
+                      <span className="text-xs font-bold text-red-400">NO (Wait)</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-500">Conviction:</span>
+                      <span className="text-xs font-bold text-amber-500">87%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-500">Kill Signal:</span>
+                      <span className="text-xs font-bold text-red-500">🔴 Active</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-16">
+            <Link href="/analyze/new" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black rounded-full font-black text-sm uppercase tracking-widest hover:bg-zinc-200 transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(255,255,255,0.15)]">
+              Try It Free <ArrowRight size={16} />
+            </Link>
+            <p className="text-zinc-600 text-xs mt-4 uppercase tracking-widest">2 free analyses · No credit card</p>
+          </div>
+        </div>
+      </section>
+
+      {/* WHO THIS IS FOR - ICP Self-Identification */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#050505] border-y border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Built For Builders.</h2>
+            <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">If you recognize yourself here, this tool was made for you.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
+              <div className="text-2xl mb-4">🔥</div>
+              <h3 className="font-bold text-white mb-2 text-sm">Solo Founders</h3>
+              <p className="text-zinc-500 text-xs leading-relaxed">No co-founder to debate with. No board to validate ideas. You need an unbiased second brain.</p>
+            </div>
+            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
+              <div className="text-2xl mb-4">⚡</div>
+              <h3 className="font-bold text-white mb-2 text-sm">Startup CEOs</h3>
+              <p className="text-zinc-500 text-xs leading-relaxed">Pivot or double down? Hire or outsource? Fire or coach? High-stakes decisions that keep you up at night.</p>
+            </div>
+            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
+              <div className="text-2xl mb-4">🎯</div>
+              <h3 className="font-bold text-white mb-2 text-sm">Career Switchers</h3>
+              <p className="text-zinc-500 text-xs leading-relaxed">Quit the corporate job? Take the offer? Start freelancing? Life-changing decisions need structure, not opinions.</p>
+            </div>
+            <div className="p-6 rounded-2xl bg-zinc-900/30 border border-white/5 hover:border-amber-500/20 transition-all group">
+              <div className="text-2xl mb-4">💡</div>
+              <h3 className="font-bold text-white mb-2 text-sm">Indie Hackers</h3>
+              <p className="text-zinc-500 text-xs leading-relaxed">Which feature to build next? When to launch? How to price? Stop guessing, start computing.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TRUST BAR - Enhanced Social Proof */}
+      <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-16 bg-black border-b border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-3xl font-black text-white mb-1">500+</div>
+              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Decisions Analyzed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-amber-500 mb-1">4.8/5</div>
+              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Clarity Score</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-white mb-1">30s</div>
+              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Avg. Analysis Time</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-black text-emerald-500 mb-1">92%</div>
+              <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Said "Worth It"</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* NEW: TESTIMONIALS */}
       <TestimonialSection />
 
