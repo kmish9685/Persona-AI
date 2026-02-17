@@ -17,10 +17,18 @@ const STEPS = [
     { id: 'context', title: 'Final Context' },
 ];
 
-export function DecisionForm() {
+// ... imports
+
+interface DecisionFormProps {
+    initialValues?: any; // ValuesProfile
+    vizData?: any; // 5-Year Viz
+}
+
+export function DecisionForm({ initialValues, vizData }: DecisionFormProps) {
     const [step, setStep] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+
 
     const { register, control, handleSubmit, watch, trigger, formState: { errors } } = useForm<DecisionFormValues>({
         resolver: zodResolver(DecisionSchema) as any,
@@ -60,10 +68,17 @@ export function DecisionForm() {
     const onSubmit = async (data: DecisionFormValues) => {
         setIsSubmitting(true);
         try {
+            const payload = {
+                ...data,
+                values_profile: initialValues,
+                five_year_viz: vizData?.scenarios,
+                viz_clarity_achieved: vizData?.clarityAchieved
+            };
+
             const res = await fetch('/api/analyze', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify(payload),
             });
 
             if (!res.ok) throw new Error('Analysis failed');

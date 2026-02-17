@@ -1,4 +1,4 @@
-import { DecisionForm } from '@/components/decision/DecisionForm';
+import NewDecisionFlow from '@/components/decision/NewDecisionFlow';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 
@@ -27,7 +27,7 @@ export default function NewAnalysisPage() {
                     </p>
                 </div>
 
-                <DecisionForm />
+                <NewDecisionFlow />
             </main>
         </div>
     );

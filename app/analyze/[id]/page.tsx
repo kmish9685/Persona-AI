@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import DecisionStatus from '@/components/decision/DecisionStatus';
+import GutCheckIntegration from '@/components/decision/GutCheckIntegration';
 
 import { ArrowLeft, AlertTriangle, TrendingUp, Skull, CheckCircle } from 'lucide-react';
 
@@ -66,6 +67,12 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
 
     return (
         <div className="min-h-screen bg-black text-white p-6 md:p-12">
+            <GutCheckIntegration
+                decisionId={decision.id}
+                verdict={recommendation.verdict}
+                existingReaction={decision.gut_reaction}
+            />
+
             <div className="max-w-5xl mx-auto">
                 <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-8 transition-colors">
                     <ArrowLeft size={16} className="mr-2" /> Back to Dashboard
@@ -113,7 +120,7 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     </div>
                 </div>
 
-                {/* Recommendation Card - Now BELOW kill signals */}
+                {/* Recommendation Card */}
                 <div className="bg-gradient-to-br from-amber-500/10 to-black border border-amber-500/30 rounded-2xl p-8 mb-10 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-8 opacity-20"><TrendingUp size={100} /></div>
 
@@ -127,7 +134,7 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     </div>
                 </div>
 
-                {/* Options Analysis */}
+                {/* Detailed Analysis */}
                 <div className="mb-12">
                     <h3 className="text-2xl font-light mb-6 text-white">Detailed Analysis</h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
