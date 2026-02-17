@@ -79,14 +79,14 @@ export function PersonaModal({ onClose }: PersonaModalProps) {
                                     className={clsx(
                                         "relative p-4 rounded-xl border transition-all duration-200",
                                         p.active 
-                                            ? "bg-white/5 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.1)]" 
+                                            ? "bg-white/5 border-[#5e6ad2]/50 shadow-[0_0_15px_rgba(94,106,210,0.1)]" 
                                             : "bg-transparent border-white/5 opacity-60"
                                     )}
                                 >
                                     <div className="flex items-start gap-4">
                                         <div className={clsx(
                                             "p-2 rounded-lg",
-                                            p.active ? "bg-amber-500/10 text-amber-500" : "bg-white/5 text-zinc-500"
+                                            p.active ? "bg-[#5e6ad2]/10 text-[#5e6ad2]" : "bg-white/5 text-zinc-500"
                                         )}>
                                             <p.icon size={20} />
                                         </div>
@@ -96,7 +96,7 @@ export function PersonaModal({ onClose }: PersonaModalProps) {
                                                     "font-medium text-sm",
                                                     p.active ? "text-white" : "text-zinc-400"
                                                 )}>{p.name}</h3>
-                                                {p.active && <Check size={16} className="text-amber-500" />}
+                                                {p.active && <Check size={16} className="text-[#5e6ad2]" />}
                                                 {p.locked && <Lock size={14} className="text-zinc-600" />}
                                             </div>
                                             <p className="text-xs text-zinc-500 mt-1">{p.desc}</p>
@@ -118,3 +118,4 @@ export function PersonaModal({ onClose }: PersonaModalProps) {
         </Dialog>
     );
 }
+

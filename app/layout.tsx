@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Persona AI - Stop Chatting. Start Deciding.",
@@ -31,13 +20,8 @@ export const metadata: Metadata = {
   },
 };
 
-// V4 suggests Auth0Provider or similar may be needed, OR UserProvider is in a different path?
-// Error log: "Did you mean to import Auth0Provider?"
-// import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { AuthProvider } from '@/src/contexts/AuthContext';
 import { ClerkProvider } from "@clerk/nextjs";
-
-
 
 export default function RootLayout({
   children,
@@ -47,9 +31,18 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
+        <head>
+          {/* Fontshare CDN — Clash Display + Cabinet Grotesk */}
+          <link
+            href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@100,200,300,400,500,700,800,900&display=swap"
+            rel="stylesheet"
+          />
+        </head>
+        <body className="antialiased">
           {/* Google Analytics */}
           <Script
             src="https://www.googletagmanager.com/gtag/js?id=G-DGFC27782F"

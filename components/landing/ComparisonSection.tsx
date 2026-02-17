@@ -4,61 +4,59 @@ import { Check, X, Zap } from 'lucide-react';
 
 export default function ComparisonSection() {
     return (
-        <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-black overflow-hidden border-b border-white/5">
-            <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Show, Don't Tell.</h2>
-                    <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">The difference between a chat and a verdict.</p>
+        <section className="relative z-10 px-6 lg:px-8 py-24 border-b overflow-hidden" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
+            <div className="max-w-5xl mx-auto">
+                <div className="text-center mb-14">
+                    <h2 className="text-3xl sm:text-[44px] font-semibold mb-3" style={{ letterSpacing: '-0.03em' }}>Show, don't tell.</h2>
+                    <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>The difference between a chat and a verdict.</p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-[1px]" style={{ background: 'var(--border-subtle)' }}>
                     {/* Generic Output */}
-                    <div className="flex flex-col opacity-60 hover:opacity-100 transition-opacity duration-500">
-                        <div className="mb-4 text-xs font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-zinc-800"></div> Generic AI Output
+                    <div className="p-8 opacity-50 hover:opacity-100 transition-opacity duration-300" style={{ background: 'var(--bg-base)' }}>
+                        <div className="mb-4 text-[11px] font-medium uppercase tracking-[0.06em] flex items-center gap-2" style={{ color: 'var(--text-tertiary)' }}>
+                            <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--text-tertiary)' }} /> Generic AI Output
                         </div>
-                        <div className="flex-1 bg-zinc-900/30 border border-white/5 rounded-2xl p-8 text-zinc-500 font-serif leading-relaxed italic relative">
-                            <div className="absolute top-4 right-4 text-zinc-700/20"><X size={24} /></div>
+                        <div className="text-[14px] leading-relaxed relative" style={{ color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                            <div className="absolute top-0 right-0 opacity-10"><X size={20} style={{ color: 'var(--text-tertiary)' }} /></div>
                             "Deciding whether to pivot is a complex choice that depends on many factors. You should consider your market fit, runway, and team morale. On one hand, staying the course shows grit. On the other hand, pivoting might reveal new opportunities. Perhaps you could try a hybrid approach for a few weeks and reassess..."
                         </div>
                     </div>
 
                     {/* Persona AI Output */}
-                    <div className="flex flex-col transform hover:scale-[1.02] transition-transform duration-500">
-                        <div className="mb-4 text-xs font-bold text-amber-500 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div> Persona AI Engine Output
+                    <div className="p-8 relative overflow-hidden" style={{ background: 'var(--bg-elevated)' }}>
+                        <div className="absolute top-0 right-0 p-4 opacity-5"><Zap size={40} style={{ color: '#5e6ad2' }} /></div>
+                        <div className="mb-4 text-[11px] font-semibold uppercase tracking-[0.06em] flex items-center gap-2" style={{ color: '#5e6ad2' }}>
+                            <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#5e6ad2' }} /> Persona AI Engine Output
                         </div>
-                        <div className="flex-1 glass-panel border border-amber-500/20 rounded-2xl p-8 font-mono text-sm shadow-2xl shadow-amber-500/10 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 text-amber-500/20"><Zap size={40} /></div>
 
-                            <div className="space-y-6 relative z-10">
-                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                    <span className="text-zinc-400">VERDICT:</span>
-                                    <span className="text-green-500 font-black text-lg">PIVOT NOW</span>
-                                </div>
-                                <div className="flex justify-between items-center border-b border-white/5 pb-4">
-                                    <span className="text-zinc-400">CONVICTION:</span>
-                                    <span className="text-white font-black text-lg">84%</span>
-                                </div>
-                                <div>
-                                    <span className="text-zinc-400 block mb-2 uppercase text-[10px] tracking-widest">Kill Signals Triggered:</span>
-                                    <ul className="space-y-3">
-                                        <li className="text-red-400/90 pl-3 border-l-2 border-red-500/50 flex items-center justify-between">
-                                            <span>CAC &gt; $50 in first 48h</span>
-                                            <span className="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded">CRITICAL</span>
-                                        </li>
-                                        <li className="text-red-400/90 pl-3 border-l-2 border-red-500/50 flex items-center justify-between">
-                                            <span>Retention &lt; 20% by week 2</span>
-                                            <span className="text-[10px] bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded">WARNING</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
-                                    <span className="text-amber-500 block mb-1 uppercase text-[10px] tracking-widest font-bold">Action Plan:</span>
-                                    <p className="text-zinc-200 leading-relaxed">
-                                        Kill "Option A" immediately. You are burning cash on a dead end. Launch MVP-B by Friday 5PM.
-                                    </p>
-                                </div>
+                        <div className="space-y-5 relative z-10" style={{ fontFamily: 'var(--font-mono)' }}>
+                            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                                <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>VERDICT:</span>
+                                <span className="text-[15px] font-semibold" style={{ color: '#4dac68' }}>PIVOT NOW</span>
+                            </div>
+                            <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                                <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>CONVICTION:</span>
+                                <span className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>84%</span>
+                            </div>
+                            <div>
+                                <span className="text-[11px] uppercase tracking-[0.06em] block mb-2" style={{ color: 'var(--text-tertiary)' }}>Kill Signals Triggered:</span>
+                                <ul className="space-y-2">
+                                    <li className="text-[13px] pl-3 flex items-center justify-between" style={{ borderLeft: '2px solid rgba(224,93,93,0.5)', color: 'rgba(224,93,93,0.9)' }}>
+                                        <span>CAC &gt; $50 in first 48h</span>
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(224,93,93,0.12)', color: '#e05d5d' }}>CRITICAL</span>
+                                    </li>
+                                    <li className="text-[13px] pl-3 flex items-center justify-between" style={{ borderLeft: '2px solid rgba(224,93,93,0.5)', color: 'rgba(224,93,93,0.9)' }}>
+                                        <span>Retention &lt; 20% by week 2</span>
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(242,184,75,0.12)', color: '#f2b84b' }}>WARNING</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="p-3 rounded-md" style={{ background: 'var(--bg-hover)', border: '1px solid var(--border-subtle)' }}>
+                                <span className="accent-label block mb-1">Action Plan:</span>
+                                <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                                    Kill "Option A" immediately. You are burning cash on a dead end. Launch MVP-B by Friday 5PM.
+                                </p>
                             </div>
                         </div>
                     </div>

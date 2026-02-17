@@ -1,7 +1,5 @@
 'use client';
 
-import { Quote, Star } from 'lucide-react';
-
 const TESTIMONIALS = [
     {
         quote: "I fired my co-founder after a 20-minute session with the Steve Jobs persona. It was brutal, but it was the right call. Saved my company.",
@@ -25,36 +23,32 @@ const TESTIMONIALS = [
 
 export default function TestimonialSection() {
     return (
-        <section className="relative z-10 px-4 sm:px-6 lg:px-8 py-24 bg-[#080808] border-t border-white/5">
-            <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl sm:text-5xl font-black mb-4 tracking-tighter uppercase">Wall of Truth.</h2>
-                    <p className="text-zinc-500 text-lg uppercase tracking-widest text-xs font-bold">Real founders. Real breakthroughs.</p>
+        <section className="relative z-10 px-6 lg:px-8 py-24 border-y" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+            <div className="max-w-5xl mx-auto">
+                <div className="text-center mb-14">
+                    <h2 className="text-3xl sm:text-[44px] font-semibold mb-3" style={{ letterSpacing: '-0.03em' }}>Wall of truth.</h2>
+                    <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>Real founders. Real breakthroughs.</p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Linear testimonial strip: 1px gap grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-[1px]" style={{ background: 'var(--border-subtle)' }}>
                     {TESTIMONIALS.map((t, i) => (
-                        <div key={i} className="bg-zinc-900/40 p-8 rounded-3xl border border-white/5 relative hover:-translate-y-1 transition-transform duration-300">
-                            <Quote className="absolute top-8 right-8 text-amber-500/10" size={40} />
+                        <div key={i} className="p-8 relative" style={{ background: 'var(--bg-base)' }}>
+                            {/* Linear-style quote mark — subtle, using accent */}
+                            <div className="text-[40px] leading-none font-serif mb-4 opacity-15" style={{ color: '#5e6ad2' }}>"</div>
 
-                            <div className="flex gap-1 mb-6">
-                                {[1, 2, 3, 4, 5].map(s => <Star key={s} size={14} className="text-amber-500 fill-amber-500" />)}
-                            </div>
-
-                            <p className="text-zinc-300 italic mb-8 leading-relaxed relative z-10">
-                                "{t.quote}"
+                            <p className="text-[15px] leading-relaxed mb-8" style={{ color: 'var(--text-secondary)', fontStyle: 'normal' }}>
+                                {t.quote}
                             </p>
 
-                            <div className="mt-auto border-t border-white/5 pt-6">
+                            <div className="mt-auto pt-5" style={{ borderTop: '1px solid var(--border-subtle)' }}>
                                 <div className="flex justify-between items-end">
                                     <div>
-                                        <div className="text-white font-bold text-sm">{t.author}</div>
-                                        <div className="text-zinc-600 text-xs uppercase tracking-widest">{t.role}</div>
+                                        <div className="text-[13px] font-medium" style={{ color: 'var(--text-primary)' }}>{t.author}</div>
+                                        <div className="text-[11px] uppercase tracking-[0.06em]" style={{ color: 'var(--text-tertiary)' }}>{t.role}</div>
                                     </div>
-                                    <div className="text-right">
-                                        <div className="text-[10px] font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded inline-block">
-                                            {t.metric}
-                                        </div>
+                                    <div className="text-[11px] font-medium px-2 py-1 rounded" style={{ background: 'rgba(77,172,104,0.12)', color: '#4dac68' }}>
+                                        {t.metric}
                                     </div>
                                 </div>
                             </div>

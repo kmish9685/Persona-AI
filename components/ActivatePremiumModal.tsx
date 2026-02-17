@@ -119,7 +119,7 @@ export default function ActivatePremiumModal() {
                     >
                         {status === 'loading' && (
                             <>
-                                <Loader2 className="w-16 h-16 mx-auto mb-4 text-amber-500 animate-spin" />
+                                <Loader2 className="w-16 h-16 mx-auto mb-4 text-[#5e6ad2] animate-spin" />
                                 <h2 className="text-2xl font-semibold text-white mb-2">Activating Premium...</h2>
                                 <p className="text-zinc-400">Please wait while we verify your purchase.</p>
                             </>
@@ -136,7 +136,7 @@ export default function ActivatePremiumModal() {
 
                         {status === 'email_mismatch' && (
                             <>
-                                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-amber-500" />
+                                <AlertCircle className="w-16 h-16 mx-auto mb-4 text-[#5e6ad2]" />
                                 <h2 className="text-2xl font-semibold text-white mb-2">Email Mismatch</h2>
                                 <p className="text-zinc-400 mb-4">{message}</p>
 
@@ -155,7 +155,7 @@ export default function ActivatePremiumModal() {
                                     </p>
                                     <button
                                         onClick={handleManualVerification}
-                                        className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-3 rounded-xl transition-all"
+                                        className="w-full bg-[#5e6ad2] hover:bg-[#6b76e0] text-black font-semibold py-3 rounded-xl transition-all"
                                     >
                                         Yes, This Is My Purchase
                                     </button>
@@ -176,7 +176,7 @@ export default function ActivatePremiumModal() {
                                 <p className="text-zinc-400 mb-6">{message}</p>
                                 <button
                                     onClick={() => router.push('/')}
-                                    className="w-full bg-amber-500 hover:bg-amber-400 text-black font-semibold py-3 rounded-xl transition-all"
+                                    className="w-full bg-[#5e6ad2] hover:bg-[#6b76e0] text-black font-semibold py-3 rounded-xl transition-all"
                                 >
                                     Return to Home
                                 </button>
@@ -188,3 +188,4 @@ export default function ActivatePremiumModal() {
         </Dialog>
     );
 }
+

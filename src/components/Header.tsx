@@ -26,13 +26,13 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 group cursor-default">
                     <img src="/personaai.png" alt="Persona AI" className="w-6 h-6 object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
-                    <span className="text-sm font-medium tracking-wide text-zinc-200 group-hover:text-white transition-colors">Persona AI</span>
+                    <span className="text-sm font-medium tracking-wide text-zinc-200 group-hover:text-white transition-colors font-display">Persona AI</span>
                 </div>
                 {/* Active Persona Indicator */}
                 <div className="hidden sm:flex flex-col gap-0.5 pl-4 border-l border-white/10">
                     <div className="flex items-center gap-2">
                         <span className="text-[10px] uppercase tracking-wider text-zinc-500 font-medium">Active:</span>
-                        <span className="text-xs text-amber-500/90 font-medium tracking-wide">Elon</span>
+                        <span className="text-xs text-[#5e6ad2]/90 font-medium tracking-wide">Elon</span>
                     </div>
                     <span className="text-[9px] text-zinc-600 tracking-tight">First-principles. Physics over opinion.</span>
                 </div>
@@ -88,7 +88,7 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                                                 onClick={onShowPaywall}
                                                 className={clsx(
                                                     "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all",
-                                                    active ? "bg-amber-500/10 text-amber-400" : "text-amber-500"
+                                                    active ? "bg-[#5e6ad2]/10 text-[#6b76e0]" : "text-[#5e6ad2]"
                                                 )}
                                             >
                                                 <Zap size={14} />
@@ -124,7 +124,7 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
                             <div className="flex items-center gap-2 border-l border-white/10 pl-3">
                                 <button
                                     onClick={onShowPaywall}
-                                    className="px-3.5 py-1.5 text-xs font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-all shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] active:scale-95 flex items-center gap-1.5"
+                                    className="px-3.5 py-1.5 text-xs font-medium bg-[#5e6ad2] text-black rounded-lg hover:bg-[#6b76e0] transition-all shadow-[0_0_15px_rgba(94,106,210,0.3)] hover:shadow-[0_0_20px_rgba(94,106,210,0.5)] active:scale-95 flex items-center gap-1.5"
                                 >
                                     <Zap size={12} className="fill-black/50" />
                                     Upgrade
@@ -159,3 +159,4 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
         </header>
     );
 }
+

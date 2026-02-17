@@ -6,6 +6,13 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+if (!GROQ_API_KEY) {
+  console.error('❌ GROQ_API_KEY is missing!');
+}
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  console.error('❌ Supabase credentials are missing!');
+}
+
 const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!);
 
 const SYSTEM_PROMPT = `
@@ -28,7 +35,9 @@ JSON OUTPUT STRUCTURE:
     "option_id": "Option A/B/C match",
     "verdict": "Clear concise verdict",
     "reasoning": "Why this wins based on constraints",
-    "conviction_score": 0-100
+    "conviction_score": 0-100,
+    "certainty_score": 0-100,
+    "conditional_factors": ["If X happens, then verdict changes to Y", "Only proceed if Z is true"]
   },
   "options_analysis": [
     {
@@ -56,81 +65,69 @@ RULES:
 `;
 
 export async function POST(req: NextRequest) {
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!GROQ_API_KEY) {
+    return NextResponse.json({ error: "GROQ_API_KEY not configured on server" }, { status: 500 });
+  }
+
   try {
-    const user = await currentUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     const body = await req.json();
-    const { decisionType, constraints, options, blindspots, context } = body;
+    const { title, context, options, constraints, decisionType, values_profile, five_year_viz, viz_clarity_achieved } = body;
 
-    // --- ROLLING HISTORY LOGIC (Free Tier Limit: 3) ---
-    // 1. Check User Plan
-    const userPlan = (user.publicMetadata?.plan as string) || 'free';
-
-    if (userPlan !== 'pro') {
-      // 2. Count Existing Decisions
-      const { count, error: countError } = await supabase
-        .from('decisions')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id);
-
-      if (countError) {
-        console.error("Error checking decision count:", countError);
-        // Fail safe: Allow creation or block? Let's log and allow for now to avoid blocking user.
-      } else if (count !== null && count >= 3) {
-        console.log(`[Rolling History] User ${user.id} has ${count} decisions. Auto-deleting oldest.`);
-
-        // 3. Find Oldest Decision
-        const { data: oldestDecision, error: fetchError } = await supabase
-          .from('decisions')
-          .select('id')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: true })
-          .limit(1)
-          .single();
-
-        if (oldestDecision && !fetchError) {
-          // 4. Delete Oldest (Checkpoints first ideally, but decision cascade might handle it if set up. 
-          // To be safe based on previous delete logic, we delete checkpoints manually first as per manual delete flow)
-
-          // Delete Checkpoints
-          await supabase.from('checkpoints').delete().eq('decision_id', oldestDecision.id);
-
-          // Delete Decision
-          const { error: deleteError } = await supabase.from('decisions').delete().eq('id', oldestDecision.id);
-
-          if (deleteError) {
-            console.error("Failed to auto-delete oldest decision:", deleteError);
-            // We could return error, but better to proceed (worst case they have 4 decisions temporarily)
-          } else {
-            console.log(`[Rolling History] Successfully deleted oldest decision: ${oldestDecision.id}`);
-          }
-        }
-      }
+    // Validate required fields
+    if (!title && !context) {
+      return NextResponse.json({ error: "Missing required fields: title or context" }, { status: 400 });
     }
-    // --- END ROLLING HISTORY LOGIC ---
 
-    // Construct the prompt
-    const prompt = `
-        DECISION TYPE: ${decisionType}
-        
-        CONSTRAINTS:
-        - Runway: ${constraints.runwayMonths} months
-        - Burn: ${constraints.monthlyBurn}
-        - MRR: ${constraints.currentMrr}
-        - Team: ${constraints.teamSize}
-        - Skillset: ${constraints.skillset}
-        - Risk Tolerance: ${constraints.riskTolerance}
-        
-        OPTIONS:
-        ${options.map((o: any, i: number) => `Option ${i + 1}: ${o.title}`).join('\n')}
-        
-        BLINDSPOTS/CONTEXT:
-        ${blindspots || 'None'}
-        ${context || 'None'}
-        
-        Analyze this now. Return ONLY JSON.
-        `;
+    // Construct the prompt (flexible for both old and new formats)
+    let prompt = `
+DECISION: ${title || decisionType || 'General Decision'}
+
+FULL CONTEXT:
+${context || 'No context provided'}
+
+OPTIONS BEING CONSIDERED:
+${Array.isArray(options) && options.length > 0
+        ? options.map((o: any, i: number) => `Option ${i + 1}: ${typeof o === 'string' ? o : o.title}`).join('\n')
+        : 'No explicit options provided - extract from context'
+      }
+
+HARD CONSTRAINTS:
+${typeof constraints === 'string'
+        ? constraints
+        : constraints
+          ? `Runway: ${constraints.runwayMonths || 'N/A'} months, Burn: ${constraints.monthlyBurn || 'N/A'}, MRR: ${constraints.currentMrr || 'N/A'}, Team: ${constraints.teamSize || 'N/A'}`
+          : 'None specified'
+      }
+    `;
+
+    if (values_profile) {
+      prompt += `
+
+USER VALUES PROFILE:
+- Optimizing for: ${values_profile.optimizing_for?.join(', ')}
+- Deal Breakers: ${values_profile.deal_breakers?.join(', ')}
+- Tradeoffs: Certainty(${values_profile.tradeoff_preferences?.certainty_vs_upside}/5), Speed(${values_profile.tradeoff_preferences?.speed_vs_quality}/5), Solo(${values_profile.tradeoff_preferences?.solo_vs_team}/5)
+
+IMPORTANT: Align your verdict with these values. If they optimize for 'Freedom' but Option A is 'Raise VC Funding', warn them.
+          `;
+    }
+
+    if (five_year_viz) {
+      prompt += `
+
+USER'S 5-YEAR VISUALIZATION:
+${five_year_viz.map((s: any) => `Scenario ${s.option}: Typical day "${s.typical_day}", Proud of "${s.proud_of}", Regrets "${s.regrets}"`).join('\n')}
+
+Use this to sanity check the AI verdict.
+          `;
+    }
+
+    prompt += `
+Analyze this now. Return ONLY JSON.
+    `;
 
     // Call Groq
     const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -155,42 +152,102 @@ export async function POST(req: NextRequest) {
     // Generate ID on server to guarantee return
     const decisionId = crypto.randomUUID();
 
+    // ── PRO USER CHECK (runs BEFORE AI call to save API credits) ──
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+
+    // Try finding user by email first (most reliable), then by user_id
+    let userPlanData = null;
+    if (userEmail) {
+      const { data } = await supabase
+        .from('users')
+        .select('id, plan, subscription_end_date, user_id')
+        .eq('email', userEmail)
+        .single();
+      userPlanData = data;
+    }
+
+    if (!userPlanData) {
+      const { data } = await supabase
+        .from('users')
+        .select('id, plan, subscription_end_date, user_id')
+        .eq('user_id', user.id)
+        .single();
+      userPlanData = data;
+    }
+
+    // HEAL: If found but user_id is missing, link it for future lookups
+    if (userPlanData && !userPlanData.user_id && user.id) {
+      console.log(`[analyze] Healing user_id: linking ${user.id} to row ${userPlanData.id}`);
+      await supabase.from('users').update({ user_id: user.id }).eq('id', userPlanData.id);
+    }
+
+    let isPaidUser = false;
+    if (userPlanData?.plan === 'pro') {
+      if (userPlanData.subscription_end_date) {
+        const endDate = new Date(userPlanData.subscription_end_date);
+        isPaidUser = endDate > new Date();
+      } else {
+        isPaidUser = true; // Pro without end date = lifetime/manual
+      }
+    }
+
+    console.log(`[analyze] User: ${userEmail}, Plan: ${userPlanData?.plan}, isPaid: ${isPaidUser}`);
+
+    // FREE TIER CHECK
+    const { count: analysisCount } = await supabase
+      .from('decisions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    const FREE_LIMIT = 2;
+
+    if (!isPaidUser && (analysisCount || 0) >= FREE_LIMIT) {
+      return NextResponse.json({
+        error: "FREE_LIMIT_REACHED",
+        message: `You've used your ${FREE_LIMIT} free analyses. Upgrade for unlimited access.`,
+        analysisCount: analysisCount
+      }, { status: 403 });
+    }
+
     // Save to Database
     const { error } = await supabase.from('decisions').insert({
       id: decisionId,
       user_id: user.id,
-      title: decisionType === 'custom' ? options[0].title + ' vs...' : decisionType,
-      decision_type: decisionType,
+      title: title || decisionType || 'Decision Analysis',
+      decision_type: decisionType || 'custom',
       input_data: body,
       analysis_result: analysisResult,
       conviction_score: analysisResult.recommendation.conviction_score,
-      status: 'completed'
+      status: 'completed',
+      values_profile: values_profile,
+      five_year_viz: five_year_viz,
+      viz_clarity_achieved: viz_clarity_achieved
     });
 
     if (error) throw error;
 
     // Auto-create checkpoints from kill signals
-    const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
-      decision_id: decisionId,
-      checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // rough default, logic needs refinement later
-      metric: ks.signal,
-      status: 'pending'
-    }));
+    if (analysisResult.kill_signals && analysisResult.kill_signals.length > 0) {
+      const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
+        decision_id: decisionId,
+        checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        metric: ks.signal,
+        status: 'pending'
+      }));
 
-    await supabase.from('checkpoints').insert(checkpoints);
+      await supabase.from('checkpoints').insert(checkpoints);
+    }
 
     // debug log
-    console.log("✅ Checkpoints created. returning Decision ID:", decisionId);
+    console.log("✅ Decision saved. ID:", decisionId);
 
     return NextResponse.json({
       id: decisionId,
-      debug_decision: { id: decisionId, ...analysisResult }
+      remaining_free: isPaidUser ? 'unlimited' : Math.max(0, FREE_LIMIT - (analysisCount || 0) - 1)
     });
 
-
-
   } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error('❌ Analysis API Error:', e);
+    return NextResponse.json({ error: e.message || 'Internal server error' }, { status: 500 });
   }
 }

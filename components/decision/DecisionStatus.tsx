@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 const STATUS_CONFIG = {
     active: { label: 'In Progress', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20', icon: Clock },
     completed: { label: 'Analysis Done', color: 'bg-zinc-800 text-zinc-400 border-zinc-700', icon: CheckCircle },
-    pivot: { label: 'Pivoted', color: 'bg-amber-500/10 text-amber-500 border-amber-500/20', icon: AlertTriangle },
+    pivot: { label: 'Pivoted', color: 'bg-[#5e6ad2]/10 text-[#5e6ad2] border-[#5e6ad2]/20', icon: AlertTriangle },
     killed: { label: 'Killed / Stopped', color: 'bg-red-500/10 text-red-500 border-red-500/20', icon: XCircle },
     successful: { label: 'Successful', color: 'bg-green-500/10 text-green-500 border-green-500/20', icon: CheckCircle },
 };
@@ -81,3 +81,4 @@ export default function DecisionStatus({ decisionId, initialStatus }: { decision
         </div>
     );
 }
+

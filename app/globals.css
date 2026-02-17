@@ -1,118 +1,318 @@
 @import "tailwindcss";
 
-:root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  /* Pure Black */
-  --background-end-rgb: 0, 0, 0;
-  /* Pure Black */
-  --accent-color: #F59E0B;
-  /* Amber 500 */
-}
+/* Fonts loaded via <link> tags in layout.tsx */
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-start-rgb));
-  font-family: var(--font-geist-sans), "Inter", -apple-system, sans-serif;
-  letter-spacing: -0.02em;
-  -webkit-font-smoothing: antialiased;
+/* ============================================
+   LINEAR DESIGN SYSTEM + FONTSHARE TYPOGRAPHY
+   Clash Display (headings) + Cabinet Grotesk (body)
+   ============================================ */
+
+:root {
+  /* Typography — Fontshare */
+  --font-display: 'Clash Display', -apple-system, sans-serif;
+  --font-body: 'Cabinet Grotesk', -apple-system, sans-serif;
+  --font-sans: 'Cabinet Grotesk', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+
+  /* Background layers — Linear exact (darkest → lightest) */
+  --bg-base: #0a0a0b;
+  --bg-surface: #111112;
+  --bg-elevated: #1a1a1b;
+  --bg-hover: #202022;
+  --bg-active: #26262a;
+  --bg-overlay: rgba(0, 0, 0, 0.5);
+
+  /* Borders — Linear exact */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  /* Text — Linear exact */
+  --text-primary: #e2e2e3;
+  --text-secondary: #8a8a8f;
+  --text-tertiary: #5a5a5f;
+  --text-inverse: #0a0a0b;
+
+  /* Accent — Linear purple */
+  --accent: #5e6ad2;
+  --accent-hover: #6b76e0;
+  --accent-subtle: rgba(94, 106, 210, 0.15);
+  --accent-glow: rgba(94, 106, 210, 0.12);
+
+  /* Semantic status */
+  --status-success: #4dac68;
+  --status-danger: #e05d5d;
+  --status-warning: #f2b84b;
+  --status-info: #5e6ad2;
+
+  /* Priority */
+  --priority-urgent: #e05d5d;
+  --priority-high: #e07050;
+  --priority-medium: #f2b84b;
+  --priority-low: #8a8a8f;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-instant: 80ms;
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-xslow: 500ms;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-hero: 0 40px 100px rgba(0, 0, 0, 0.6), 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-accent: 0 0 20px rgba(94, 106, 210, 0.3);
+
+  /* Radius */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-full: 9999px;
 }
 
 /* ============================================
-   PREMIUM UTILITIES (Glassmorphism)
+   BASE TYPOGRAPHY — Cabinet Grotesk body
+   ============================================ */
+
+body {
+  color: var(--text-primary);
+  background: var(--bg-base);
+  font-family: var(--font-body);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* ============================================
+   HEADINGS — Clash Display everywhere
+   ============================================ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+h1 {
+  font-weight: 600;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+h2 {
+  font-weight: 600;
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+}
+
+h3 {
+  font-weight: 600;
+  font-size: clamp(1.2rem, 2.5vw, 1.75rem);
+}
+
+h4 {
+  font-weight: 500;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+}
+
+h5,
+h6 {
+  font-weight: 500;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+}
+
+/* ============================================
+   BUTTONS — Clash Display, medium weight
+   ============================================ */
+
+button,
+a[role="button"],
+[class*="btn"],
+input[type="submit"] {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================
+   FORM INPUTS — Cabinet Grotesk
+   ============================================ */
+
+input,
+textarea,
+select {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+label {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.font-display {
+  font-family: var(--font-display) !important;
+}
+
+.font-body {
+  font-family: var(--font-body) !important;
+}
+
+/* ============================================
+   SURFACE UTILITIES
    ============================================ */
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.08);
-  /* Increased visibility */
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-normal) var(--ease-in-out);
 }
 
 .glass-panel:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-md);
 }
 
+/* Text gradient — white→grey */
 .text-gradient {
-  background: linear-gradient(180deg, #fff 0%, #a1a1aa 100%);
+  background: linear-gradient(180deg, #ffffff 30%, #71717a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.text-gradient-gold {
-  background: linear-gradient(to right, #fbbf24, #d97706);
-  /* Amber 400 to 600 */
+/* Text gradient — purple accent */
+.text-gradient-accent {
+  background: linear-gradient(135deg, #5e6ad2 0%, #8b5cf6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Custom Scrollbar */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+/* ============================================
+   SCROLLBARS — thin, 4px
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 4px;
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 999px;
-  transition: background 0.2s ease;
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 2px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
 }
 
 html {
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 
 /* ============================================
-   ANIMATIONS (Premium Smoothness)
+   ANIMATIONS
    ============================================ */
 
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
-    filter: blur(10px);
+    transform: translateY(20px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    filter: blur(10px);
   }
 
   to {
     opacity: 1;
-    filter: blur(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes wordReveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 
 .animate-fade-up {
-  animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  /* Apple-like easing */
+  animation: fadeUp 0.6s var(--ease-out) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s var(--ease-out) forwards;
+}
+
+.animate-slide-in {
+  animation: slideIn var(--duration-slow) var(--ease-out) forwards;
+}
+
+.animate-word-reveal {
+  animation: wordReveal 0.5s var(--ease-out) forwards;
+  opacity: 0;
 }
 
 .delay-100 {
@@ -127,21 +327,99 @@ html {
   animation-delay: 0.3s;
 }
 
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* ============================================
+   MARKETING PATTERNS
+   ============================================ */
+
+.hero-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(94, 106, 210, 0.15), transparent),
+    var(--bg-base);
+}
+
+.section-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+.accent-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.product-screenshot {
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-default);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    var(--shadow-hero);
+  overflow: hidden;
+}
+
 /* ============================================
    MOBILE OPTIMIZATIONS
    ============================================ */
 
-/* Prevent iOS zoom on input focus */
 @media screen and (max-width: 767px) {
+  body {
+    font-size: 15px;
+    letter-spacing: -0.005em;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    line-height: 1.2;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    line-height: 1.25;
+  }
 
   input,
   select,
   textarea {
     font-size: 16px !important;
   }
+
+  /* Prevent font-triggered layout shifts on mobile */
+  button,
+  a[role="button"] {
+    font-size: 14px;
+  }
 }
 
-/* Fix iOS Safari 100vh issue */
+@media screen and (max-width: 400px) {
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+}
+
 .min-h-screen-mobile {
   min-height: 100vh;
   min-height: 100dvh;

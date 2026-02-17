@@ -3,6 +3,7 @@ import { currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import DecisionStatus from '@/components/decision/DecisionStatus';
+import GutCheckIntegration from '@/components/decision/GutCheckIntegration';
 
 import { ArrowLeft, AlertTriangle, TrendingUp, Skull, CheckCircle } from 'lucide-react';
 
@@ -66,6 +67,12 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
 
     return (
         <div className="min-h-screen bg-black text-white p-6 md:p-12">
+            <GutCheckIntegration
+                decisionId={decision.id}
+                verdict={recommendation.verdict}
+                existingReaction={decision.gut_reaction}
+            />
+
             <div className="max-w-5xl mx-auto">
                 <Link href="/" className="inline-flex items-center text-zinc-500 hover:text-white mb-8 transition-colors">
                     <ArrowLeft size={16} className="mr-2" /> Back to Dashboard
@@ -75,14 +82,42 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                 <div className="mb-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
                         <div className="flex items-center gap-4">
-                            <h1 className="text-3xl font-light text-white">Decision Analysis</h1>
+                            <h1 className="text-3xl font-light text-white">Decision Clarity</h1>
                             <DecisionStatus decisionId={decision.id} initialStatus={decision.status} />
-                        </div>
-                        <div className="bg-zinc-900 border border-white/10 px-4 py-2 rounded-full text-xs font-mono text-zinc-400 self-start md:self-auto">
-                            {decision_compression?.time_saved || "Compressed from 2 weeks → 5 mins"}
                         </div>
                     </div>
                     <p className="text-zinc-500">Analysis for: <span className="text-white">{decision.title}</span></p>
+                </div>
+
+                {/* Kill Signals - PROMOTED TO TOP */}
+                <div className="bg-gradient-to-br from-red-500/10 to-black border-2 border-red-500/40 rounded-2xl p-8 mb-10">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <Skull size={24} className="text-red-500" />
+                        </div>
+                        <div>
+                            <h2 className="text-red-500 font-bold tracking-widest uppercase text-sm">Abort Signals</h2>
+                            <p className="text-zinc-400 text-sm">Watch for these — they'll tell you when to quit</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4 mb-6">
+                        {kill_signals.map((ks: any, i: number) => (
+                            <div key={i} className="bg-black/40 border border-red-500/30 p-5 rounded-xl hover:border-red-500/50 transition-colors">
+                                <div className="flex items-start justify-between mb-3">
+                                    <div className="text-sm font-bold text-red-400">{ks.timeframe}</div>
+                                    <div className="text-xs bg-red-500/20 text-red-300 px-3 py-1 rounded-full">
+                                        {ks.action}
+                                    </div>
+                                </div>
+                                <div className="text-base text-white font-medium leading-relaxed">{ks.signal}</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="text-center pt-4 border-t border-red-500/20">
+                        <p className="text-zinc-500 text-sm">💡 Kill signals are often MORE valuable than the verdict — they give you objective exit criteria</p>
+                    </div>
                 </div>
 
                 {/* Recommendation Card */}
@@ -93,66 +128,100 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     <h3 className="text-3xl font-bold text-white mb-4">{recommendation.verdict}</h3>
                     <p className="text-lg text-zinc-300 leading-relaxed mb-6 max-w-3xl">{recommendation.reasoning}</p>
 
-                    <div className="inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-2 rounded-lg border border-white/5">
-                        <span className="text-zinc-400 text-sm">Conviction Score:</span>
-                        <span className="text-amber-500 font-bold">{recommendation.conviction_score}%</span>
+                    <div className="flex flex-col md:flex-row gap-4 mb-6">
+                        <div className="flex-1 inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-3 rounded-lg border border-white/5">
+                            <span className="text-zinc-400 text-sm">Conviction Score:</span>
+                            <span className="text-amber-500 font-bold text-lg">{recommendation.conviction_score}%</span>
+                        </div>
+                        {recommendation.certainty_score && (
+                            <div className="flex-1 inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-3 rounded-lg border border-white/5">
+                                <span className="text-zinc-400 text-sm">Certainty Score:</span>
+                                <span className="text-blue-400 font-bold text-lg">{recommendation.certainty_score}%</span>
+                            </div>
+                        )}
                     </div>
+
+                    {recommendation.conditional_factors && recommendation.conditional_factors.length > 0 && (
+                        <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl mb-4">
+                            <h4 className="text-amber-500 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <AlertTriangle size={12} /> Conditional Factors
+                            </h4>
+                            <ul className="space-y-2">
+                                {recommendation.conditional_factors.map((factor: string, i: number) => (
+                                    <li key={i} className="text-sm text-zinc-300 flex items-start gap-2">
+                                        <span className="text-amber-500 mt-1">•</span> {factor}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
 
-                {/* Kill Signals */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                    <div className="lg:col-span-1">
-                        <h3 className="text-xl font-light mb-4 flex items-center gap-2">
-                            <Skull size={20} className="text-red-500" /> Kill Signals
-                        </h3>
-                        <p className="text-sm text-zinc-500 mb-4">Abort if these happen.</p>
-                        <div className="space-y-4">
-                            {kill_signals.map((ks: any, i: number) => (
-                                <div key={i} className="bg-[#111] border border-red-500/20 p-4 rounded-xl">
-                                    <div className="text-xs font-bold text-red-500 mb-1">{ks.timeframe}</div>
-                                    <div className="text-sm text-zinc-300 mb-2">{ks.signal}</div>
-                                    <div className="text-xs bg-red-500/10 text-red-400 inline-block px-2 py-1 rounded">Action: {ks.action}</div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                {/* Detailed Analysis */}
+                <div className="mb-12">
+                    <h3 className="text-2xl font-light mb-6 text-white">Detailed Analysis</h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        {options_analysis.map((opt: any, i: number) => (
+                            <div key={i} className="bg-[#0F0F0F] border border-white/5 p-6 rounded-2xl">
+                                <h4 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">{opt.title}</h4>
 
-                    {/* Options Analysis */}
-                    <div className="lg:col-span-2">
-                        <h3 className="text-xl font-light mb-4 text-white">Option Analysis</h3>
-                        <div className="space-y-6">
-                            {options_analysis.map((opt: any, i: number) => (
-                                <div key={i} className="bg-[#0F0F0F] border border-white/5 p-6 rounded-2xl">
-                                    <h4 className="text-lg font-bold text-white mb-4 border-b border-white/5 pb-2">{opt.title}</h4>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <p className="text-xs font-bold text-zinc-500 uppercase mb-2">Second-Order Consequences</p>
-                                            <ul className="space-y-1">
-                                                {opt.consequences.map((c: string, idx: number) => (
-                                                    <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
-                                                        <span className="text-zinc-600 mt-1">→</span> {c}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-bold text-zinc-500 uppercase mb-2">What must be true</p>
-                                            <ul className="space-y-1">
-                                                {opt.requirements.map((r: string, idx: number) => (
-                                                    <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
-                                                        <CheckCircle size={14} className="text-emerald-500/50 mt-1 shrink-0" /> {r}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
+                                <div className="grid grid-cols-1 gap-6">
+                                    <div>
+                                        <p className="text-xs font-bold text-zinc-500 uppercase mb-2">Second-Order Consequences</p>
+                                        <ul className="space-y-1">
+                                            {opt.consequences.map((c: string, idx: number) => (
+                                                <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
+                                                    <span className="text-zinc-600 mt-1">→</span> {c}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-bold text-zinc-500 uppercase mb-2">What must be true</p>
+                                        <ul className="space-y-1">
+                                            {opt.requirements.map((r: string, idx: number) => (
+                                                <li key={idx} className="text-sm text-zinc-400 flex items-start gap-2">
+                                                    <CheckCircle size={14} className="text-emerald-500/50 mt-1 shrink-0" /> {r}
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
-            </div >
-        </div >
+
+                {/* Feature Discovery Nudge */}
+                <div className="mb-12 bg-gradient-to-br from-amber-500/5 to-transparent border border-amber-500/10 rounded-2xl p-8">
+                    <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        💡 Want deeper clarity?
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-6">
+                        Run these optional exercises to validate this verdict against your personal values and long-term vision.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Link
+                            href="/analyze/new"
+                            className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all group"
+                        >
+                            <div className="text-amber-500 text-xs font-bold mb-1 uppercase tracking-widest">Values Check</div>
+                            <div className="text-zinc-400 text-sm group-hover:text-zinc-300 transition-colors">
+                                Does this verdict align with what YOU actually optimize for?
+                            </div>
+                        </Link>
+                        <Link
+                            href="/analyze/new"
+                            className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all group"
+                        >
+                            <div className="text-amber-500 text-xs font-bold mb-1 uppercase tracking-widest">5-Year Visualization</div>
+                            <div className="text-zinc-400 text-sm group-hover:text-zinc-300 transition-colors">
+                                Picture yourself 5 years down each path. Which one feels right?
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 }
