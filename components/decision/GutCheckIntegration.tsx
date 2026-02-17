@@ -15,11 +15,11 @@ export default function GutCheckIntegration({ decisionId, verdict, existingReact
     const [hasReaction, setHasReaction] = useState(!!existingReaction);
 
     useEffect(() => {
-        // Show modal if no reaction exists, after a small delay
+        // Show modal after user has had time to read the analysis (15 seconds)
         if (!hasReaction) {
             const timer = setTimeout(() => {
                 setShowModal(true);
-            }, 1000);
+            }, 15000);
             return () => clearTimeout(timer);
         }
     }, [hasReaction]);

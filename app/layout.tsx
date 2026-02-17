@@ -1,21 +1,6 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Persona AI - Stop Chatting. Start Deciding.",
@@ -46,14 +31,18 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body
-          className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
-          style={{
-            fontFamily: 'var(--font-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            background: 'var(--bg-base)',
-            color: 'var(--text-primary)',
-          }}
-        >
+        <head>
+          {/* Fontshare CDN — Clash Display + Cabinet Grotesk */}
+          <link
+            href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&display=swap"
+            rel="stylesheet"
+          />
+          <link
+            href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@100,200,300,400,500,700,800,900&display=swap"
+            rel="stylesheet"
+          />
+        </head>
+        <body className="antialiased">
           {/* Google Analytics */}
           <Script
             src="https://www.googletagmanager.com/gtag/js?id=G-DGFC27782F"

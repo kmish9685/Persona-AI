@@ -62,7 +62,7 @@ function LandingPageContent() {
         <div className="max-w-7xl mx-auto w-full flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity mr-8">
             <img src="/logo.png" alt="Persona AI" className="w-6 h-6 rounded-md" />
-            <span className="font-semibold text-[14px] tracking-[-0.02em]" style={{ color: 'var(--text-primary)' }}>Persona AI</span>
+            <span className="font-semibold text-[14px] tracking-[-0.02em] font-display" style={{ color: 'var(--text-primary)' }}>Persona AI</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1 flex-1">
@@ -84,7 +84,7 @@ function LandingPageContent() {
               </Link>
               <Link
                 href="/analyze/new"
-                className="h-8 px-3 text-[13px] font-medium rounded-md transition-all flex items-center gap-1.5 text-white hover:opacity-90"
+                className="h-8 px-3 text-[13px] font-medium rounded-md transition-all flex items-center gap-1.5 text-white hover:opacity-90 font-display"
                 style={{ background: '#5e6ad2' }}
               >
                 Get started <ArrowRight size={13} />
@@ -120,7 +120,7 @@ function LandingPageContent() {
 
           {/* CTA Group — Linear hero-cta-group */}
           <div className="flex items-center justify-center gap-2 animate-fade-up" style={{ animationDelay: '0.3s' }}>
-            <Link href="/analyze/new" className="h-10 px-5 rounded-lg font-medium text-[14px] transition-all flex items-center gap-2 text-white hover:opacity-90" style={{ background: '#5e6ad2', letterSpacing: '-0.01em' }}>
+            <Link href="/analyze/new" className="h-10 px-5 rounded-lg font-medium text-[14px] transition-all flex items-center gap-2 text-white hover:opacity-90 font-display" style={{ background: '#5e6ad2', letterSpacing: '-0.01em' }}>
               Get started <ArrowRight size={14} />
             </Link>
             <Link href="/personas" className="h-10 px-5 rounded-lg font-medium text-[14px] transition-all flex items-center gap-2 hover:text-white" style={{ background: 'transparent', border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
@@ -351,7 +351,7 @@ function LandingPageContent() {
                   <div className="rounded-md p-4 text-left" style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}>
                     <div className="accent-label mb-2">{step.label}</div>
                     {step.detail && (
-                      <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-secondary)', fontFamily: '"Geist Mono", "Fira Code", "SF Mono", ui-monospace, monospace' }}>{step.detail}</p>
+                      <p className="text-[12px] leading-relaxed" style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>{step.detail}</p>
                     )}
                     {step.items && (
                       <div className="space-y-2">

@@ -26,7 +26,7 @@ export const Header = ({ onShowPersona, onShowPaywall, remaining }: HeaderProps)
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2 group cursor-default">
                     <img src="/personaai.png" alt="Persona AI" className="w-6 h-6 object-contain opacity-90 group-hover:opacity-100 transition-opacity" />
-                    <span className="text-sm font-medium tracking-wide text-zinc-200 group-hover:text-white transition-colors">Persona AI</span>
+                    <span className="text-sm font-medium tracking-wide text-zinc-200 group-hover:text-white transition-colors font-display">Persona AI</span>
                 </div>
                 {/* Active Persona Indicator */}
                 <div className="hidden sm:flex flex-col gap-0.5 pl-4 border-l border-white/10">

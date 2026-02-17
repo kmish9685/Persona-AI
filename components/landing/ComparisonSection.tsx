@@ -30,7 +30,7 @@ export default function ComparisonSection() {
                             <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#5e6ad2' }} /> Persona AI Engine Output
                         </div>
 
-                        <div className="space-y-5 relative z-10" style={{ fontFamily: '"Geist Mono", "Fira Code", "SF Mono", ui-monospace, monospace' }}>
+                        <div className="space-y-5 relative z-10" style={{ fontFamily: 'var(--font-mono)' }}>
                             <div className="flex justify-between items-center pb-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                                 <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>VERDICT:</span>
                                 <span className="text-[15px] font-semibold" style={{ color: '#4dac68' }}>PIVOT NOW</span>
