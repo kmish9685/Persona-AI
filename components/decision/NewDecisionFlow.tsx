@@ -37,10 +37,10 @@ export default function NewDecisionFlow() {
                 {step === 'form' && (
                     <button
                         onClick={() => setShowAdvanced(!showAdvanced)}
-                        className="flex items-center gap-2 text-xs bg-white/5 px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors"
+                        className="flex items-center gap-2 text-xs bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-full hover:bg-amber-500/20 transition-colors text-amber-500"
                     >
                         {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        Advanced Options
+                        ⚡ Boost Accuracy (+15%)
                     </button>
                 )}
             </div>

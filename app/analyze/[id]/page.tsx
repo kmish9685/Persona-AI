@@ -191,6 +191,36 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                         ))}
                     </div>
                 </div>
+
+                {/* Feature Discovery Nudge */}
+                <div className="mb-12 bg-gradient-to-br from-amber-500/5 to-transparent border border-amber-500/10 rounded-2xl p-8">
+                    <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                        💡 Want deeper clarity?
+                    </h3>
+                    <p className="text-sm text-zinc-400 mb-6">
+                        Run these optional exercises to validate this verdict against your personal values and long-term vision.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Link
+                            href="/analyze/new"
+                            className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all group"
+                        >
+                            <div className="text-amber-500 text-xs font-bold mb-1 uppercase tracking-widest">Values Check</div>
+                            <div className="text-zinc-400 text-sm group-hover:text-zinc-300 transition-colors">
+                                Does this verdict align with what YOU actually optimize for?
+                            </div>
+                        </Link>
+                        <Link
+                            href="/analyze/new"
+                            className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all group"
+                        >
+                            <div className="text-amber-500 text-xs font-bold mb-1 uppercase tracking-widest">5-Year Visualization</div>
+                            <div className="text-zinc-400 text-sm group-hover:text-zinc-300 transition-colors">
+                                Picture yourself 5 years down each path. Which one feels right?
+                            </div>
+                        </Link>
+                    </div>
+                </div>
             </div>
         </div>
     );

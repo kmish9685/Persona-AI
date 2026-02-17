@@ -152,6 +152,23 @@ Analyze this now. Return ONLY JSON.
     // Generate ID on server to guarantee return
     const decisionId = crypto.randomUUID();
 
+    // FREE TIER CHECK: Count user's existing analyses
+    const { count: analysisCount } = await supabase
+      .from('decisions')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    const FREE_LIMIT = 2;
+    const isPaidUser = false; // TODO: Check Razorpay/Stripe subscription status
+
+    if (!isPaidUser && (analysisCount || 0) >= FREE_LIMIT) {
+      return NextResponse.json({
+        error: "FREE_LIMIT_REACHED",
+        message: `You've used your ${FREE_LIMIT} free analyses. Upgrade for unlimited access.`,
+        analysisCount: analysisCount
+      }, { status: 403 });
+    }
+
     // Save to Database
     const { error } = await supabase.from('decisions').insert({
       id: decisionId,
@@ -160,7 +177,6 @@ Analyze this now. Return ONLY JSON.
       decision_type: decisionType || 'custom',
       input_data: body,
       analysis_result: analysisResult,
-      confidence_score: analysisResult.recommendation.conviction_score,
       conviction_score: analysisResult.recommendation.conviction_score,
       status: 'completed',
       values_profile: values_profile,
@@ -171,27 +187,27 @@ Analyze this now. Return ONLY JSON.
     if (error) throw error;
 
     // Auto-create checkpoints from kill signals
-    const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
-      decision_id: decisionId,
-      checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      metric: ks.signal,
-      status: 'pending'
-    }));
+    if (analysisResult.kill_signals && analysisResult.kill_signals.length > 0) {
+      const checkpoints = analysisResult.kill_signals.map((ks: any) => ({
+        decision_id: decisionId,
+        checkpoint_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        metric: ks.signal,
+        status: 'pending'
+      }));
 
-    await supabase.from('checkpoints').insert(checkpoints);
+      await supabase.from('checkpoints').insert(checkpoints);
+    }
 
     // debug log
-    console.log("✅ Checkpoints created. returning Decision ID:", decisionId);
+    console.log("✅ Decision saved. ID:", decisionId);
 
     return NextResponse.json({
       id: decisionId,
-      debug_decision: { id: decisionId, ...analysisResult }
+      remaining_free: isPaidUser ? 'unlimited' : Math.max(0, FREE_LIMIT - (analysisCount || 0) - 1)
     });
 
-
-
   } catch (e: any) {
-    console.error(e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    console.error('❌ Analysis API Error:', e);
+    return NextResponse.json({ error: e.message || 'Internal server error' }, { status: 500 });
   }
 }

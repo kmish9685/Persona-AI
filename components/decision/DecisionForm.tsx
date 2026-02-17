@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, Lock } from 'lucide-react';
+import { Paywall } from '@/components/Paywall';
 
 interface DecisionFormProps {
     initialValues?: any; // ValuesProfile
@@ -12,6 +13,8 @@ interface DecisionFormProps {
 export function DecisionForm({ initialValues, vizData }: DecisionFormProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
+    const [showPaywall, setShowPaywall] = useState(false);
+    const [remainingFree, setRemainingFree] = useState<number | null>(null);
     const router = useRouter();
 
     // Simple form state
@@ -52,13 +55,24 @@ export function DecisionForm({ initialValues, vizData }: DecisionFormProps) {
                 body: JSON.stringify(payload),
             });
 
-            if (!res.ok) {
-                const errorData = await res.json().catch(() => ({ error: 'Unknown error' }));
-                throw new Error(errorData.error || `HTTP ${res.status}: Analysis failed`);
+            const responseData = await res.json();
+
+            // Handle free limit reached
+            if (res.status === 403 && responseData.error === 'FREE_LIMIT_REACHED') {
+                setShowPaywall(true);
+                setIsSubmitting(false);
+                return;
             }
 
-            const responseData = await res.json();
+            if (!res.ok) {
+                throw new Error(responseData.error || `HTTP ${res.status}: Analysis failed`);
+            }
+
             console.log("🔍 Analyzer API Response:", responseData);
+
+            if (responseData.remaining_free !== undefined && responseData.remaining_free !== 'unlimited') {
+                setRemainingFree(responseData.remaining_free);
+            }
 
             if (!responseData.id) {
                 throw new Error('No decision ID returned from API');
@@ -167,8 +181,29 @@ Take 6-month sabbatical"
                     <p className="text-center text-zinc-600 text-xs mt-4 uppercase tracking-widest">
                         ⚡ Analysis completes in ~30 seconds
                     </p>
+                    {remainingFree !== null && (
+                        <p className="text-center text-amber-500/60 text-xs mt-2">
+                            {remainingFree > 0
+                                ? `${remainingFree} free ${remainingFree === 1 ? 'analysis' : 'analyses'} remaining`
+                                : 'This is your last free analysis'
+                            }
+                        </p>
+                    )}
                 </div>
             </form>
+
+            {/* Paywall Modal */}
+            {showPaywall && (
+                <Paywall
+                    onClose={() => setShowPaywall(false)}
+                    onSuccess={() => {
+                        setShowPaywall(false);
+                        // Re-submit after payment
+                        const form = document.querySelector('form');
+                        if (form) form.requestSubmit();
+                    }}
+                />
+            )}
         </div>
     );
 }

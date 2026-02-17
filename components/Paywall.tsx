@@ -292,15 +292,23 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                     <ul className="space-y-3 mb-6 border-t border-white/5 pt-4 relative z-10">
                                         <li className="flex items-start gap-2 text-sm text-white">
                                             <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
-                                            <span className="font-medium">Unlimited Messages</span>
+                                            <span className="font-medium">Unlimited Decision Analyses</span>
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <span className="font-medium">Kill Signals + Binary Verdicts</span>
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <span className="font-medium">Values Quiz + 5-Year Visualization</span>
+                                        </li>
+                                        <li className="flex items-start gap-2 text-sm text-white">
+                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
+                                            <span className="font-medium">Unlimited Advisor Chat Messages</span>
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
                                             <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
                                             <span className="font-medium">All 6 Personas (Elon, Naval...)</span>
-                                        </li>
-                                        <li className="flex items-start gap-2 text-sm text-white">
-                                            <div className="p-1 rounded-full bg-amber-500/10 mt-0.5"><Check size={12} className="text-amber-500" /></div>
-                                            <span className="font-medium">Reasoning Breakdown Engine</span>
                                         </li>
                                     </ul>
 
