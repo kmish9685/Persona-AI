@@ -4,19 +4,20 @@ import { useState } from 'react';
 import { DecisionForm } from '@/components/decision/DecisionForm';
 import FiveYearViz, { FiveYearScenario } from '@/components/FiveYearViz';
 import ValuesQuiz, { ValuesProfile } from '@/components/ValuesQuiz';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NewDecisionFlow() {
-    const [step, setStep] = useState<'viz' | 'values' | 'form'>('viz');
+    const [step, setStep] = useState<'viz' | 'values' | 'form'>('form'); // Start with form
+    const [showAdvanced, setShowAdvanced] = useState(false);
+
     // Store data from previous steps to pass to final form
     const [vizData, setVizData] = useState<{ scenarios: FiveYearScenario[], clarityAchieved: boolean } | null>(null);
     const [valuesData, setValuesData] = useState<ValuesProfile | null>(null);
 
     const handleVizComplete = (scenarios: FiveYearScenario[], clarityAchieved: boolean) => {
         setVizData({ scenarios, clarityAchieved });
-        // If clarity achieved, we could offer to skip AI, but for now we proceed to values
-        setStep('values');
+        setStep('form');
     };
 
     const handleValuesComplete = (values: ValuesProfile) => {
@@ -31,18 +32,47 @@ export default function NewDecisionFlow() {
                 <Link href="/" className="flex items-center hover:text-white transition-colors">
                     <ArrowLeft size={16} className="mr-2" /> Cancel
                 </Link>
-                <div className="flex gap-4">
-                    <span className={step === 'viz' ? 'text-amber-500 font-bold' : 'text-zinc-600'}>1. Visualize</span>
-                    <span className={step === 'values' ? 'text-amber-500 font-bold' : 'text-zinc-600'}>2. Values</span>
-                    <span className={step === 'form' ? 'text-amber-500 font-bold' : 'text-zinc-600'}>3. Analyze</span>
-                </div>
+
+                {/* Advanced Options Toggle */}
+                {step === 'form' && (
+                    <button
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        className="flex items-center gap-2 text-xs bg-white/5 px-3 py-1.5 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                        {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                        Advanced Options
+                    </button>
+                )}
             </div>
+
+            {/* Advanced Options Panel (Only show on form step) */}
+            {step === 'form' && showAdvanced && (
+                <div className="mb-6 bg-zinc-900/50 border border-white/10 rounded-2xl p-6 animate-fade-in">
+                    <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Optional: Boost Accuracy</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button
+                            onClick={() => setStep('viz')}
+                            className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all"
+                        >
+                            <div className="text-amber-500 text-xs font-bold mb-1">5-YEAR VISUALIZATION</div>
+                            <div className="text-zinc-400 text-sm">Often reveals the answer in 10 minutes</div>
+                        </button>
+                        <button
+                            onClick={() => setStep('values')}
+                            className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all"
+                        >
+                            <div className="text-amber-500 text-xs font-bold mb-1">VALUES CLARIFICATION</div>
+                            <div className="text-zinc-400 text-sm">+15% decision alignment accuracy</div>
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {step === 'viz' && (
                 <div className="animate-fade-in">
                     <FiveYearViz
                         onComplete={handleVizComplete}
-                        onSkip={() => setStep('values')}
+                        onSkip={() => setStep('form')}
                     />
                 </div>
             )}

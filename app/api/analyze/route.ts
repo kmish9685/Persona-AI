@@ -6,6 +6,13 @@ const GROQ_API_KEY = process.env.GROQ_API_KEY;
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+if (!GROQ_API_KEY) {
+  console.error('❌ GROQ_API_KEY is missing!');
+}
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  console.error('❌ Supabase credentials are missing!');
+}
+
 const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_KEY!);
 
 const SYSTEM_PROMPT = `
@@ -58,59 +65,68 @@ RULES:
 `;
 
 export async function POST(req: NextRequest) {
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  if (!GROQ_API_KEY) {
+    return NextResponse.json({ error: "GROQ_API_KEY not configured on server" }, { status: 500 });
+  }
+
   try {
-    const user = await currentUser();
-    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     const body = await req.json();
-    const { decisionType, constraints, options, blindspots, context, values_profile, five_year_viz, viz_clarity_achieved } = body;
+    const { title, context, options, constraints, decisionType, values_profile, five_year_viz, viz_clarity_achieved } = body;
 
-    // ... (limit checks)
+    // Validate required fields
+    if (!title && !context) {
+      return NextResponse.json({ error: "Missing required fields: title or context" }, { status: 400 });
+    }
 
-    // Construct the prompt
+    // Construct the prompt (flexible for both old and new formats)
     let prompt = `
-        DECISION TYPE: ${decisionType}
-        
-        CONSTRAINTS:
-        - Runway: ${constraints.runwayMonths} months
-        - Burn: ${constraints.monthlyBurn}
-        - MRR: ${constraints.currentMrr}
-        - Team: ${constraints.teamSize}
-        - Skillset: ${constraints.skillset}
-        - Risk Tolerance: ${constraints.riskTolerance}
-        
-        OPTIONS:
-        ${options.map((o: any, i: number) => `Option ${i + 1}: ${o.title}`).join('\n')}
-        
-        BLINDSPOTS/CONTEXT:
-        ${blindspots || 'None'}
-        ${context || 'None'}
+DECISION: ${title || decisionType || 'General Decision'}
+
+FULL CONTEXT:
+${context || 'No context provided'}
+
+OPTIONS BEING CONSIDERED:
+${Array.isArray(options) && options.length > 0
+        ? options.map((o: any, i: number) => `Option ${i + 1}: ${typeof o === 'string' ? o : o.title}`).join('\n')
+        : 'No explicit options provided - extract from context'
+      }
+
+HARD CONSTRAINTS:
+${typeof constraints === 'string'
+        ? constraints
+        : constraints
+          ? `Runway: ${constraints.runwayMonths || 'N/A'} months, Burn: ${constraints.monthlyBurn || 'N/A'}, MRR: ${constraints.currentMrr || 'N/A'}, Team: ${constraints.teamSize || 'N/A'}`
+          : 'None specified'
+      }
     `;
 
     if (values_profile) {
       prompt += `
-        
-        USER VALUES PROFILE:
-        - Optimizing for: ${values_profile.optimizing_for?.join(', ')}
-        - Deal Breakers: ${values_profile.deal_breakers?.join(', ')}
-        - Tradeoffs: Certainty(${values_profile.tradeoff_preferences?.certainty_vs_upside}/5), Speed(${values_profile.tradeoff_preferences?.speed_vs_quality}/5), Solo(${values_profile.tradeoff_preferences?.solo_vs_team}/5)
-        
-        IMPORTANT: Align your verdict with these values. If they optimize for 'Freedom' but Option A is 'Raise VC Funding', warn them.
-        `;
+
+USER VALUES PROFILE:
+- Optimizing for: ${values_profile.optimizing_for?.join(', ')}
+- Deal Breakers: ${values_profile.deal_breakers?.join(', ')}
+- Tradeoffs: Certainty(${values_profile.tradeoff_preferences?.certainty_vs_upside}/5), Speed(${values_profile.tradeoff_preferences?.speed_vs_quality}/5), Solo(${values_profile.tradeoff_preferences?.solo_vs_team}/5)
+
+IMPORTANT: Align your verdict with these values. If they optimize for 'Freedom' but Option A is 'Raise VC Funding', warn them.
+          `;
     }
 
     if (five_year_viz) {
       prompt += `
-        
-        USER'S 5-YEAR VISUALIZATION:
-        ${five_year_viz.map((s: any) => `Scenario ${s.option}: Typical day "${s.typical_day}", Proud of "${s.proud_of}", Regrets "${s.regrets}"`).join('\n')}
-        
-        Use this to sanity check the AI verdict.
-        `;
+
+USER'S 5-YEAR VISUALIZATION:
+${five_year_viz.map((s: any) => `Scenario ${s.option}: Typical day "${s.typical_day}", Proud of "${s.proud_of}", Regrets "${s.regrets}"`).join('\n')}
+
+Use this to sanity check the AI verdict.
+          `;
     }
 
     prompt += `
-        Analyze this now. Return ONLY JSON.
+Analyze this now. Return ONLY JSON.
     `;
 
     // Call Groq
@@ -140,8 +156,8 @@ export async function POST(req: NextRequest) {
     const { error } = await supabase.from('decisions').insert({
       id: decisionId,
       user_id: user.id,
-      title: decisionType === 'custom' ? options[0].title + ' vs...' : decisionType,
-      decision_type: decisionType,
+      title: title || decisionType || 'Decision Analysis',
+      decision_type: decisionType || 'custom',
       input_data: body,
       analysis_result: analysisResult,
       confidence_score: analysisResult.recommendation.conviction_score,
