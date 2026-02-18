@@ -209,11 +209,27 @@ THINKING FROM ZERO TO ONE:
 [ANSWER]
 [Your direct, 3-sentence verdict here]
 ` + STRESS_TEST_APPENDIX
-    }
+    },
+
+    // --- Framework ID Aliases (new IDs map to same prompts) ---
+    inversion: { name: "Inversion", system_prompt: '' },
+    leverage: { name: "Leverage Analysis", system_prompt: '' },
+    user_truth: { name: "User Truth", system_prompt: '' },
+    customer_back: { name: "Customer-Back", system_prompt: '' },
+    simplicity: { name: "Simplicity Filter", system_prompt: '' },
+    contrarian: { name: "Contrarian Check", system_prompt: '' },
 };
 
+// Wire framework aliases to their persona prompts (after object is defined)
+PERSONAS.inversion.system_prompt = PERSONAS.elon.system_prompt;
+PERSONAS.leverage.system_prompt = PERSONAS.naval.system_prompt;
+PERSONAS.user_truth.system_prompt = PERSONAS.paul.system_prompt;
+PERSONAS.customer_back.system_prompt = PERSONAS.bezos.system_prompt;
+PERSONAS.simplicity.system_prompt = PERSONAS.jobs.system_prompt;
+PERSONAS.contrarian.system_prompt = PERSONAS.thiel.system_prompt;
+
 const PERSONA = {
-    name: "Elon Musk (Unfiltered)",
+    name: "Decision Framework Engine",
     max_words: 150,
     forbidden_phrases: [
         "as an AI", "I'm an AI", "I cannot have personal opinions",
@@ -221,7 +237,7 @@ const PERSONA = {
         "foster", "delve", "tapestry", "I hope this helps",
         "Is there anything else"
     ],
-    system_prompt: PERSONAS.elon.system_prompt
+    system_prompt: PERSONAS.inversion.system_prompt
 };
 
 // --- Helpers ---
@@ -532,7 +548,7 @@ export async function POST(req: NextRequest) {
             // Multi-persona mode: Call all 6 personas in parallel
             console.log(`🚀 Multi-persona mode: Calling all 6 personas`);
 
-            const allPersonaIds = ['elon', 'naval', 'paul', 'bezos', 'jobs', 'thiel'];
+            const allPersonaIds = ['inversion', 'leverage', 'user_truth', 'customer_back', 'simplicity', 'contrarian'];
 
             // CRITICAL FIX: Do NOT pass history to multi-persona mode.
             // 1. Prevents "stiffness" or "generic" responses where models try to match the previous assistant's tone.
@@ -559,8 +575,8 @@ export async function POST(req: NextRequest) {
             });
         } else {
             // Single persona mode: Use the same helper to get reasoning
-            const validPersona = PERSONAS[persona] ? persona : 'elon';
-            console.log(`🚀 Single mode: Calling persona ${validPersona}`);
+            const validPersona = PERSONAS[persona] ? persona : 'inversion';
+            console.log(`🚀 Single mode: Calling framework ${validPersona}`);
 
             const result = await callGroqForPersona(validPersona, currentMessageContent, history);
             console.log("✅ Groq Response received.");

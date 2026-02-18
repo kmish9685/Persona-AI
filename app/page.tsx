@@ -11,7 +11,7 @@ import TestimonialSection from '@/components/landing/TestimonialSection';
 
 function LandingPageContent() {
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR');
+  const [currency, setCurrency] = useState<'INR' | 'USD'>('USD');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
   const pricing = {
@@ -31,8 +31,8 @@ function LandingPageContent() {
       title: "The Solution",
       subtitle: "Structured analysis. Binary verdict.",
       icon: <Check className="text-[#4dac68]" size={20} />,
-      tag: "Persona Engine",
-      content: "We enforce constraints. 6 persona perspectives synthesized into a single verdict, a conviction score, and clear kill signals. Decision compression."
+      tag: "Decision Frameworks",
+      content: "We enforce constraints. Inversion, pre-mortem, and opportunity cost frameworks synthesized into a single verdict, a conviction score, and clear kill signals. Decision compression."
     },
     {
       title: "The Result",
