@@ -67,7 +67,7 @@ function LandingPageContent() {
 
           <nav className="hidden md:flex items-center gap-1 flex-1">
             <Link href="#pricing" className="px-2.5 py-1 text-[13px] rounded transition-colors hover:text-white" style={{ color: 'var(--text-secondary)' }}>Pricing</Link>
-            <Link href="/personas" className="px-2.5 py-1 text-[13px] rounded transition-colors hover:text-white" style={{ color: 'var(--text-secondary)' }}>Advisors</Link>
+            <Link href="/personas" className="px-2.5 py-1 text-[13px] rounded transition-colors hover:text-white" style={{ color: 'var(--text-secondary)' }}>Frameworks</Link>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -124,7 +124,7 @@ function LandingPageContent() {
               Get started <ArrowRight size={14} />
             </Link>
             <Link href="/personas" className="h-10 px-5 rounded-lg font-medium text-[14px] transition-all flex items-center gap-2 hover:text-white" style={{ background: 'transparent', border: '1px solid var(--border-default)', color: 'var(--text-secondary)' }}>
-              Try Advisors
+              Try Frameworks
             </Link>
           </div>
 
@@ -212,9 +212,9 @@ function LandingPageContent() {
               </ul>
             </div>
 
-            {/* Persona Chatbots */}
+            {/* Generic AI Copilots */}
             <div className="p-8 opacity-70" style={{ background: 'var(--bg-base)' }}>
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.06em] mb-6" style={{ color: 'var(--text-secondary)' }}>Persona Chatbots</h3>
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.06em] mb-6" style={{ color: 'var(--text-secondary)' }}>Generic AI Copilots</h3>
               <ul className="space-y-3 text-[14px]" style={{ color: 'var(--text-secondary)' }}>
                 <li className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0" /> Fun mimicry</li>
                 <li className="flex items-start gap-2"><Check size={14} className="mt-0.5 shrink-0" /> Good for brainstorming</li>
@@ -321,7 +321,7 @@ function LandingPageContent() {
               {
                 num: "02",
                 title: "AI computes your decision",
-                desc: "6 mental models analyze constraints, extract options, and stress-test every path. ~30 seconds.",
+                desc: "6 decision frameworks analyze constraints, extract options, and stress-test every path. ~30 seconds.",
                 label: "What happens",
                 items: [
                   { color: '#4dac68', text: 'Constraint analysis' },
@@ -519,9 +519,9 @@ function LandingPageContent() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 {[
                   'Unlimited Decision Analysis',
-                  'All Founder Personas (6+)',
+                  'All 6 Decision Frameworks',
                   'Binary Verdicts & Kill Signals',
-                  'Advisor Chat Mode',
+                  'Framework Chat Mode',
                   'Decision History',
                   'Priority Inference'
                 ].map((feature, i) => (
@@ -589,10 +589,10 @@ function LandingPageContent() {
           <div className="flex gap-4 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
             <Link href="/analyze/new" className="hover:text-white transition-colors">Start</Link>
             <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/personas" className="hover:text-white transition-colors">Advisors</Link>
+            <Link href="/personas" className="hover:text-white transition-colors">Frameworks</Link>
           </div>
           <p className="text-[11px] tracking-[0.06em]" style={{ color: 'var(--text-tertiary)' }}>
-            © 2025 Persona AI. Decision compression for builders.
+            © 2026 Persona AI. Decision compression for builders.
           </p>
         </div>
       </footer>
