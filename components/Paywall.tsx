@@ -308,7 +308,7 @@ export function Paywall({ onClose, onSuccess }: PaywallProps) {
                                         </li>
                                         <li className="flex items-start gap-2 text-sm text-white">
                                             <div className="p-1 rounded-full bg-[#5e6ad2]/10 mt-0.5"><Check size={12} className="text-[#5e6ad2]" /></div>
-                                            <span className="font-medium">All 6 Personas (Elon, Naval...)</span>
+                                            <span className="font-medium">All 6 Decision Frameworks</span>
                                         </li>
                                     </ul>
 
