@@ -58,7 +58,7 @@ THINKING FROM FIRST PRINCIPLES:
 [Step 3: Determine the path of least entropy]
 [ANSWER]
 [Your direct, 3-sentence verdict here]
-`
+` + STRESS_TEST_APPENDIX
     },
     naval: {
         name: "Naval Ravikant",
@@ -88,7 +88,7 @@ THINKING FROM LEVERAGE:
 [Step 3: Apply the specific knowledge filter]
 [ANSWER]
 [Your direct, 3-sentence verdict here]
-`
+` + STRESS_TEST_APPENDIX
     },
     paul: {
         name: "Paul Graham",
@@ -118,7 +118,7 @@ THINKING FROM YC WISDOM:
 [Step 3: Define the immediate "do things that don't scale" action]
 [ANSWER]
 [Your direct, 3-sentence verdict here]
-`
+` + STRESS_TEST_APPENDIX
     },
     bezos: {
         name: "Jeff Bezos",
@@ -148,7 +148,7 @@ THINKING BACKWARDS FROM CUSTOMER:
 [Step 3: Define the mechanism to ensure quality]
 [ANSWER]
 [Your direct, 3-sentence verdict here]
-`
+` + STRESS_TEST_APPENDIX
     },
     jobs: {
         name: "Steve Jobs",
@@ -178,7 +178,7 @@ THINKING FROM DESIGN & SIMPLICITY:
 [Step 3: Focus on the one thing that matters]
 [ANSWER]
 [Your direct, 3-sentence verdict here]
-`
+` + STRESS_TEST_APPENDIX
     },
     thiel: {
         name: "Peter Thiel",
@@ -374,6 +374,7 @@ async function incrementGlobalStats() {
 
 // Helper to parse response into answer and reasoning
 // Updated to handle Stress-Test sections
+// FIXED: Handles both [TAG] and TAG (without brackets) since LLMs are inconsistent
 function parseResponse(text: string): {
     response: string;
     reasoning?: string;
@@ -384,24 +385,41 @@ function parseResponse(text: string): {
 } {
     const output: any = { response: text.trim() };
 
-    // Updated Regex: Capture content until the next known tag or end of string.
-    // Handles markdown (e.g., **[TAG]**), whitespace, and nested [] brackets inside content.
-    const extract = (tag: string) => {
-        const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)(?=\\[(?:ANSWER|REASONING|ASSUMPTIONS|MISSING_DATA|PRE_MORTEM|BIAS_CHECK)\\]|$)`, 'i');
-        const match = text.match(regex);
-        return match ? match[1].trim() : undefined;
+    const ALL_TAGS = ['ANSWER', 'REASONING', 'ASSUMPTIONS', 'MISSING_DATA', 'PRE_MORTEM', 'BIAS_CHECK'];
+    const tagsPattern = ALL_TAGS.join('|');
+
+    // Extract content for a given tag. Handles:
+    // - [TAG] content  (bracketed)
+    // - TAG content     (unbracketed, but only at word boundary)
+    // - **[TAG]** content (markdown bold)
+    const extract = (tag: string): string | undefined => {
+        // Try bracketed first: [TAG]
+        const bracketRegex = new RegExp(`\\[${tag}\\][:\\s]*([\\s\\S]*?)(?=\\[(?:${tagsPattern})\\]|(?:^|\\n)\\s*(?:${tagsPattern})(?:\\s|:|$)|$)`, 'im');
+        let match = text.match(bracketRegex);
+        if (match && match[1].trim()) return match[1].trim();
+
+        // Try unbracketed: TAG at start of line or after newline
+        const unbracketRegex = new RegExp(`(?:^|\\n)\\s*${tag}[:\\s]+([\\s\\S]*?)(?=\\[(?:${tagsPattern})\\]|(?:^|\\n)\\s*(?:${tagsPattern})(?:\\s|:|$)|$)`, 'im');
+        match = text.match(unbracketRegex);
+        if (match && match[1].trim()) return match[1].trim();
+
+        return undefined;
     };
 
     output.reasoning = extract('REASONING');
-    output.response = extract('ANSWER') || text.trim();
-    // If text starts with ANSWER tag, extract explicitly. If not, use full text as fallback.
-    // However, if the text contains OTHER tags later, we must only take the part BEFORE them.
-    if (!output.response && !text.includes('[ANSWER]')) {
-        // Fallback: take everything until the first known tag
-        const firstTagIndex = text.search(/\[(?:REASONING|ASSUMPTIONS|MISSING_DATA|PRE_MORTEM|BIAS_CHECK)\]/);
-        if (firstTagIndex !== -1) {
-            output.response = text.substring(0, firstTagIndex).trim();
+    output.response = extract('ANSWER') || '';
+
+    // Fallback: if no ANSWER tag found at all, use the full text minus any tagged sections
+    if (!output.response) {
+        // Take everything that's NOT inside a known tag
+        let fallback = text;
+        for (const tag of ALL_TAGS) {
+            // Remove [TAG] content blocks  
+            fallback = fallback.replace(new RegExp(`\\[${tag}\\][:\\s]*[\\s\\S]*?(?=\\[(?:${tagsPattern})\\]|(?:^|\\n)\\s*(?:${tagsPattern})(?:\\s|:|$)|$)`, 'gim'), '');
+            // Remove unbracketed TAG content blocks
+            fallback = fallback.replace(new RegExp(`(?:^|\\n)\\s*${tag}[:\\s]+[\\s\\S]*?(?=\\[(?:${tagsPattern})\\]|(?:^|\\n)\\s*(?:${tagsPattern})(?:\\s|:|$)|$)`, 'gim'), '');
         }
+        output.response = fallback.trim() || text.trim();
     }
 
     output.assumptions = extract('ASSUMPTIONS');
@@ -409,9 +427,9 @@ function parseResponse(text: string): {
     output.preMortem = extract('PRE_MORTEM');
     output.biasCheck = extract('BIAS_CHECK');
 
-    // Clean up response if it contains the raw tags (legacy fallback)
-    if (output.response.includes('[REASONING]')) {
-        output.response = output.response.split('[REASONING]')[0].trim();
+    // Clean up: remove raw tags from response if they leaked through
+    for (const tag of ALL_TAGS) {
+        output.response = output.response.replace(new RegExp(`\\[?${tag}\\]?[:\\s]*`, 'gi'), '').trim();
     }
 
     return output;
