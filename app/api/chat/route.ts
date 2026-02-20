@@ -467,7 +467,7 @@ async function callGroqForPersona(personaId: string, message: string, history: a
             model: "llama-3.3-70b-versatile",
             messages: groqMessages,
             temperature: 0.9,
-            max_tokens: 500, // Increased for reasoning
+            max_tokens: 1000,
             top_p: 0.95
         })
     });
