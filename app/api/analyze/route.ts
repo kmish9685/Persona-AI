@@ -71,9 +71,10 @@ JSON OUTPUT STRUCTURE:
 }
 
 RULES:
-- No fluff. No "it depends".
-- Use the provided constraints strictly.
+- Talk like a human companion. Do not use words like "Furthermore", "Thus", or "In conclusion".
+- Be empathetic to the context, then be objective in your analysis.
 - Explicitly identify the decision as Type 1 or Type 2, and adapt the strategy accordingly.
+- No fluff. No "it depends". Use the provided constraints strictly.
 `;
 }
 

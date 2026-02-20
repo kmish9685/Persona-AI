@@ -126,6 +126,14 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
 
                     <h2 className="text-amber-500 font-bold tracking-widest uppercase text-xs mb-2">Recommendation</h2>
                     <h3 className="text-3xl font-bold text-white mb-4">{recommendation.verdict}</h3>
+
+                    {/* Conversational Intro */}
+                    {recommendation.companion_intro && (
+                        <div className="mb-6 text-xl text-zinc-300 font-light italic border-l-2 border-[#5e6ad2] pl-4">
+                            "{recommendation.companion_intro}"
+                        </div>
+                    )}
+
                     <p className="text-lg text-zinc-300 leading-relaxed mb-6 max-w-3xl">{recommendation.reasoning}</p>
 
                     {recommendation.decision_type && (
