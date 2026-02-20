@@ -1,7 +1,7 @@
 -- Run this in your Supabase SQL Editor
 
 -- 1. USERS Table (Tracks limits)
-create table users (
+create table if not exists users (
   ip_address text primary key,
   plan text default 'free', -- 'free' or 'pro'
   msg_count int default 0,
@@ -10,7 +10,7 @@ create table users (
 );
 
 -- 2. TRANSACTIONS Table (Tracks money)
-create table transactions (
+create table if not exists transactions (
   id uuid primary key default gen_random_uuid(),
   user_ip text references users(ip_address),
   razorpay_order_id text,
@@ -21,7 +21,7 @@ create table transactions (
 );
 
 -- 3. GLOBAL STATS (Safety Cap)
-create table global_stats (
+create table if not exists global_stats (
   date date primary key default current_date,
   total_requests int default 0
 );
