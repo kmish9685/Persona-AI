@@ -128,6 +128,17 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     <h3 className="text-3xl font-bold text-white mb-4">{recommendation.verdict}</h3>
                     <p className="text-lg text-zinc-300 leading-relaxed mb-6 max-w-3xl">{recommendation.reasoning}</p>
 
+                    {recommendation.decision_type && (
+                        <div className="bg-black/30 border border-white/10 p-5 rounded-xl mb-6 max-w-3xl relative z-10">
+                            <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                                ⚖️ Classification: <span className="text-[#5e6ad2]">{recommendation.decision_type}</span>
+                            </h4>
+                            {recommendation.reversibility_strategy && (
+                                <p className="text-zinc-400 text-sm leading-relaxed">{recommendation.reversibility_strategy}</p>
+                            )}
+                        </div>
+                    )}
+
                     <div className="flex flex-col md:flex-row gap-4 mb-6">
                         <div className="flex-1 inline-flex items-center gap-2 bg-black/40 backdrop-blur px-4 py-3 rounded-lg border border-white/5">
                             <span className="text-zinc-400 text-sm">Conviction Score:</span>

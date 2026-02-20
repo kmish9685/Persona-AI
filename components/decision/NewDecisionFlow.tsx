@@ -11,17 +11,20 @@ interface NewDecisionFlowProps {
     initialStep?: string;
     initialTitle?: string;
     initialContext?: string;
+    threadId?: string | null;
 }
 
 export default function NewDecisionFlow({
     initialStep = 'form',
     initialTitle = '',
-    initialContext = ''
+    initialContext = '',
+    threadId = null
 }: NewDecisionFlowProps) {
     const [step, setStep] = useState<'viz' | 'values' | 'form'>(
         (initialStep === 'viz' || initialStep === 'values') ? initialStep : 'form'
     );
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [personaMode, setPersonaMode] = useState<'challenger' | 'supportive'>('challenger');
 
     // Store data from previous steps to pass to final form
     const [vizData, setVizData] = useState<{ scenarios: FiveYearScenario[], clarityAchieved: boolean } | null>(null);
@@ -52,7 +55,7 @@ export default function NewDecisionFlow({
                         className="flex items-center gap-2 text-xs bg-[#5e6ad2]/10 border border-[#5e6ad2]/20 px-3 py-1.5 rounded-full hover:bg-[#5e6ad2]/20 transition-colors text-[#5e6ad2]"
                     >
                         {showAdvanced ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        ⚡ Boost Accuracy (+15%)
+                        ⚡ Advanced Options
                     </button>
                 )}
             </div>
@@ -60,6 +63,31 @@ export default function NewDecisionFlow({
             {/* Advanced Options Panel (Only show on form step) */}
             {step === 'form' && showAdvanced && (
                 <div className="mb-6 bg-zinc-900/50 border border-white/10 rounded-2xl p-6 animate-fade-in">
+
+                    <div className="mb-6">
+                        <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-widest">Persona Tone</h3>
+                        <div className="flex gap-4">
+                            <button
+                                onClick={() => setPersonaMode('challenger')}
+                                className={`flex-1 p-3 rounded-xl border text-sm font-medium transition-all ${personaMode === 'challenger'
+                                    ? 'bg-red-500/10 border-red-500/40 text-red-200'
+                                    : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10'
+                                    }`}
+                            >
+                                👿 Devil's Advocate (Challenge Me)
+                            </button>
+                            <button
+                                onClick={() => setPersonaMode('supportive')}
+                                className={`flex-1 p-3 rounded-xl border text-sm font-medium transition-all ${personaMode === 'supportive'
+                                    ? 'bg-[#5e6ad2]/15 border-[#5e6ad2]/40 text-[#5e6ad2]'
+                                    : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10'
+                                    }`}
+                            >
+                                🤝 Supportive Partner (Validate Me)
+                            </button>
+                        </div>
+                    </div>
+
                     <h3 className="text-sm font-bold text-white mb-4 uppercase tracking-widest">Optional: Boost Accuracy</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <button
@@ -105,6 +133,8 @@ export default function NewDecisionFlow({
                         vizData={vizData}
                         initialTitle={initialTitle}
                         initialContext={initialContext}
+                        personaMode={personaMode}
+                        threadId={threadId}
                     />
                 </div>
             )}

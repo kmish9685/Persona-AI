@@ -12,6 +12,8 @@ interface DecisionFormProps {
     vizData?: any;
     initialTitle?: string;
     initialContext?: string;
+    personaMode?: 'challenger' | 'supportive';
+    threadId?: string | null;
 }
 
 // --- Quiz Configuration ---
@@ -74,7 +76,7 @@ const STEPS = [
 
 type QuizAnswers = Record<string, string>;
 
-export function DecisionForm({ initialValues, vizData, initialTitle = '', initialContext = '' }: DecisionFormProps) {
+export function DecisionForm({ initialValues, vizData, initialTitle = '', initialContext = '', personaMode = 'challenger', threadId = null }: DecisionFormProps) {
     const router = useRouter();
 
     // Quiz state
@@ -190,6 +192,8 @@ export function DecisionForm({ initialValues, vizData, initialTitle = '', initia
                 five_year_viz: vizData?.scenarios,
                 viz_clarity_achieved: vizData?.clarityAchieved,
                 kill_signals: killSignals,
+                personaMode,
+                thread_id: threadId,
             };
 
             const res = await fetch('/api/analyze', {
