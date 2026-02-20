@@ -15,8 +15,8 @@ function LandingPageContent() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
 
   const pricing = {
-    INR: { monthly: 149, annual: 999, symbol: "₹" },
-    USD: { monthly: 3.25, annual: 39, symbol: "$" }
+    INR: { monthly: 149, annual: 83, symbol: "₹", fullAnnual: 999 },
+    USD: { monthly: 4.99, annual: 3.25, symbol: "$", fullAnnual: 39 }
   };
 
   const frames = [
@@ -383,7 +383,7 @@ function LandingPageContent() {
             <Link href="/analyze/new" className="inline-flex items-center gap-2 h-10 px-5 rounded-lg font-medium text-[14px] text-white transition-all hover:opacity-90" style={{ background: '#5e6ad2' }}>
               Try it free <ArrowRight size={14} />
             </Link>
-            <p className="text-[12px] mt-3" style={{ color: 'var(--text-tertiary)' }}>2 free analyses · No credit card required</p>
+            <p className="text-[12px] mt-3" style={{ color: 'var(--text-tertiary)' }}>5 free analyses · No credit card required</p>
           </div>
         </div>
       </section>
@@ -509,10 +509,12 @@ function LandingPageContent() {
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl" style={{ color: 'var(--text-tertiary)' }}>{pricing[currency].symbol}</span>
                   <span className="text-[56px] font-semibold leading-none" style={{ letterSpacing: '-0.04em' }}>{pricing[currency][billingCycle]}</span>
-                  <span className="text-[13px] font-medium ml-1" style={{ color: 'var(--text-tertiary)' }}>/ {billingCycle === 'monthly' ? 'mo' : 'yr'}</span>
+                  <span className="text-[13px] font-medium ml-1" style={{ color: 'var(--text-tertiary)' }}>/ mo</span>
                 </div>
-                {billingCycle === 'annual' && currency === 'INR' && (
-                  <p className="mt-2 text-[13px] font-medium" style={{ color: '#5e6ad2' }}>₹83/mo equivalent — annual launch price</p>
+                {billingCycle === 'annual' && (
+                  <p className="mt-2 text-[13px] font-medium" style={{ color: '#5e6ad2' }}>
+                    {pricing[currency].symbol}{pricing[currency].fullAnnual} billed annually — founding price
+                  </p>
                 )}
               </div>
 
