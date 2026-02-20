@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Fragment } from 'react';
 import { Dialog, Listbox, Transition } from '@headlessui/react';
-import { X, Zap, Check, ChevronDown, Globe } from 'lucide-react';
+import { X, Zap, Check, ChevronDown, Globe, ArrowRight } from 'lucide-react';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { PRICING_CONFIG } from '@/lib/pricing-config';
 import clsx from 'clsx';
@@ -24,9 +24,8 @@ export function Paywall({ onClose, onSuccess, defaultCurrency, defaultBillingCyc
     const [loading, setLoading] = useState(false);
 
     // Context-aware initialization
-    const initialCountry = defaultCurrency === 'INR' ? countries[0] : (defaultCurrency === 'USD' ? countries[1] : countries[0]);
-    const [step, setStep] = useState<'details' | 'payment'>(defaultCurrency ? 'payment' : 'details');
-    const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+    const [step, setStep] = useState<'region' | 'details' | 'payment'>('region');
+    const [selectedCountry, setSelectedCountry] = useState(countries[1]); // Default to US/Intl for the region picker
     const [billingCycle, setBillingCycle] = useState<'annual' | 'monthly'>(defaultBillingCycle || 'annual');
     const [name, setName] = useState(user?.fullName || '');
 
@@ -159,7 +158,50 @@ export function Paywall({ onClose, onSuccess, defaultCurrency, defaultBillingCyc
                             </p>
                         </div>
 
-                        {step === 'details' ? (
+                        {step === 'region' ? (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <h3 className="text-[10px] font-bold text-zinc-500 mb-6 uppercase tracking-[0.2em] text-center">Where are you based?</h3>
+                                <div className="grid grid-cols-1 gap-3">
+                                    <button
+                                        onClick={() => {
+                                            setSelectedCountry(countries[0]);
+                                            setStep('payment');
+                                        }}
+                                        className="group relative flex items-center justify-between p-5 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-[#5e6ad2]/50 hover:bg-[#5e6ad2]/5 transition-all text-left"
+                                    >
+                                        <div>
+                                            <div className="text-white font-semibold mb-1 flex items-center gap-2">
+                                                India
+                                                <span className="text-[10px] font-medium text-zinc-500">₹ INR</span>
+                                            </div>
+                                            <div className="text-zinc-500 text-xs">Recommended for users in India</div>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#5e6ad2]/20 transition-colors">
+                                            <ArrowRight size={16} className="text-zinc-500 group-hover:text-[#5e6ad2]" />
+                                        </div>
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            setSelectedCountry(countries[1]);
+                                            setStep('payment');
+                                        }}
+                                        className="group relative flex items-center justify-between p-5 rounded-2xl bg-zinc-900/50 border border-white/5 hover:border-[#5e6ad2]/50 hover:bg-[#5e6ad2]/5 transition-all text-left"
+                                    >
+                                        <div>
+                                            <div className="text-white font-semibold mb-1 flex items-center gap-2">
+                                                International
+                                                <span className="text-[10px] font-medium text-zinc-500">$ USD</span>
+                                            </div>
+                                            <div className="text-zinc-500 text-xs">Visa, Mastercard, & Global cards</div>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#5e6ad2]/20 transition-colors">
+                                            <ArrowRight size={16} className="text-zinc-500 group-hover:text-[#5e6ad2]" />
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        ) : step === 'details' ? (
                             <div className="space-y-5">
                                 <div>
                                     <label className="block text-[10px] font-bold text-zinc-500 mb-2 uppercase tracking-widest">Your Name</label>
@@ -350,7 +392,7 @@ export function Paywall({ onClose, onSuccess, defaultCurrency, defaultBillingCyc
                                 </div>
 
                                 <button
-                                    onClick={() => setStep('details')}
+                                    onClick={() => setStep('region')}
                                     className="w-full text-xs font-medium text-zinc-500 hover:text-white transition-colors py-2"
                                 >
                                     ← Change billing details
