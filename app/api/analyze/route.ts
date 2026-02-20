@@ -199,7 +199,7 @@ Analyze this now. Return ONLY JSON.
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id);
 
-    const FREE_LIMIT = 2;
+    const FREE_LIMIT = 5;
 
     if (!isPaidUser && (analysisCount || 0) >= FREE_LIMIT) {
       return NextResponse.json({
