@@ -2,7 +2,9 @@ import NewDecisionFlow from '@/components/decision/NewDecisionFlow';
 import { UserButton } from '@clerk/nextjs';
 import Link from 'next/link';
 
-export default function NewAnalysisPage() {
+export default async function NewAnalysisPage(props: { searchParams: Promise<{ step?: string, title?: string, context?: string }> }) {
+    const searchParams = await props.searchParams;
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-[#5e6ad2]/30">
             {/* Minimal Header */}
@@ -27,7 +29,11 @@ export default function NewAnalysisPage() {
                     </p>
                 </div>
 
-                <NewDecisionFlow />
+                <NewDecisionFlow
+                    initialStep={searchParams.step}
+                    initialTitle={searchParams.title}
+                    initialContext={searchParams.context}
+                />
             </main>
         </div>
     );

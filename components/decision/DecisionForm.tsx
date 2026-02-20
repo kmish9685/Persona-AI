@@ -10,6 +10,8 @@ import clsx from 'clsx';
 interface DecisionFormProps {
     initialValues?: any;
     vizData?: any;
+    initialTitle?: string;
+    initialContext?: string;
 }
 
 // --- Quiz Configuration ---
@@ -72,7 +74,7 @@ const STEPS = [
 
 type QuizAnswers = Record<string, string>;
 
-export function DecisionForm({ initialValues, vizData }: DecisionFormProps) {
+export function DecisionForm({ initialValues, vizData, initialTitle = '', initialContext = '' }: DecisionFormProps) {
     const router = useRouter();
 
     // Quiz state
@@ -82,8 +84,8 @@ export function DecisionForm({ initialValues, vizData }: DecisionFormProps) {
     const [showOtherInput, setShowOtherInput] = useState<Record<string, boolean>>({});
 
     // Text step state
-    const [title, setTitle] = useState('');
-    const [context, setContext] = useState('');
+    const [title, setTitle] = useState(initialTitle);
+    const [context, setContext] = useState(initialContext);
 
     // Kill signals state
     const [killSignals, setKillSignals] = useState({

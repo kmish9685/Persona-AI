@@ -7,8 +7,20 @@ import ValuesQuiz, { ValuesProfile } from '@/components/ValuesQuiz';
 import { ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 
-export default function NewDecisionFlow() {
-    const [step, setStep] = useState<'viz' | 'values' | 'form'>('form'); // Start with form
+interface NewDecisionFlowProps {
+    initialStep?: string;
+    initialTitle?: string;
+    initialContext?: string;
+}
+
+export default function NewDecisionFlow({
+    initialStep = 'form',
+    initialTitle = '',
+    initialContext = ''
+}: NewDecisionFlowProps) {
+    const [step, setStep] = useState<'viz' | 'values' | 'form'>(
+        (initialStep === 'viz' || initialStep === 'values') ? initialStep : 'form'
+    );
     const [showAdvanced, setShowAdvanced] = useState(false);
 
     // Store data from previous steps to pass to final form
@@ -91,6 +103,8 @@ export default function NewDecisionFlow() {
                     <DecisionForm
                         initialValues={valuesData}
                         vizData={vizData}
+                        initialTitle={initialTitle}
+                        initialContext={initialContext}
                     />
                 </div>
             )}

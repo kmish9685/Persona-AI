@@ -202,7 +202,14 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Link
-                            href="/analyze/new"
+                            href={{
+                                pathname: '/analyze/new',
+                                query: {
+                                    step: 'values',
+                                    title: decision.title,
+                                    context: decision.input_data?.context || ''
+                                }
+                            }}
                             className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all group"
                         >
                             <div className="text-amber-500 text-xs font-bold mb-1 uppercase tracking-widest">Values Check</div>
@@ -211,7 +218,14 @@ export default async function AnalysisResultPage(props: { params: Promise<{ id: 
                             </div>
                         </Link>
                         <Link
-                            href="/analyze/new"
+                            href={{
+                                pathname: '/analyze/new',
+                                query: {
+                                    step: 'viz',
+                                    title: decision.title,
+                                    context: decision.input_data?.context || ''
+                                }
+                            }}
                             className="p-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-left transition-all group"
                         >
                             <div className="text-amber-500 text-xs font-bold mb-1 uppercase tracking-widest">5-Year Visualization</div>
