@@ -4,15 +4,20 @@ import Link from 'next/link';
 import ChatDemoSection from '@/components/landing/ChatDemoSection';
 import { Suspense, useState, useEffect } from 'react';
 import { ArrowRight, Check, X, Target, Brain, ShieldAlert, Zap, BarChart3, HelpCircle, ChevronLeft, ChevronRight, Sparkles, Clock, Users, TrendingUp, Eye, Shield } from 'lucide-react';
-import { SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs';
 import BoardSection from '@/components/landing/BoardSection';
 import ComparisonSection from '@/components/landing/ComparisonSection';
 import TestimonialSection from '@/components/landing/TestimonialSection';
+import { Paywall } from '@/components/Paywall';
+import { useRouter } from 'next/navigation';
 
 function LandingPageContent() {
   const [currentFrame, setCurrentFrame] = useState(0);
   const [currency, setCurrency] = useState<'INR' | 'USD'>('USD');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
+  const [showPaywall, setShowPaywall] = useState(false);
+  const { user } = useUser();
+  const router = useRouter();
 
   const pricing = {
     INR: { monthly: 149, annual: 83, symbol: "₹", fullAnnual: 999 },
@@ -534,9 +539,19 @@ function LandingPageContent() {
                 ))}
               </div>
 
-              <Link href="/analyze/new" className="block w-full py-3 rounded-md text-center font-medium text-[14px] text-white transition-all hover:opacity-90" style={{ background: '#5e6ad2' }}>
+              <button
+                onClick={() => {
+                  if (!user) {
+                    router.push('/login?redirect_url=' + encodeURIComponent('/#pricing'));
+                  } else {
+                    setShowPaywall(true);
+                  }
+                }}
+                className="block w-full py-3 rounded-md text-center font-medium text-[14px] text-white transition-all hover:opacity-90 cursor-pointer"
+                style={{ background: '#5e6ad2' }}
+              >
                 Gain Absolute Clarity
-              </Link>
+              </button>
 
               <div className="mt-5 flex items-center justify-center gap-5 opacity-20">
                 {['Visa', 'Mastercard', 'Razorpay'].map(p => (
@@ -598,6 +613,18 @@ function LandingPageContent() {
           </p>
         </div>
       </footer>
+
+      {showPaywall && (
+        <Paywall
+          defaultCurrency={currency}
+          defaultBillingCycle={billingCycle}
+          onClose={() => setShowPaywall(false)}
+          onSuccess={() => {
+            setShowPaywall(false);
+            router.push('/dashboard?upgrade=success');
+          }}
+        />
+      )}
     </div>
   );
 }

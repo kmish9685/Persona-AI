@@ -10,6 +10,8 @@ import clsx from 'clsx';
 interface PaywallProps {
     onClose: () => void;
     onSuccess: () => void;
+    defaultCurrency?: 'INR' | 'USD';
+    defaultBillingCycle?: 'monthly' | 'annual';
 }
 
 const countries = [
@@ -17,15 +19,16 @@ const countries = [
     { id: 'US', name: 'International ($ USD)', currency: 'USD' },
 ];
 
-export function Paywall({ onClose, onSuccess }: PaywallProps) {
+export function Paywall({ onClose, onSuccess, defaultCurrency, defaultBillingCycle }: PaywallProps) {
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
 
-    // State
-    const [step, setStep] = useState<'details' | 'payment'>('details');
-    const [selectedCountry, setSelectedCountry] = useState(countries[0]);
-    const [billingCycle, setBillingCycle] = useState<'annual' | 'monthly'>('annual'); // Default to Annual
-    const [name, setName] = useState('');
+    // Context-aware initialization
+    const initialCountry = defaultCurrency === 'INR' ? countries[0] : (defaultCurrency === 'USD' ? countries[1] : countries[0]);
+    const [step, setStep] = useState<'details' | 'payment'>(defaultCurrency ? 'payment' : 'details');
+    const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+    const [billingCycle, setBillingCycle] = useState<'annual' | 'monthly'>(defaultBillingCycle || 'annual');
+    const [name, setName] = useState(user?.fullName || '');
 
     // Derived state
     const isIndia = selectedCountry.id === 'IN';
