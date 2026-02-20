@@ -613,10 +613,22 @@ function LandingPageContent() {
             <img src="/logo.png" alt="Persona AI" className="w-6 h-6 rounded-md grayscale opacity-60" />
             <span className="font-semibold text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Persona AI</span>
           </div>
-          <div className="flex gap-4 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13px]" style={{ color: 'var(--text-tertiary)' }}>
             <Link href="/analyze/new" className="hover:text-white transition-colors">Start</Link>
             <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
             <Link href="/personas" className="hover:text-white transition-colors">Frameworks</Link>
+            <Link href="/guides" className="hover:text-white transition-colors">Guides</Link>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-[11px] mt-2" style={{ color: 'var(--text-tertiary)', opacity: 0.7 }}>
+            <span>vs ChatGPT</span>
+            <span>·</span>
+            <Link href="/compare/claude" className="hover:text-white transition-colors">vs Claude</Link>
+            <span>·</span>
+            <Link href="/compare/perplexity" className="hover:text-white transition-colors">vs Perplexity</Link>
+            <span>·</span>
+            <Link href="/compare/character-ai" className="hover:text-white transition-colors">vs Character AI</Link>
+            <span>·</span>
+            <Link href="/compare/executive-coaching" className="hover:text-white transition-colors">vs Executive Coaching</Link>
           </div>
           <p className="text-[11px] tracking-[0.06em]" style={{ color: 'var(--text-tertiary)' }}>
             © 2026 Persona AI. Decision compression for builders.

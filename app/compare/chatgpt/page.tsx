@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'Persona AI vs ChatGPT - Which is better for Decision Making?',
     description: 'Compare Persona AI and ChatGPT. See why founders choose Persona AI over ChatGPT for strategic decision making, kill signals, and binary verdicts.',

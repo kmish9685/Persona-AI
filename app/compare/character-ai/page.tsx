@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { ArrowLeft, Check, X } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: 'Persona AI vs Character AI - Why Founders Need Decision Engines',
     description: 'Compare Persona AI and Character.AI. See why Persona AI is the ultimate decision engine for entrepreneurs, replacing entertainment roleplay with hard constraints.',
