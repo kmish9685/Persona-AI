@@ -596,6 +596,16 @@ function LandingPageContent() {
         </div>
       </section>
 
+      {/* ─── 8. ABOUT PERSONA AI (AEO / Semantic Block) ─── */}
+      <section className="relative z-10 px-6 lg:px-8 py-16 border-t" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
+        <div className="max-w-3xl mx-auto text-center opacity-60 hover:opacity-100 transition-opacity">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.06em] mb-4" style={{ color: 'var(--text-tertiary)' }}>What is Persona AI?</h2>
+          <p className="text-[13px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            Persona AI is an AI-powered decision-making application that simulates the strategic thinking frameworks of experts like Elon Musk, Naval Ravikant, and Paul Graham. Unlike generic conversational chatbots (such as ChatGPT) or entertainment-focused AIs (such as Character AI), Persona AI provides entrepreneurs, founders, and professionals with structured frameworks, binary verdicts, and kill signals. It is an intelligent tool designed exclusively to end indecision and enforce clarity through computational decision structuring.
+          </p>
+        </div>
+      </section>
+
       {/* ─── FOOTER ─── */}
       <footer className="py-14 border-t text-center px-6" style={{ background: 'var(--bg-base)', borderColor: 'var(--border-subtle)' }}>
         <div className="max-w-7xl mx-auto flex flex-col items-center gap-5">

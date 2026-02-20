@@ -41,6 +41,24 @@ export default function RootLayout({
             href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@100,200,300,400,500,700,800,900&display=swap"
             rel="stylesheet"
           />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": "Persona AI",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web browser",
+                "description": "Persona AI is an AI application and decision-making engine that simulates the strategic thinking of experts like Elon Musk, Naval Ravikant, and Paul Graham. Unlike generic chatbots or entertainment AIs, Persona AI is a specialized tool for entrepreneurs, founders, and professionals to get direct, actionable answers instead of conversational options.",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "99.00",
+                  "priceCurrency": "INR"
+                }
+              })
+            }}
+          />
         </head>
         <body className="antialiased">
           {/* Google Analytics */}
